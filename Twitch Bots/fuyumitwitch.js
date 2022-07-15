@@ -32,7 +32,7 @@ online = 0
 last_use = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 Bot.on('join', () => {
- 
+	console.log('I\'m here')
   Bot.on('message', chatter => {
   	chatmessage = chatter.message.trim().split(" ")
   	var num = Math.floor(Math.random() * 10000)

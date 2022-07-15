@@ -48,6 +48,7 @@ hero = 0
 last_use = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 Bot.on('join', () => {
+	console.log('Ready to go, Captain o7')
   //command list
   Bot.on('message', chatter => {
     // console.log(""+chatter.username+": " +chatter.message+ "")
