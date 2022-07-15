@@ -1,6 +1,6 @@
 // Import packages/set variables (constants)
-const Discord = require('discord.js');
-const client = new Discord.Client();
+const { Client, Intents } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
 const fs = require('fs');
 var oauth = require('./oauth.js')
@@ -47,9 +47,9 @@ client.on('ready', () => {
 });
 
 // Creates an event listener for messages
-client.on('message', message => {
+client.on("messageCreate", message => {
   //console.log(message)
-    if (message.channel.type === 'text' && message.author != null) {
+    if (message.channel.type != undefined && message.author != null) {
       if (message.content === '!alerts' && message.author != undefined) {
        //console.log(client.guilds.cache.get('172065393525915648'))
        client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.add('607809003665489930')
@@ -66,7 +66,7 @@ client.on('message', message => {
           .catch(console.error);
       }
 
-      if (message.channel.name === 'ventriloquism' && message.author.username === 'ShadowBeatz') {
+      if (message.channel.id === '608509082835484702' && message.author.username === 'ShadowBeatz') {
       	yeet = message.content.split(" ")
       	poundDel = yeet[1].substring(2, yeet[1].length-1)
       	if (yeet[0] === 'kirika') {
@@ -74,16 +74,15 @@ client.on('message', message => {
       	}
       }
 
-      if (message.channel.name === 'oyashiro-samas_shrine' && message.content.includes('||') && !message.content.includes('(')) {
-        message.channel.send('Hey, if that\'s a spoiler, could you put what show it is outside of the spoiler so people can know not to click if they don\'t want it spoiled? <:KirikaSmile:608201680374464532>')
+      if (message.channelId === '175925024098746369' && message.content.includes('||') && !message.content.includes('(')) {
+        message.channel.send({ content: 'Hey, if that\'s a spoiler, could you put what show it is outside of the spoiler so people can know not to click if they don\'t want it spoiled? <:KirikaSmile:608201680374464532>', embeds: [] });
       }
 
       sup = message.content.toLowerCase()
-      //console.log(sup)
+    //   console.log(sup)
       if (sup.includes('hi ') || sup.includes('hey ') || sup.includes('greetings ') || sup.includes('ohayo ') || sup.includes('konbanwa ') || sup.includes('hello ')) {
-        if(message.author.id !='607807501722845202' ) {
+        if(message.author.id !='607807501722845202') {
       	   if (sup.includes('kirika')) {
-        //console.log('here')          nod
       		try{
             message.channel.send('Hi <@'+message.author.id+'> <:KirikaSmile:608201680374464532>')
           }
@@ -92,13 +91,12 @@ client.on('message', message => {
             }
       	   }
           }
-     
-	  
-	  if (message.channel.name === 'Daily Wordle Game Thread' && message.content.includes('6/6')) {
-		message.channel.send('<@'+message.author.id+'> <:HahaSweat:940501632205066331>')
-	  }
 
       }
+
+	  if (message.channelId === '931407561792565280' && message.content.includes('6/6')) {
+		message.channel.send('<@'+message.author.id+'> close one <:monkaW:717247350397075466>')
+	  }
 
 	  if (message.channel.name === 'general') {
 		message.react('📦');

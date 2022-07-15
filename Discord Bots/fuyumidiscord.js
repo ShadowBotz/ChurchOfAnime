@@ -1,6 +1,6 @@
 // Import packages/set variables (constants)
-const Discord = require('discord.js');
-const client = new Discord.Client();
+const { Client, Intents } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
 const fs = require('fs');
 var oauth = require('./oauth.js')
@@ -14,8 +14,8 @@ client.on('ready', () => {
 });
 
 // Creates an event listener for messages
-client.on('message', message => {
-    if (message.channel.type === 'text' && message.author != null) {
+client.on('messageCreate', message => {
+    if (message.channel.type != undefined && message.author != null) {
       if (message.content === '!alertsoff') {
         client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.remove('607809003665489930')
         .then(message.channel.send('Got it.'))
@@ -43,6 +43,10 @@ client.on('message', message => {
       if (message.content === '!weeblist') {
       	message.channel.send('"kyoniwasawa" <:pepeLaugh:619388817236951070> https://myanimelist.net/animelist/KyonIwasawa')
       }
+
+      if (message.channelId === '931407561792565280' && message.content.includes('*/6')) {
+        message.channel.send('<@'+message.author.id+'> <:OMEGALUL:854391735458988063>')
+        }
 
 
       sup = message.content.toLowerCase()
