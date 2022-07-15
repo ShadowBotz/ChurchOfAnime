@@ -201,7 +201,7 @@ Bot.on('join', () => {
 			}
 
 			if (chatter.message.toLowerCase().includes('!followage')){
-				Bot.say('@'+chatter.display_name+' Just click on your name and chat and you can see')
+				Bot.say('@'+chatter.display_name+' Just click on your name in chat and you can see')
 			}
 
 		// if (chatter.username === 'harvey_')
