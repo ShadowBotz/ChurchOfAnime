@@ -92,16 +92,17 @@ client.on('message', message => {
             }
       	   }
           }
-
-      if (sup.includes('pausefish')) {
-        message.channel.send('<:FishPog:768723373051346945>')
-      }
+     
 	  
 	  if (message.channel.name === 'Daily Wordle Game Thread' && message.content.includes('6/6')) {
 		message.channel.send('<@'+message.author.id+'> <:HahaSweat:940501632205066331>')
 	  }
 
       }
+
+	  if (message.channel.name === 'general') {
+		message.react('📦');
+	}
 
       if (message.content.includes('!bd')) {
       	if (message.content.substring(0,3) === '!bd') {
