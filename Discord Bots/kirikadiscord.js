@@ -1,6 +1,6 @@
 // Import packages/set variables (constants)
 const { Client, Intents } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], partials: ["CHANNEL"] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
 const fs = require('fs');
 var oauth = require('./oauth.js')
@@ -54,7 +54,7 @@ client.on("messageCreate", message => {
        //console.log(client.guilds.cache.get('172065393525915648'))
        client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.add('607809003665489930')
         .then(message.channel.send('You have been added to the alerts list <:KirikaSmile:608201680374464532>'))
-          .then(console.log('alerts role added'))
+          .then(console.log('alerts role added for '+message.author.username+''))
           .catch(console.error);
       }
 
@@ -62,7 +62,7 @@ client.on("messageCreate", message => {
        //console.log(client.guilds.cache.get('172065393525915648'))
        client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.add('859218117833916437')
         .then(message.channel.send('Welcome to the official Church of Anime v-tuber ~~simp~~ fan club <:KirikaSmile:608201680374464532>'))
-          .then(console.log('v-tube role added'))
+          .then(console.log('v-tube role added for '+message.author.username+''))
           .catch(console.error);
       }
 
@@ -278,15 +278,15 @@ client.on("messageCreate", message => {
 // Assigns the streamer role to anyone live on Twitch
 
 client.on('presenceUpdate', (oldMember, newMember) => {
-  // if (newMember.userID === '124044415634243584'){
-  //   console.log(newMember)
-    //console.log(newMember.activities[0])
-  //}
+  if (newMember.userId === '124044415634243584'){
+    // console.log(newMember)
+    // console.log(newMember.activities[0])
+  }
 
   // if (newMember.activities[0] != undefined){
   //   if (newMember.activities[0].type === 'CUSTOM_STATUS'){
   //     console.log(newMember.activities)
-  //     console.log(client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userID).user.username)
+  //     console.log(client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username)
   //   }
   // }  
 
@@ -301,10 +301,10 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	}
 
     if(currentlyStreaming >= 1){
-      client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userID).roles.add('610621341984489472')
+      client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
          //.then(console.log('dude strimmin'))
               //.catch(console.error);
-              if (newMember.userID === '124044415634243584') {
+              if (newMember.userId === '124044415634243584') {
                  if (oldMember.activities[0] != undefined) {
                    if (oldMember.activities[0].type != 'STREAMING') {
                       client.channels.cache.get('607817203588268062').send(('<@&607809003665489930> Streaming some ' +a.state+ ' <:KirikaSmile:608201680374464532> "' +a.details+ '" http://www.twitch.tv/ShadowBeatz'))
@@ -316,14 +316,18 @@ client.on('presenceUpdate', (oldMember, newMember) => {
               console.log(newMember.activities[0])
               }
     }else{
-      if(client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userID)._roles.includes('610621341984489472')) {
-        client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userID).roles.remove('610621341984489472')
+      if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId)._roles != undefined) {
+	  	  if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId)._roles.includes('610621341984489472')) {
+              client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
       }
-    }
+    }else{
+		console.log(client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId))
+		 }
+		} 
 
 
 	if (a === undefined) {
-			client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userID).roles.remove('610621341984489472')
+			client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
     }      	  
 
 });
