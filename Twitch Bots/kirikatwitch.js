@@ -111,7 +111,7 @@ Bot.on('join', () => {
 	if (messagecount > 50){
 		if (canSend(1800, last_use[10])){
 			last_use[10] = new Date().getTime()
-			fs.readFile('kirikacommands.json', 'utf8', (err, data) => {
+			fs.readFile('kirikaquotes.json', 'utf8', (err, data) => {
 				quote = JSON.parse(data)
 				max = quote.quotes.length
 				num = Math.floor(Math.random() * max)
