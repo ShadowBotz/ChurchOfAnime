@@ -2,6 +2,7 @@
 const { Client, Intents } = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
+const fetch = require('node-fetch');
 const fs = require('fs');
 var oauth = require('./oauth.js')
 
@@ -49,6 +50,8 @@ client.on('ready', () => {
 // Creates an event listener for messages
 client.on("messageCreate", message => {
   //console.log(message)
+  splt = message.content.split(" ")
+
     if (message.channel.type != undefined && message.author != null) {
       if (message.content === '!alerts' && message.author != undefined) {
        //console.log(client.guilds.cache.get('172065393525915648'))
@@ -66,7 +69,7 @@ client.on("messageCreate", message => {
           .catch(console.error);
       }
 
-      if (message.channel.id === '608509082835484702' && message.author.username === 'ShadowBeatz') {
+      if (message.channel.id === '608509082835484702' && message.author.id === '124044415634243584') {
       	yeet = message.content.split(" ")
       	poundDel = yeet[1].substring(2, yeet[1].length-1)
       	if (yeet[0] === 'kirika') {
@@ -100,7 +103,7 @@ client.on("messageCreate", message => {
 
 	  if (message.channel.name === 'general') {
 		message.react('📦');
-	}
+	  }
 
       if (message.content.includes('!bd')) {
       	if (message.content.substring(0,3) === '!bd') {
@@ -259,9 +262,222 @@ client.on("messageCreate", message => {
       	}	
       }
 
+	  function TitleCase(Input){
+		Input = Input.toLowerCase().split(" ");
+
+		for (var i = 0; i < Input.length; i++){
+			if (Input[i].length === 2){
+				Input [i] = Input[i].toUpperCase();
+			}else{
+			Input[i] = Input[i].charAt(0).toUpperCase() + Input[i].slice(1);
+			}
+		}
+
+		return Input.join(' ');
+	  }
+
+	  function username(Input){
+		if (client.guilds.cache.get('172065393525915648').members.cache.get(Input) != undefined){
+			if (client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname != null){
+				return client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname	
+			}else{
+				return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.username
+			}				
+		}else{
+			return ("a mystery person")
+		}
+	  }
+
+
+	  if (splt[0] === "!addteam"){
+
+		fs.readFile('sports.json', 'utf8', (err, data)=>{
+			sports = JSON.parse(data)
+			AID = message.author.id
+			teamInput = splt.slice(2).join(' ')
+			teamInputLength = teamInput.split(" ")
+			team = TitleCase(teamInput)			
+		
+		if (sports[splt[1].toUpperCase()] === undefined){
+			//sports[splt[1].toUpperCase()] = {[team]: [AID]}
+			//fs.writeFile('sports.json', JSON.stringify(sports), (err)=>{
+			//	if (err) throw err;
+			//})
+			message.channel.send('<@'+message.author.id+'> I\'m not familiar with that league <:beatzPosh:824832391792427011> Currently we\'re only keeping track of MLB, NFL, NHL, NBA, MLS, WNBA and XFL teams, with college sports hopefully coming soon <:KirikaSmile:608201680374464532> Sorry if you feel left out but ShadowBeatz is just a dumb American and can only do so much :flag_us:')
+		}else{
+			
+		if (sports[splt[1].toUpperCase()][team] === undefined){
+			if (splt[1].toUpperCase() === 'MLS'){
+				message.channel.send('<@'+message.author.id+'> Is that a real team? <:beatzSusAF:549413960948908063> MLS teams are weird. Try spelling out the whole city name, abbreviating "Football Club/Soccer Club" to "FC/SC", or adding "FC/SC" to the name')
+			}else{
+				message.channel.send('<@'+message.author.id+'> That\'s not a real team <:beatzSusAF:549413960948908063> Are you sure you spelled it right?')
+				console.log(sports[splt[1].toUpperCase()])
+			}
+			}else{ if (sports[splt[1].toUpperCase()][team].fans.find(element => element === AID) != undefined){
+				message.channel.send('<@'+message.author.id+'> You already added that <:beatzSusAF:549413960948908063>')
+			}else{
+				chant = sports[splt[1].toUpperCase()][team].chant
+			    modifier = sports[splt[1].toUpperCase()][team].modifier
+
+				sports[splt[1].toUpperCase()][team].fans.push(AID)
+				fs.writeFile('sports.json', JSON.stringify(sports), (err)=>{
+					if (err) throw err;
+
+					if (sports[splt[1].toUpperCase()][team].fans.length < 2){
+
+						message.channel.send('<@'+message.author.id+'> A fan of ' +modifier+ '' +team+ ' huh? ' +chant+ '')
+
+					}else{
+						message.channel.send('<@'+message.author.id+'> Another fan of ' +modifier+ '' +team+ '! You\'re among friends here ' +chant+ '')
+					}
+					
+			})}
+		}		
+		
+				
+			}}
+			)}
+
+	  if (splt[0] === 'yur'){
+		fs.readFile('sports.json', 'utf8', (err, data)=>{
+
+			sports = JSON.parse(data)
+
+			console.log(sports.MLB['Boston Red Sox'])
+	  	})
+	}	
+
+	  if (splt[0] === '!fans'){
+		fs.readFile('sports.json', 'utf8', (err, data)=>{
+			sports = JSON.parse(data)
+			teamInput = splt.slice(1).join(' ')
+			teamInputLength = teamInput.split(" ")
+			team = TitleCase(teamInput)
+
+			let LeaguesEntries = Object.entries(sports) 
+
+			let outcome = undefined
+
+			for (let i = 0; i < LeaguesEntries.length; i++){
+ 			  if(LeaguesEntries[i][1][team] != undefined){
+  			    outcome = [LeaguesEntries[i][0], LeaguesEntries[i][1][team]]
+ 			  }
+			}
+
+			if (outcome === undefined){
+				message.channel.send('What? <:beatzSusAF:549413960948908063> What team is that? Is that a typo?')
+			}else{
+			modifier = outcome[1].modifier
+			chant = outcome[1].chant
+			
+			if (outcome[1].fans.length < 1){
+				message.channel.send('Nobody likes ' +modifier+ '' +team+ ' <:beatzF:384222351186853891>')
+			}else if (outcome[1].fans.length === 1){
+				message.channel.send(''+username(outcome[1].fans[0])+' is the ' +team+ ' fan in this discord '+chant+'')
+			}else if (outcome[1].fans.length > 1){				
+				fan = []				
+
+				for (let i = 0; i < outcome[1].fans.length; i++){
+					fan.push(username(outcome[1].fans[i]))
+				}
+
+				last = fan.pop()
+				
+				message.channel.send(''+fan.join(', ')+ ' and ' +last+ ' are the ' +team+ ' fans in this discord '+chant+'')
+			}
+		}
+		})
+	  }
+
+	  if (splt[0] === '!teams'){
+		if (splt[1][1] != '@'){
+			message.channel.send('You need to use "@" to tag the person who you want the teams of so I can look them up properly <:KirikaSmile:608201680374464532>')	
+		}else{
+		fs.readFile('sports.json', 'utf8', (err, data)=>{
+			sports = JSON.parse(data)
+			id = splt[1].slice(2, -1)
+
+			let LeaguesEntries = Object.entries(sports)
+			// let TeamsEntries = Object.entries(LeaguesEntries[0][1])
+			// let FansEntries = Object.entries(TeamsEntries[0][1])
+			userfandom = []
+
+			for (let i = 0; i < LeaguesEntries.length; i++){
+				let TeamsEntries = Object.entries(LeaguesEntries[i][1])				
+				for (let j = 0; j < TeamsEntries.length; j++){
+					let FansEntries = Object.entries(TeamsEntries[j][1])
+					//console.log (FansEntries[0][1])
+					if (FansEntries[0][1].includes(id)){
+				   	userfandom.push(TeamsEntries[j][0])
+						}
+					}
+			    }
+
+			if (userfandom.length < 1){
+				message.channel.send(''+username(id)+' hasn\'t told me who their favorite teams are yet <:beatzDespair:1019839939522859109> Maybe they don\'t like sports')
+			}
+			if (userfandom.length === 1){
+				message.channel.send(''+username(id)+' is just a ' +userfandom[0]+ ' fan <:KirikaSmile:608201680374464532>')
+			}
+			if (userfandom.length > 1){
+
+				last = userfandom.pop()
+			
+				message.channel.send(''+username(id)+' is a '+userfandom.join(', ')+ ' and ' +last+ ' fan <:KirikaSmile:608201680374464532>')
+			}
+			
+			
+
+		})
+		}
+	  }
+
+	  if (splt[0] === '!scores'){
+		//fs.readFile('sports.json', 'utf8', (err, data)=>{
+			// sports = JSON.parse(data)
+
+			// let LeaguesEntries = Object.entries(sports)
+			// let outcome = undefined
+
+			function getScores(sport, league){
+				return new Promise(async function(resolve, reject){
+				   const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/'+sport+'/'+league+'/scoreboard', {
+					  method: 'get',
+					  headers: {},
+					  redirect: 'follow'
+					  });
+						  make_request = await fetch(req)                                                              //sends the request
+						  format_resolved_request = await make_request.json()                   //formats the raw request into JSON
+					  
+					  if(format_resolved_request.events[0]!=undefined){                
+						  games = []
+
+						  for (i = 0; i < format_resolved_request.events.length; i++){
+							games.push([format_resolved_request.events[i].competitions[0].competitors[0].team.displayName, format_resolved_request.events[i].competitions[0].competitors[0].winner])
+							games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName, format_resolved_request.events[i].competitions[0].competitors[1].winner])
+						  }
+
+						  console.log(games)
+
+						  resolve(games)												 				                                            
+					  }else{
+						  reject()
+					  }
+					  
+					//   setTimeout(()=>{console.log(games, (err)=>{
+					// 	if (err) throw err;
+					// 	})
+					//   }, 4000)
+					  //message.channel.send(''+games.join(' - ')+'')       
+			  })                                             
+		  }
+		  getScores(splt[1], splt[2])
+		//})
+	  }
+
       if (message.content.includes('!at')) {
-        console.log(message.content)
-      	//console.log(client.guilds.cache.get('172065393525915648').members.cache.get('124044415634243584')._roles)
+        //console.log(message.content)
+      	console.log(client.guilds.cache.get('172065393525915648').members.cache.get('124044415634243584'))
       	}
 
       if (message.content.includes('!get') && message.channel.name === ('test')) {
@@ -302,8 +518,6 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
     if(currentlyStreaming >= 1){
       client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
-         //.then(console.log('dude strimmin'))
-              //.catch(console.error);
               if (newMember.userId === '124044415634243584') {
                  if (oldMember.activities[0] != undefined) {
                    if (oldMember.activities[0].type != 'STREAMING') {
@@ -316,19 +530,21 @@ client.on('presenceUpdate', (oldMember, newMember) => {
               console.log(newMember.activities[0])
               }
     }else{
-      if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId)._roles != undefined) {
+      if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId) != undefined) {
 	  	  if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId)._roles.includes('610621341984489472')) {
               client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
       }
     }else{
-		console.log(client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId))
+		console.log(newMember)
 		 }
 		} 
 
 
 	if (a === undefined) {
+		if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId) != undefined){
 			client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
-    }      	  
+		}
+	}     	  
 
 });
 

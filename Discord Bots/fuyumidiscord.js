@@ -30,7 +30,7 @@ client.on('messageCreate', message => {
           .catch(console.error);
       }
 
-      if (message.channel.name === 'ventriloquism' && message.author.username === 'ShadowBeatz') {
+      if (message.channel.id === '608509082835484702' && message.author.id === '124044415634243584') {
       	yeet = message.content.split(" ")
       	poundDel = yeet[1].substring(2, yeet[1].length-1)
       	if (yeet[0] === 'fuyumi') {
