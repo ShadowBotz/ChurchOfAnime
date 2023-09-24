@@ -517,7 +517,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 	}
 
 	if (newMember.userId === '124044415634243584'){
-		if (newMember.activities[0] === undefined && oldMember.activities[0] != undefined){
+		if (a === undefined && oldMember.activities[0] != undefined){
 			if (oldMember.activities[0].type === 'STREAMING'){
 				client.channels.cache.get('607817203588268062').send(('The stream is over, but if you missed it, you can watch the stream on the new VOD channel here (just give it an hour or two, depending on the length of the stream <:KirikaSmile:608201680374464532>) https://www.youtube.com/channel/UCkQBMVEYiDg3jqc2mcjlThA'))
 			}
@@ -548,12 +548,15 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 		} 
 
 
-	if (a === undefined) {
-		if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId) != undefined){
-			client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
+	if (a === undefined && oldMember != null) {
+		if (oldMember.activities[0] != undefined) {
+			if (oldMember.activities[0].type === 'STREAMING'){
+				if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId) != undefined){
+					client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
+				}
+			}
 		}
 	}     	  
-
 });
 
 // Gets Kirika to say Happy Birthday
