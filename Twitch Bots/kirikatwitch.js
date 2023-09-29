@@ -126,7 +126,7 @@ Bot.on('join', () => {
   	chatmessage = chatter.message.trim().split(" ")
 	if (chatter.username != 'kirika_sama' || chatter.username != 'fuyumi_sama' || chatter.username != 'nightbot'){
 		fs.readFile('kirikacommands.json', 'utf8', (err, data) => {
-			command = JSON.parse(data).commands
+			command = JSON.parse(data)
 
 			if (chatmessage[0] == "!addcomk"){
 				if (online === 1){
@@ -325,7 +325,7 @@ Bot.on('join', () => {
     	if (chatter.message.includes('pack')  && chatter.message.includes('mod') && chatter.display_name != 'Nightbot'){
 			if (canSend(30, last_use[24])){
     			last_use[24] = new Date().getTime()
-    			Bot.say('@'+chatter.display_name+' The modpack is called Vault Hunters KirikaSmile It\'s a 1.18.2 modpack mixes dungeon crawling and RPG mechanics and makes it minecrafty')
+    			Bot.say('@'+chatter.display_name+' The modpack is called Create: Astral KirikaSmile It\'s a 1.18.2 modpack based around Create with the goal of space travel')
 		  	}
 		}
 		
