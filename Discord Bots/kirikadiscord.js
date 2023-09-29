@@ -4,7 +4,12 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 const schedule = require('node-schedule');
 const fetch = require('node-fetch');
 const fs = require('fs');
-var oauth = require('./oauth.js')
+var oauth = require('./oauth.js');
+var d = new Date();
+
+function currentTime(){
+	return d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+' - '
+	}
 
 //Each discord bot has a unique token
 client.login(oauth.KirikaID);
@@ -44,7 +49,7 @@ client.login(oauth.KirikaID);
 
 // Creates an event listener for bot ready-state
 client.on('ready', () => {
-	console.log('bot running')
+	console.log(currentTime()+'bot running')
 });
 
 // Creates an event listener for messages
@@ -508,13 +513,13 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
 	a = newMember.activities[0]
   currentlyStreaming = 0
-	if (a != undefined) {
-    newMember.activities.forEach((element, index) => {
-      if (element.type === 'STREAMING') {
-        currentlyStreaming += 1
-      } 
-    })
-	}
+	// if (a != undefined) {
+    // newMember.activities.forEach((element, index) => {
+    //   if (element.type === 'STREAMING') {
+    //     currentlyStreaming += 1
+    //   } 
+    // })
+	// }
 
 	if (newMember.userId === '124044415634243584'){
 		if (a === undefined && oldMember.activities[0] != undefined){
@@ -524,8 +529,11 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 		}	
 	}
 
-    if(currentlyStreaming >= 1){
-      client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
+    if(a != undefined){
+		if (a.type === 'STREAMING'){
+			if (oldMember.activities[0] === undefined){
+      			client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
+	  			console.log(currentTime()+client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username+' started streaming')
               if (newMember.userId === '124044415634243584') {
                  if (oldMember.activities[0] != undefined) {
                    if (oldMember.activities[0].type != 'STREAMING') {
@@ -537,14 +545,16 @@ client.on('presenceUpdate', (oldMember, newMember) => {
               }
               console.log(newMember.activities[0])
               }
+			}  
+		}	  
     }else{
       if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId) != undefined) {
 	  	  if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId)._roles.includes('610621341984489472')) {
               client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
       }
-    }else{
-		console.log(newMember)
-		 }
+     }//else{
+	// 	console.log(newMember)
+	// 	 }
 		} 
 
 
