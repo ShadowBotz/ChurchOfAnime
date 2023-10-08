@@ -294,6 +294,7 @@ client.on("messageCreate", message => {
 
 
 	  if (splt[0] === "!addteam"){
+		if (splt[1] != undefined){
 
 		fs.readFile('sports.json', 'utf8', (err, data)=>{
 			sports = JSON.parse(data)
@@ -302,45 +303,47 @@ client.on("messageCreate", message => {
 			teamInputLength = teamInput.split(" ")
 			team = TitleCase(teamInput)			
 		
-		if (sports[splt[1].toUpperCase()] === undefined){
-			//sports[splt[1].toUpperCase()] = {[team]: [AID]}
-			//fs.writeFile('sports.json', JSON.stringify(sports), (err)=>{
-			//	if (err) throw err;
-			//})
-			message.channel.send('<@'+message.author.id+'> I\'m not familiar with that league <:beatzPosh:824832391792427011> Currently we\'re only keeping track of MLB, NFL, NHL, NBA, MLS, WNBA and XFL teams, with college sports hopefully coming soon <:KirikaSmile:608201680374464532> Sorry if you feel left out but ShadowBeatz is just a dumb American and can only do so much :flag_us:')
-		}else{
-			
-		if (sports[splt[1].toUpperCase()][team] === undefined){
-			if (splt[1].toUpperCase() === 'MLS'){
-				message.channel.send('<@'+message.author.id+'> Is that a real team? <:beatzSusAF:549413960948908063> MLS teams are weird. Try spelling out the whole city name, abbreviating "Football Club/Soccer Club" to "FC/SC", or adding "FC/SC" to the name')
+			if (sports[splt[1].toUpperCase()] === undefined){
+				//sports[splt[1].toUpperCase()] = {[team]: [AID]}
+				//fs.writeFile('sports.json', JSON.stringify(sports), (err)=>{
+				//	if (err) throw err;
+				//})
+				message.channel.send('<@'+message.author.id+'> I\'m not familiar with that league <:beatzPosh:824832391792427011> Currently we\'re only keeping track of MLB, NFL, NHL, NBA, MLS, WNBA and XFL teams, with college sports hopefully coming soon <:KirikaSmile:608201680374464532> Sorry if you feel left out but ShadowBeatz is just a dumb American and can only do so much :flag_us:')
 			}else{
-				message.channel.send('<@'+message.author.id+'> That\'s not a real team <:beatzSusAF:549413960948908063> Are you sure you spelled it right?')
-				console.log(sports[splt[1].toUpperCase()])
-			}
-			}else{ if (sports[splt[1].toUpperCase()][team].fans.find(element => element === AID) != undefined){
-				message.channel.send('<@'+message.author.id+'> You already added that <:beatzSusAF:549413960948908063>')
-			}else{
-				chant = sports[splt[1].toUpperCase()][team].chant
-			    modifier = sports[splt[1].toUpperCase()][team].modifier
-
-				sports[splt[1].toUpperCase()][team].fans.push(AID)
-				fs.writeFile('sports.json', JSON.stringify(sports), (err)=>{
-					if (err) throw err;
-
-					if (sports[splt[1].toUpperCase()][team].fans.length < 2){
-
-						message.channel.send('<@'+message.author.id+'> A fan of ' +modifier+ '' +team+ ' huh? ' +chant+ '')
-
-					}else{
-						message.channel.send('<@'+message.author.id+'> Another fan of ' +modifier+ '' +team+ '! You\'re among friends here ' +chant+ '')
-					}
-					
-			})}
-		}		
-		
 				
-			}}
-			)}
+			if (sports[splt[1].toUpperCase()][team] === undefined){
+				if (splt[1].toUpperCase() === 'MLS'){
+					message.channel.send('<@'+message.author.id+'> Is that a real team? <:beatzSusAF:549413960948908063> MLS teams are weird. Try spelling out the whole city name, abbreviating "Football Club/Soccer Club" to "FC/SC", or adding "FC/SC" to the name')
+				}else{
+					message.channel.send('<@'+message.author.id+'> That\'s not a real team <:beatzSusAF:549413960948908063> Are you sure you spelled it right?')
+					console.log(sports[splt[1].toUpperCase()])
+				}
+				}else{ if (sports[splt[1].toUpperCase()][team].fans.find(element => element === AID) != undefined){
+					message.channel.send('<@'+message.author.id+'> You already added that <:beatzSusAF:549413960948908063>')
+				}else{
+					chant = sports[splt[1].toUpperCase()][team].chant
+					modifier = sports[splt[1].toUpperCase()][team].modifier
+
+					sports[splt[1].toUpperCase()][team].fans.push(AID)
+					fs.writeFile('sports.json', JSON.stringify(sports), (err)=>{
+						if (err) throw err;
+
+						if (sports[splt[1].toUpperCase()][team].fans.length < 2){
+
+							message.channel.send('<@'+message.author.id+'> A fan of ' +modifier+ '' +team+ ' huh? ' +chant+ '')
+
+						}else{
+							message.channel.send('<@'+message.author.id+'> Another fan of ' +modifier+ '' +team+ '! You\'re among friends here ' +chant+ '')
+						}
+						
+				})}
+			}		
+			
+					
+				}}
+				)
+			}
+			}
 
 	  if (splt[0] === 'yur'){
 		fs.readFile('sports.json', 'utf8', (err, data)=>{
@@ -437,6 +440,43 @@ client.on("messageCreate", message => {
 	  }
 
 	  if (splt[0] === '!scores'){
+		SPORT = undefined
+		LEAGUE = undefined
+
+		if (splt[1].toLowerCase() === 'nfl'){
+			SPORT = 'football'
+			LEAGUE = 'nfl'
+		}
+		if (splt[1].toLowerCase() === 'nhl'){
+			SPORT = 'hockey'
+			LEAGUE = 'nhl'
+		}
+		if (splt[1].toLowerCase() === 'nba'){
+			SPORT = 'basketball'
+			LEAGUE = 'nba'
+		}
+		if (splt[1].toLowerCase() === 'mlb'){
+			SPORT = 'baseball'
+			LEAGUE = 'mlb'
+		}
+		if (splt[1].toLowerCase() === 'ncaaf'){
+			SPORT = 'football'
+			LEAGUE = 'college-football'
+		}
+		if (splt[1].toLowerCase() === 'xfl'){
+			SPORT = 'football'
+			LEAGUE = 'xfl'
+		}
+		if (splt[1].toLowerCase() === 'wnba'){
+			SPORT = 'basketball'
+			LEAGUE = 'wnba'
+		}
+		if (splt[1].toLowerCase() === 'mls'){
+			SPORT = 'soccer'
+			LEAGUE = 'usa.1'
+		}
+
+
 		//fs.readFile('sports.json', 'utf8', (err, data)=>{
 			// sports = JSON.parse(data)
 
@@ -457,8 +497,9 @@ client.on("messageCreate", message => {
 						  games = []
 
 						  for (i = 0; i < format_resolved_request.events.length; i++){
-							games.push([format_resolved_request.events[i].competitions[0].competitors[0].team.displayName, format_resolved_request.events[i].competitions[0].competitors[0].winner])
-							games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName, format_resolved_request.events[i].competitions[0].competitors[1].winner])
+							 
+							games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName+" ", format_resolved_request.events[i].competitions[0].competitors[1].score+" - ",format_resolved_request.events[i].competitions[0].competitors[0].team.displayName+" ", format_resolved_request.events[i].competitions[0].competitors[0].score+" (", format_resolved_request.events[i].competitions[0].status.type.shortDetail+")"])
+							//games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName, format_resolved_request.events[i].competitions[0].competitors[1].score])
 						  }
 
 						  console.log(games)
@@ -472,11 +513,16 @@ client.on("messageCreate", message => {
 					// 	if (err) throw err;
 					// 	})
 					//   }, 4000)
-					  //message.channel.send(''+games.join(' - ')+'')       
+					  message.channel.send('```prolog\n'+(games.join('\n\n')).replaceAll(',','').replaceAll('New York Giants','Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles','Philadelphia Phuckbois').replaceAll('Washington Commanders','Washington Football Team')+'```')       
 			  })                                             
 		  }
-		  getScores(splt[1], splt[2])
+		  if (LEAGUE === undefined){
+			message.channel.send('I\'m sorry, I don\'t recognize that league <:KirikaSmile:608201680374464532> Try one of the following: NFL, NHL, MLB, NBA, WNBA, MLS, NCAAF or XFL (No college basketball though. Too many games. Makes my head hurt <:monkaW:717247350397075466> )')
+		  }else{
+		  	getScores(SPORT, LEAGUE)
+		}
 		//})
+	  
 	  }
 
       if (message.content.includes('!at')) {
@@ -496,6 +542,8 @@ client.on("messageCreate", message => {
 });
 
 // Assigns the streamer role to anyone live on Twitch
+
+streamingrn = 3
 
 client.on('presenceUpdate', (oldMember, newMember) => {
 if (oldMember != null){
@@ -548,7 +596,8 @@ if (oldMember != null){
 		client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
 		// if (a.type === 'STREAMING'){
 			if (beenStreaming === 0){
-	  			console.log(time+client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username+' started streaming')
+				streamingrn += 1
+	  			console.log(time+client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username+' started streaming ('+streamingrn+')')
               if (newMember.userId === '124044415634243584') {
                  if (oldMember.activities[0] != undefined) {
                    if (oldMember.activities[0].type != 'STREAMING') {
@@ -566,7 +615,8 @@ if (oldMember != null){
       if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId) != undefined) {
 	  	  if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId)._roles.includes('610621341984489472')) {
               client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
-			  console.log(time+client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username+' stopped streaming')
+			  streamingrn -= 1
+			  console.log(time+client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username+' stopped streaming('+streamingrn+')')
       }
      }//else{
 	// 	console.log(newMember)
