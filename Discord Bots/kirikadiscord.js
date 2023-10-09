@@ -405,8 +405,6 @@ client.on("messageCreate", message => {
 			id = splt[1].slice(2, -1)
 
 			let LeaguesEntries = Object.entries(sports)
-			// let TeamsEntries = Object.entries(LeaguesEntries[0][1])
-			// let FansEntries = Object.entries(TeamsEntries[0][1])
 			userfandom = []
 
 			for (let i = 0; i < LeaguesEntries.length; i++){
@@ -440,6 +438,7 @@ client.on("messageCreate", message => {
 	  }
 
 	  if (splt[0] === '!scores'){
+		if (splt[1] != undefined){
 		SPORT = undefined
 		LEAGUE = undefined
 
@@ -499,7 +498,6 @@ client.on("messageCreate", message => {
 						  for (i = 0; i < format_resolved_request.events.length; i++){
 							 
 							games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName+" ", format_resolved_request.events[i].competitions[0].competitors[1].score+" - ",format_resolved_request.events[i].competitions[0].competitors[0].team.displayName+" ", format_resolved_request.events[i].competitions[0].competitors[0].score+" (", format_resolved_request.events[i].competitions[0].status.type.shortDetail+")"])
-							//games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName, format_resolved_request.events[i].competitions[0].competitors[1].score])
 						  }
 
 						  console.log(games)
@@ -522,7 +520,202 @@ client.on("messageCreate", message => {
 		  	getScores(SPORT, LEAGUE)
 		}
 		//})
-	  
+		}
+	  }
+
+	  if (splt[0] === '!livescores'){
+		if (splt[1] != undefined){
+		SPORT = undefined
+		LEAGUE = undefined
+
+		if (splt[1].toLowerCase() === 'nfl'){
+			SPORT = 'football'
+			LEAGUE = 'nfl'
+		}
+		if (splt[1].toLowerCase() === 'nhl'){
+			SPORT = 'hockey'
+			LEAGUE = 'nhl'
+		}
+		if (splt[1].toLowerCase() === 'nba'){
+			SPORT = 'basketball'
+			LEAGUE = 'nba'
+		}
+		if (splt[1].toLowerCase() === 'mlb'){
+			SPORT = 'baseball'
+			LEAGUE = 'mlb'
+		}
+		if (splt[1].toLowerCase() === 'ncaaf'){
+			SPORT = 'football'
+			LEAGUE = 'college-football'
+		}
+		if (splt[1].toLowerCase() === 'xfl'){
+			SPORT = 'football'
+			LEAGUE = 'xfl'
+		}
+		if (splt[1].toLowerCase() === 'wnba'){
+			SPORT = 'basketball'
+			LEAGUE = 'wnba'
+		}
+		if (splt[1].toLowerCase() === 'mls'){
+			SPORT = 'soccer'
+			LEAGUE = 'usa.1'
+		}
+
+
+		//fs.readFile('sports.json', 'utf8', (err, data)=>{
+			// sports = JSON.parse(data)
+
+			// let LeaguesEntries = Object.entries(sports)
+			// let outcome = undefined
+
+			function getScores(sport, league){
+				return new Promise(async function(resolve, reject){
+				   const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/'+sport+'/'+league+'/scoreboard', {
+					  method: 'get',
+					  headers: {},
+					  redirect: 'follow'
+					  });
+						  make_request = await fetch(req)                                                              //sends the request
+						  format_resolved_request = await make_request.json()                   //formats the raw request into JSON
+					  
+					  if(format_resolved_request.events[0]!=undefined){                
+						  livegames = []
+
+						  for (i = 0; i < format_resolved_request.events.length; i++){
+							
+							if (format_resolved_request.events[i].competitions[0].status.type.state === 'in'){
+							livegames.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName+" ", format_resolved_request.events[i].competitions[0].competitors[1].score+" - ",format_resolved_request.events[i].competitions[0].competitors[0].team.displayName+" ", format_resolved_request.events[i].competitions[0].competitors[0].score+" (", format_resolved_request.events[i].competitions[0].status.type.shortDetail+")"])
+						  }}
+
+						  console.log(livegames)
+
+						  resolve(livegames)												 				                                            
+					  }else{
+						  reject()
+					  }
+					  
+					if (livegames.length < 1){
+						message.channel.send('```prolog\n No Games Currently Taking Place```')
+					}else{
+					  message.channel.send('```prolog\n'+(livegames.join('\n\n')).replaceAll(',','').replaceAll('New York Giants','Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles','Philadelphia Phuckbois').replaceAll('Washington Commanders','Washington Football Team')+'```')
+				}      
+			  })                                             
+		  }
+		  if (LEAGUE === undefined){
+			message.channel.send('I\'m sorry, I don\'t recognize that league <:KirikaSmile:608201680374464532> Try one of the following: NFL, NHL, MLB, NBA, WNBA, MLS, NCAAF or XFL (No college basketball though. Too many games. Makes my head hurt <:monkaW:717247350397075466> )')
+		  }else{
+		  	getScores(SPORT, LEAGUE)
+		}
+		}
+	  }
+
+	  if (splt[0] === '!myscores'){
+		SPORT = undefined
+		LEAGUE = undefined
+		scores = []
+
+		fs.readFile('sports.json', 'utf8', (err, data)=>{
+			sports = JSON.parse(data)
+			id = message.author.id
+
+			let LeaguesEntries = Object.entries(sports)
+			userfandom = []
+
+			for (let i = 0; i < LeaguesEntries.length; i++){
+				let TeamsEntries = Object.entries(LeaguesEntries[i][1])				
+				for (let j = 0; j < TeamsEntries.length; j++){
+					let FansEntries = Object.entries(TeamsEntries[j][1])
+					//console.log (FansEntries[0][1])
+					if (FansEntries[0][1].includes(id)){
+				   	userfandom.push(LeaguesEntries[i][0],TeamsEntries[j][0])
+						}
+					}
+			    }
+			//console.log(userfandom)
+			fetchDeez = []
+
+
+			if (userfandom.length < 1){
+				message.channel.send('<@'+message.author.id+'> You gotta tell me which teams you root for first before I can give you your scores <:KirikaSmile:608201680374464532>')
+			}else{
+				
+				for (k = 0; k < userfandom.length; k+=2){
+
+				SPORT = undefined
+				LEAGUE = undefined
+
+				league = userfandom[k]
+				if (league.toLowerCase() === 'nfl'){
+					SPORT = 'football'
+					LEAGUE = 'nfl'
+				}
+				if (league.toLowerCase() === 'nhl'){
+					SPORT = 'hockey'
+					LEAGUE = 'nhl'
+				}
+				if (league.toLowerCase() === 'nba'){
+					SPORT = 'basketball'
+					LEAGUE = 'nba'
+				}
+				if (league.toLowerCase() === 'mlb'){
+					SPORT = 'baseball'
+					LEAGUE = 'mlb'
+				}
+				if (league.toLowerCase() === 'ncaaf'){
+					SPORT = 'football'
+					LEAGUE = 'college-football'
+				}
+				if (league.toLowerCase() === 'xfl'){
+					SPORT = 'football'
+					LEAGUE = 'xfl'
+				}
+				if (league.toLowerCase() === 'wnba'){
+					SPORT = 'basketball'
+					LEAGUE = 'wnba'
+				}
+				if (league.toLowerCase() === 'mls'){
+					SPORT = 'soccer'
+					LEAGUE = 'usa.1'
+				}
+
+				fetchDeez.push([SPORT, LEAGUE, userfandom[k+1]])
+			}
+
+				async function getScores(fetchDeez){
+					scores = []
+					// return new Promise(async function(resolve, reject){
+							 	
+					for (l = 0; l < fetchDeez.length; l++){
+					sport = fetchDeez[l][0]
+    				league = fetchDeez[l][1]
+					team = fetchDeez[l][2]
+								
+					const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/'+sport+'/'+league+'/scoreboard', {
+					method: 'get',
+					headers: {},
+					redirect: 'follow'
+					});
+							make_request = await fetch(req)
+							format_resolved_request = await make_request.json()
+								
+							for (i = 0; i < format_resolved_request.events.length; i++){					
+						if (format_resolved_request.events[i].name.includes(team)){
+							scores.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName+" ",format_resolved_request.events[i].competitions[0].competitors[1].score+" - ",format_resolved_request.events[i].competitions[0].competitors[0].team.displayName+" ", format_resolved_request.events[i].competitions[0].competitors[0].score+" (", format_resolved_request.events[i].competitions[0].status.type.shortDetail+")"])
+						}
+					}
+						console.log(scores)
+							
+								  	
+			  }
+			  if (scores.length === 0){
+				message.channel.send('Doesn\'t look like any of your teams played today. Nice day off <:KirikaSmile:608201680374464532>')
+			  }else{
+				message.channel.send('```prolog\n'+(scores.join('\n\n')).replaceAll(',','').replaceAll('New York Giants','Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles','Philadelphia Phuckbois').replaceAll('Washington Commanders','Washington Football Team')+'```')
+			}			  			  	
+		}
+		getScores(fetchDeez)
+		}	
+		})	
 	  }
 
       if (message.content.includes('!at')) {
@@ -543,7 +736,7 @@ client.on("messageCreate", message => {
 
 // Assigns the streamer role to anyone live on Twitch
 
-streamingrn = 3
+streamingrn = 0
 
 client.on('presenceUpdate', (oldMember, newMember) => {
 if (oldMember != null){
