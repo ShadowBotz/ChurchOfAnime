@@ -412,44 +412,52 @@ client.on("messageCreate", message => {
             })
         }
 
-        if (splt[0] === '!teams') {
-            if (splt[1][1] != '@') {
-                message.channel.send('You need to use "@" to tag the person who you want the teams of so I can look them up properly <:KirikaSmile:608201680374464532>')
-            } else {
-                fs.readFile('sports.json', 'utf8', (err, data) => {
-                    sports = JSON.parse(data)
-                    id = splt[1].slice(2, -1)
+        function getTeams(id){
+            fs.readFile('sports.json', 'utf8', (err, data) => {
+                sports = JSON.parse(data)
+                
 
-                    let LeaguesEntries = Object.entries(sports)
-                    userfandom = []
+                let LeaguesEntries = Object.entries(sports)
+                userfandom = []
 
-                    for (let i = 0; i < LeaguesEntries.length; i++) {
-                        let TeamsEntries = Object.entries(LeaguesEntries[i][1])
-                        for (let j = 0; j < TeamsEntries.length; j++) {
-                            let FansEntries = Object.entries(TeamsEntries[j][1])
-                            //console.log (FansEntries[0][1])
-                            if (FansEntries[0][1].includes(id)) {
-                                userfandom.push(TeamsEntries[j][0])
-                            }
+                for (let i = 0; i < LeaguesEntries.length; i++) {
+                    let TeamsEntries = Object.entries(LeaguesEntries[i][1])
+                    for (let j = 0; j < TeamsEntries.length; j++) {
+                        let FansEntries = Object.entries(TeamsEntries[j][1])
+                        //console.log (FansEntries[0][1])
+                        if (FansEntries[0][1].includes(id)) {
+                            userfandom.push(TeamsEntries[j][0])
                         }
                     }
+                }
 
-                    if (userfandom.length < 1) {
-                        message.channel.send('' + username(id) + ' hasn\'t told me who their favorite teams are yet <:beatzDespair:1019839939522859109> Maybe they don\'t like sports')
-                    }
-                    if (userfandom.length === 1) {
-                        message.channel.send('' + username(id) + ' is just a ' + userfandom[0] + ' fan <:KirikaSmile:608201680374464532>')
-                    }
-                    if (userfandom.length > 1) {
+                if (userfandom.length < 1) {
+                    message.channel.send('' + username(id) + ' hasn\'t told me who their favorite teams are yet <:beatzDespair:1019839939522859109> Maybe they don\'t like sports')
+                }
+                if (userfandom.length === 1) {
+                    message.channel.send('' + username(id) + ' is just a ' + userfandom[0] + ' fan <:KirikaSmile:608201680374464532>')
+                }
+                if (userfandom.length > 1) {
 
-                        last = userfandom.pop()
+                    last = userfandom.pop()
 
-                        message.channel.send('' + username(id) + ' is a ' + userfandom.join(', ') + ' and ' + last + ' fan <:KirikaSmile:608201680374464532>')
-                    }
+                    message.channel.send('' + username(id) + ' is a ' + userfandom.join(', ') + ' and ' + last + ' fan <:KirikaSmile:608201680374464532>')
+                }
 
 
 
-                })
+            })
+        }
+
+        if (splt[0] === '!teams') {
+            if (splt[1] === undefined){
+                id = message.author.id
+                getTeams(id)
+            }else if (splt[1][1] === '@'){
+                id = splt[1].slice(2, -1)
+                getTeams(id)
+            }else{
+                message.channel.send('You need to use "@" to tag the person who you want the teams of so I can look them up properly <:KirikaSmile:608201680374464532>')
             }
         }
 
@@ -700,7 +708,7 @@ client.on("messageCreate", message => {
 
                                     if (format_resolved_request.events[i].name.includes(team)) {
                                         games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
-                                        if (format_resolved_request.events[i].competitions[0].status.type.state === 'post') {
+                                        if  (format_resolved_request.events[i].competitions[0].headlines != undefined){ //(format_resolved_request.events[i].competitions[0].status.type.state === 'post')
                                             highlights.push(format_resolved_request.events[i].competitions[0].headlines[0].video[0].links.source.mezzanine.href)
                                         }
                                     }
@@ -839,6 +847,8 @@ client.on("messageCreate", message => {
             })
         }
 
+
+
         if (message.content.includes('!at')) {
             //console.log(message.content)
             console.log(client.guilds.cache.get('172065393525915648').members.cache.get('124044415634243584'))
@@ -930,7 +940,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
                 if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId)._roles.includes('610621341984489472')) {
                     client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
                     streamingrn -= 1
-                    console.log(time + client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username + ' stopped streaming(' + streamingrn + ')')
+                    console.log(time + client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username + ' stopped streaming (' + streamingrn + ')')
                 }
             }//else{
             // 	console.log(newMember)
