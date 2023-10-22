@@ -2,6 +2,7 @@
 const { Client, Intents } = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
+const fetch = require('node-fetch');
 const fs = require('fs');
 var oauth = require('./oauth.js')
 
@@ -10,7 +11,10 @@ client.login(oauth.FuyumiID);
 
 // Creates an event listener for bot ready-state
 client.on('ready', () => {
-    console.log('bot running')
+    var d = new Date();
+    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+
+    console.log(time + 'bot running')
 });
 
 // Creates an event listener for messages
@@ -20,6 +24,18 @@ client.on('messageCreate', message => {
 
     function randomNumber(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+
+    function username(Input) {
+        if (client.guilds.cache.get('172065393525915648').members.cache.get(Input) != undefined) {
+            if (client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname != null) {
+                return client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname
+            } else {
+                return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.username
+            }
+        } else {
+            return ("a mystery person")
+        }
     }
 
     if (message.channel.type != undefined && message.author != null) {
@@ -123,8 +139,8 @@ client.on('messageCreate', message => {
                         count = message.content.split("\n")
                         failures = 0
 
-                        for (var i = 2; i < count.length; i++) {
-                            for (var j = 0; j < count[i].length; j++) {
+                        for (let i = 2; i < count.length; i++) {
+                            for (let j = 0; j < count[i].length; j++) {
                                 if (count[i][j] === '⬛' || count[i][j] === '⬜') {
                                     score = score + 3
                                 } else if (count[i][j].charCodeAt(0).toString(16) === 'd83d' || count[i][j].charCodeAt(0).toString(16) === 'dfe6' || count[i][j].charCodeAt(0).toString(16) === 'dfe8') { //dfe6 and dfe8 refer to yellow and blue squares
@@ -143,12 +159,19 @@ client.on('messageCreate', message => {
                         }
 
                         if (wordle[id] === undefined) {
-                            wordle[id] = { "SCORE": score, "GUESSES": guesses, "GAMES": 1, "FAILURES": failures }
+                            wordle[id] = { "SCORE": score, "GUESSES": guesses, "GAMES": 1, "FAILURES": failures, "bestSCORE": score, "careerGUESSES": guesses,"careerGAMES": 1,"careerFAILURES": failures }
                         } else {
                             wordle[id].SCORE = wordle[id].SCORE + score
                             wordle[id].GUESSES = wordle[id].GUESSES + guesses
                             wordle[id].GAMES = wordle[id].GAMES + 1
                             wordle[id].FAILURES = wordle[id].FAILURES + failures
+                            wordle[id].careerGUESSES = wordle[id].careerGUESSES + guesses
+                            wordle[id].careerGAMES = wordle[id].careerGAMES + 1
+                            wordle[id].careerFAILURES = wordle[id].careerFAILURES + failures
+                        }
+
+                        if (score < wordle[id].bestSCORE){
+                            wordle[id].bestSCORE = score
                         }
 
                         fs.writeFile('wordlescores.json', JSON.stringify(wordle), (err) => {
@@ -160,20 +183,43 @@ client.on('messageCreate', message => {
         }
 
         if (message.channelId === '931407561792565280'){
-            if (message.content.toLowerCase() === '!average'){
+            if (message.content.toLowerCase() === '!stats'){
 
                 fs.readFile('wordlescores.json', 'utf8', (err, data) => {
                     id = message.author.id
                     wordle = JSON.parse(data)
 
-                    message.channel.send('Your Wordle guess average is ' + wordle[id].GUESSES/wordle[id].GAMES+'.')
+                    message.channel.send('```prolog\n'+username(id)+'\'s Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
                 })
             }
         }
 
-        if (message.channel.name === 'test' && message.author.username != 'Fuyumi') {
-            console.log((message.content).charCodeAt(0).toString(16))
+        if (message.channelId === '931407561792565280'){
+            if (message.content.toLowerCase() === '!leaderboard'){
+
+                fs.readFile('wordlescores.json', 'utf8', (err, data) => {
+                    wordle = JSON.parse(data)
+                    leaderboard = []
+                    let WordleEntries = Object.entries(wordle)
+
+                    //console.log(WordleEntries[1][1].SCORE)
+
+                    for (let i = 0; i < WordleEntries.length; i++){
+                        leaderboard.push([Math.round((WordleEntries[i][1].SCORE/WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, ' average --- ', username(WordleEntries[i][0])+' (', WordleEntries[i][1].GAMES+' games)'])
+                    }
+
+                    leaderboard = leaderboard.sort((firstItem, secondItem) => firstItem[0] - secondItem[0])
+
+                    //console.log(leaderboard)
+                    
+                    message.channel.send(('```yaml\nChurch of Anime Wordle Leaderboard\n\n===================================\n\n'+leaderboard.join('\n\n')).replaceAll(',', '') + '```')
+                })
+            }
         }
+
+        // if (message.channel.name === 'test' && message.author.username != 'Fuyumi') {
+        //     console.log((message.content).charCodeAt(0).toString(16))
+        // }
 
         if (message.channel.name === 'test' && message.content.includes(' would like their birthday removed')) {
             message.react('🍰')
