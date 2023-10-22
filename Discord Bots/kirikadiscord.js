@@ -412,10 +412,10 @@ client.on("messageCreate", message => {
             })
         }
 
-        function getTeams(id){
+        function getTeams(id) {
             fs.readFile('sports.json', 'utf8', (err, data) => {
                 sports = JSON.parse(data)
-                
+
 
                 let LeaguesEntries = Object.entries(sports)
                 userfandom = []
@@ -450,13 +450,13 @@ client.on("messageCreate", message => {
         }
 
         if (splt[0] === '!teams') {
-            if (splt[1] === undefined){
+            if (splt[1] === undefined) {
                 id = message.author.id
                 getTeams(id)
-            }else if (splt[1][1] === '@'){
+            } else if (splt[1][1] === '@') {
                 id = splt[1].slice(2, -1)
                 getTeams(id)
-            }else{
+            } else {
                 message.channel.send('You need to use "@" to tag the person who you want the teams of so I can look them up properly <:KirikaSmile:608201680374464532>')
             }
         }
@@ -508,11 +508,13 @@ client.on("messageCreate", message => {
 
                 function getScores(sport, league) {
                     return new Promise(async function (resolve, reject) {
-                        const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
-                            method: 'get',
-                            headers: {},
-                            redirect: 'follow'
-                        });
+                        try {
+                            const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+                                method: 'get',
+                                headers: {},
+                                redirect: 'follow'
+                            });
+                        
                         make_request = await fetch(req)                                                              //sends the request
                         format_resolved_request = await make_request.json()                   //formats the raw request into JSON
 
@@ -524,7 +526,7 @@ client.on("messageCreate", message => {
                                 games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
                             }
 
-                            console.log(games)
+                            //console.log(games)
 
                             resolve(games)
                         } else {
@@ -536,6 +538,9 @@ client.on("messageCreate", message => {
                         // 	})
                         //   }, 4000)
                         message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team') + '```')
+                    } catch (err) {
+                        message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:296024459779768320> Try again in a second')
+                    }
                     })
                 }
                 if (LEAGUE === undefined) {
@@ -708,7 +713,7 @@ client.on("messageCreate", message => {
 
                                     if (format_resolved_request.events[i].name.includes(team)) {
                                         games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
-                                        if  (format_resolved_request.events[i].competitions[0].headlines != undefined){ //(format_resolved_request.events[i].competitions[0].status.type.state === 'post')
+                                        if (format_resolved_request.events[i].competitions[0].headlines != undefined) { //(format_resolved_request.events[i].competitions[0].status.type.state === 'post')
                                             highlights.push(format_resolved_request.events[i].competitions[0].headlines[0].video[0].links.source.mezzanine.href)
                                         }
                                     }
@@ -847,7 +852,21 @@ client.on("messageCreate", message => {
             })
         }
 
+        if (message.channelId === '931407561792565280' && splt[0] === 'Wordle') {
+            if (!isNaN(message.content[7])) {
+                if (message.content[11] === 'X' || Number(message.content[11]) < 7) {
+                    id = message.author.id
 
+                    fs.readFile('wordlescores.json', 'utf8', (err, data) => {
+                        wordle = JSON.parse(data)
+
+                        if (wordle[id] === undefined) {
+                            message.channel.send('<@' + message.author.id + '> Hey <:KirikaSmile:608201680374464532> Looks like you\'re new to the database! If you want, you can paste a screenshot of your Wordle stats in here and we can get your career logged <:beatzHYPE:1165575358079303680> You could even ping ShadowBeatz if you want <:beatzWICKED:1165575471153549342>')
+                        }                       
+                    })
+                }
+            }
+        }
 
         if (message.content.includes('!at')) {
             //console.log(message.content)
@@ -908,13 +927,13 @@ client.on('presenceUpdate', (oldMember, newMember) => {
             })
         }
 
-        if (newMember.userId === '124044415634243584') {
-            if (a === undefined && oldMember.activities[0] != undefined) {
-                if (oldMember.activities[0].type === 'STREAMING') {
-                    client.channels.cache.get('607817203588268062').send(('The stream is over, but if you missed it, you can watch the stream on the new VOD channel here (just give it an hour or two, depending on the length of the stream <:KirikaSmile:608201680374464532>) https://www.youtube.com/channel/UCkQBMVEYiDg3jqc2mcjlThA'))
-                }
-            }
-        }
+        // if (newMember.userId === '124044415634243584') {
+        //     if (a === undefined && oldMember.activities[0] != undefined) {
+        //         if (oldMember.activities[0].type === 'STREAMING') {
+        //             client.channels.cache.get('607817203588268062').send(('The stream is over, but if you missed it, you can watch the stream on the new VOD channel here (just give it an hour or two, depending on the length of the stream <:KirikaSmile:608201680374464532>) https://www.youtube.com/channel/UCkQBMVEYiDg3jqc2mcjlThA'))
+        //         }
+        //     }
+        // }
 
         if (currentlyStreaming >= 1) {
             client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
