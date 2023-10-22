@@ -15,6 +15,13 @@ client.on('ready', () => {
 
 // Creates an event listener for messages
 client.on('messageCreate', message => {
+
+    splt = message.content.split(" ")
+
+    function randomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+
     if (message.channel.type != undefined && message.author != null) {
         if (message.content === '!alertsoff') {
             client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.remove('607809003665489930')
@@ -103,6 +110,69 @@ client.on('messageCreate', message => {
                     temp = 0
                 }
             })
+        }
+
+        if (message.channelId === '931407561792565280' && splt[0] === 'Wordle') {
+            if (!isNaN(message.content[7])) {
+                if (message.content[11] === 'X' || Number(message.content[11]) < 7) {
+                    id = message.author.id
+                    score = 0
+
+                    fs.readFile('wordlescores.json', 'utf8', (err, data) => {
+                        wordle = JSON.parse(data)
+                        count = message.content.split("\n")
+                        failures = 0
+
+                        for (var i = 2; i < count.length; i++) {
+                            for (var j = 0; j < count[i].length; j++) {
+                                if (count[i][j] === '⬛' || count[i][j] === '⬜') {
+                                    score = score + 3
+                                } else if (count[i][j].charCodeAt(0).toString(16) === 'd83d' || count[i][j].charCodeAt(0).toString(16) === 'dfe6' || count[i][j].charCodeAt(0).toString(16) === 'dfe8') { //dfe6 and dfe8 refer to yellow and blue squares
+                                    score = score + 1
+                                }
+                            }
+                        }
+
+                        if (message.content[11] != 'X') {
+                            message.channel.send(score + ' points.')
+                            guesses = Number(message.content[11])
+                        } else {
+                            message.channel.send('Lol. I got it in ' + randomNumber(1, 6) + '. ' + score + ' points.')
+                            failures = 1
+                            guesses = 7
+                        }
+
+                        if (wordle[id] === undefined) {
+                            wordle[id] = { "SCORE": score, "GUESSES": guesses, "GAMES": 1, "FAILURES": failures }
+                        } else {
+                            wordle[id].SCORE = wordle[id].SCORE + score
+                            wordle[id].GUESSES = wordle[id].GUESSES + guesses
+                            wordle[id].GAMES = wordle[id].GAMES + 1
+                            wordle[id].FAILURES = wordle[id].FAILURES + failures
+                        }
+
+                        fs.writeFile('wordlescores.json', JSON.stringify(wordle), (err) => {
+                            if (err) throw err;
+                        })
+                    })
+                }
+            }
+        }
+
+        if (message.channelId === '931407561792565280'){
+            if (message.content.toLowerCase() === '!average'){
+
+                fs.readFile('wordlescores.json', 'utf8', (err, data) => {
+                    id = message.author.id
+                    wordle = JSON.parse(data)
+
+                    message.channel.send('Your Wordle guess average is ' + wordle[id].GUESSES/wordle[id].GAMES+'.')
+                })
+            }
+        }
+
+        if (message.channel.name === 'test' && message.author.username != 'Fuyumi') {
+            console.log((message.content).charCodeAt(0).toString(16))
         }
 
         if (message.channel.name === 'test' && message.content.includes(' would like their birthday removed')) {
