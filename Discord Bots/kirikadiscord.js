@@ -461,6 +461,58 @@ client.on("messageCreate", message => {
             }
         }
 
+        if (splt[0] === '!fansplits') {
+            if (splt[1] === undefined) {
+                message.channel.send('You need to specify the league you want to see the splits for <:KirikaSmile:608201680374464532>')
+            } else {
+                fs.readFile('sports.json', 'utf8', (err, data) => {
+                    sports = JSON.parse(data)
+
+                    if (sports[splt[1].toUpperCase()] === undefined) {
+                        message.channel.send('<@' + message.author.id + '> I\'m not familiar with that league <:beatzPosh:824832391792427011> Currently we\'re only keeping track of MLB, NFL, NHL, NBA, MLS, WNBA and XFL teams, with college sports hopefully coming soon <:KirikaSmile:608201680374464532> Sorry if you feel left out but ShadowBeatz is just a dumb American and can only do so much :flag_us:')
+                    } else {
+                        let TeamsEntries = Object.entries(sports[splt[1].toUpperCase()])
+                        conferences = []
+                        divisions = []
+                        dfancount = ''
+
+                        for (let i = 0; i < TeamsEntries.length; i++) {
+                            if (!conferences.includes(TeamsEntries[i][1].conference)) {
+                                if (conferences.length < 1) {
+                                    conferences.push(TeamsEntries[i][1].conference, ': ')
+                                    cfancount = TeamsEntries[i][1].fans.length
+                                } else {
+                                    conferences.push(cfancount, ' ----- ')
+                                    conferences.push(TeamsEntries[i][1].conference, ': ')
+                                    cfancount = TeamsEntries[i][1].fans.length
+                                }
+                            } else {
+                                cfancount = cfancount + TeamsEntries[i][1].fans.length
+                            }
+
+                            if (TeamsEntries[i][1].division != null) {
+                                if (!divisions.includes(TeamsEntries[i][1].division)) {
+                                    if (divisions.length < 1) {
+                                        divisions.push(TeamsEntries[i][1].division, ': ')
+                                        dfancount = TeamsEntries[i][1].fans.length
+                                    } else {
+                                        divisions.push(dfancount, ' \n')
+                                        divisions.push(TeamsEntries[i][1].division, ': ')
+                                        dfancount = TeamsEntries[i][1].fans.length
+                                    }
+                                } else {
+                                    dfancount = dfancount + TeamsEntries[i][1].fans.length
+                                }
+                            }
+                        }
+                        conferences.push(cfancount)
+                        divisions.push(dfancount)
+                        message.channel.send('```prolog\n' + conferences.join().replaceAll(',', '') + '\n\n' + divisions.join().replaceAll(',', '') + '```')
+                    }
+                })
+            }
+        }
+
         if (splt[0] === '!scores') {
             if (splt[1] != undefined) {
                 SPORT = undefined
@@ -514,33 +566,33 @@ client.on("messageCreate", message => {
                                 headers: {},
                                 redirect: 'follow'
                             });
-                        
-                        make_request = await fetch(req)                                                              //sends the request
-                        format_resolved_request = await make_request.json()                   //formats the raw request into JSON
 
-                        if (format_resolved_request.events[0] != undefined) {
-                            games = []
+                            make_request = await fetch(req)                                                              //sends the request
+                            format_resolved_request = await make_request.json()                   //formats the raw request into JSON
 
-                            for (i = 0; i < format_resolved_request.events.length; i++) {
+                            if (format_resolved_request.events[0] != undefined) {
+                                games = []
 
-                                games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
+                                for (i = 0; i < format_resolved_request.events.length; i++) {
+
+                                    games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
+                                }
+
+                                //console.log(games)
+
+                                resolve(games)
+                            } else {
+                                reject()
                             }
 
-                            //console.log(games)
-
-                            resolve(games)
-                        } else {
-                            reject()
+                            //   setTimeout(()=>{console.log(games, (err)=>{
+                            // 	if (err) throw err;
+                            // 	})
+                            //   }, 4000)
+                            message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team') + '```')
+                        } catch (err) {
+                            message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:296024459779768320> Try again in a second')
                         }
-
-                        //   setTimeout(()=>{console.log(games, (err)=>{
-                        // 	if (err) throw err;
-                        // 	})
-                        //   }, 4000)
-                        message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team') + '```')
-                    } catch (err) {
-                        message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:296024459779768320> Try again in a second')
-                    }
                     })
                 }
                 if (LEAGUE === undefined) {
@@ -862,7 +914,7 @@ client.on("messageCreate", message => {
 
                         if (wordle[id] === undefined) {
                             message.channel.send('<@' + message.author.id + '> Hey <:KirikaSmile:608201680374464532> Looks like you\'re new to the database! If you want, you can paste a screenshot of your Wordle stats in here and we can get your career logged <:beatzHYPE:1165575358079303680> You could even ping ShadowBeatz if you want <:beatzWICKED:1165575471153549342>')
-                        }                       
+                        }
                     })
                 }
             }
