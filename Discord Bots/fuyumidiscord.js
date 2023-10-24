@@ -150,10 +150,8 @@ client.on('messageCreate', message => {
                         }
 
                         if (message.content[11] != 'X') {
-                            message.channel.send(score + ' points.')
                             guesses = Number(message.content[11])
                         } else {
-                            message.channel.send('Lol. I got it in ' + randomNumber(1, 6) + '. ' + score + ' points.')
                             failures = 1
                             guesses = 7
                         }
@@ -174,6 +172,12 @@ client.on('messageCreate', message => {
                             wordle[id].bestSCORE = score
                         }
 
+                        if (message.content[11] != 'X') {
+                            message.channel.send(score + ' points.\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
+                        } else {
+                            message.channel.send('Lol. I got it in ' + randomNumber(1, 6) + '. ' + score + ' points.\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
+                        }
+
                         fs.writeFile('wordlescores.json', JSON.stringify(wordle), (err) => {
                             if (err) throw err;
                         })
@@ -189,7 +193,7 @@ client.on('messageCreate', message => {
                     id = message.author.id
                     wordle = JSON.parse(data)
 
-                    message.channel.send('```prolog\n'+username(id)+'\'s Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
+                    message.channel.send('```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
                 })
             }
         }
