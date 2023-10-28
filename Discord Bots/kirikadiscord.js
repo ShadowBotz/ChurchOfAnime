@@ -997,8 +997,8 @@ client.on("messageCreate", message => {
                     }
 
                     if (scores.kirika === undefined) {                        
-                        console.log(SPORT, LEAGUE, squad, ABBR)
-                        getPrediction(SPORT, LEAGUE, squad, ABBR)                      
+                        console.log(SPORT, LEAGUE, ABBR)
+                        getPrediction(SPORT, LEAGUE, ABBR)                      
                     }else{
                         newpredict = 0
                         for (let i = 0; i < scores.kirika.prediction.length; i++) {
@@ -1014,12 +1014,12 @@ client.on("messageCreate", message => {
                         }
                         
                         if (newpredict === 0){
-                            console.log(SPORT, LEAGUE, squad, ABBR)
-                            getPrediction(SPORT, LEAGUE, squad, ABBR)
+                            console.log(SPORT, LEAGUE, ABBR)
+                            getPrediction(SPORT, LEAGUE, ABBR)
                         }
                     }
 
-                    function getPrediction(sport, league, team, abbr) {
+                    function getPrediction(sport, league, abbr) {
                         return new Promise(async function (resolve, reject) {
                             try {
                                 const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
