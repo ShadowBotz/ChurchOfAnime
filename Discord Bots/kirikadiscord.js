@@ -1,47 +1,15 @@
 // Import packages/set variables (constants)
+
 const { Client, Intents } = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
 const fetch = require('node-fetch');
+
 const fs = require('fs');
 var oauth = require('./oauth.js');
 
-
 //Each discord bot has a unique token
 client.login(oauth.KirikaID);
-
-//channels = {
-//'#stream-notifications': '607817203588268062',
-//'#general': '172065393525915648',
-//'#dank-memes': '172252229145853953',
-//'#music': '505350390624026649',
-//'#music-bot': '241315605268004864',
-//'#sports': '299346622985273344',
-//'#animals': '303289203372982272',
-//'#art': '312022293297627137',
-//'#homework': '413796637316743180',
-//'#dildos_dingeon': '505656174130102274',
-//'#super-secret-room': '585895101755293716',
-//'#test': '607815006633066496',
-//'#ventriloquism': '608509082835484702',
-//'#oyashiro-samas_shrine': '175925024098746369',
-//'#angel_mort': '365676420497801217',
-//'#watanagashi_festival': '509889368119312407',
-//'#irie_clinic': '362329489251893248',
-//'#gaming': '291006182968000512',
-//'#destiny': '360855930696368128',
-//'#gunfus': '444416499994591232',
-//'#gacha': '431717257303949313',
-//'#pokemans': '399132363386519562',
-//'#streams': '385978335425069056',
-//'#politics': '604406416589062154',
-//'#wall': '350128099154984961',
-//'#mexico': '350128528781606913',
-//'#wall_mexico_built': '399136880861642753',
-//'#normie_talk': '399136595929726976',
-//'#room_1_text': '367206706406490112',
-//'#room_2_text': '367206982781894667',
-//}
 
 // Creates an event listener for bot ready-state
 client.on('ready', () => {
@@ -979,101 +947,101 @@ client.on("messageCreate", message => {
                     }
                 })
 
-                
+                setTimeout(() => {
+                    fs.readFile('scorepredictions.json', 'utf8', (err, data) => {
+                        scores = JSON.parse(data)
 
-                setTimeout(() => {fs.readFile('scorepredictions.json', 'utf8', (err, data) => {
-                    scores = JSON.parse(data)
+                        let LeaguesEntries = Object.entries(scores)
 
-                    let LeaguesEntries = Object.entries(scores)
-
-                    for (let i = 0; i < LeaguesEntries.length; i++) {
-                        let TeamsEntries = Object.entries(LeaguesEntries[i][1])
-                        for (let j = 0; j < TeamsEntries.length; j++) {
-                            if (TeamsEntries[j][0].includes(squad)) {
-                                LEAGUE = LeaguesEntries[i][0].toLowerCase()
-                                ABBR = TeamsEntries[j][1].abbr
-                            }
-                        }
-                    }
-
-                    if (scores.kirika === undefined) {                        
-                        console.log(SPORT, LEAGUE, ABBR)
-                        getPrediction(SPORT, LEAGUE, ABBR)                      
-                    }else{
-                        newpredict = 0
-                        for (let i = 0; i < scores.kirika.prediction.length; i++) {
-                            if (scores.kirika.prediction[i].includes(squad)) {
-                                if ((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6])) < 5400000){
-                                    message.channel.send(scores.kirika.prediction[i][4]+' '+scores.kirika.prediction[i][5]+', '+scores.kirika.prediction[i][1]+' '+scores.kirika.prediction[i][2]+' <:beatzWICKED:1165575471153549342>')
-                                    newpredict = 1
-                                    break;
-                                }else{                                  
-                                    console.log(scores.kirika.prediction.splice(i, 1))
+                        for (let i = 0; i < LeaguesEntries.length; i++) {
+                            let TeamsEntries = Object.entries(LeaguesEntries[i][1])
+                            for (let j = 0; j < TeamsEntries.length; j++) {
+                                if (TeamsEntries[j][0].includes(squad)) {
+                                    LEAGUE = LeaguesEntries[i][0].toLowerCase()
+                                    ABBR = TeamsEntries[j][1].abbr
                                 }
                             }
                         }
-                        
-                        if (newpredict === 0){
+
+                        if (scores.kirika === undefined) {
                             console.log(SPORT, LEAGUE, ABBR)
                             getPrediction(SPORT, LEAGUE, ABBR)
-                        }
-                    }
-
-                    function getPrediction(sport, league, abbr) {
-                        return new Promise(async function (resolve, reject) {
-                            try {
-                                const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
-                                    method: 'get',
-                                    headers: {},
-                                    redirect: 'follow'
-                                });
-                                make_request = await fetch(req)                                                              //sends the request
-                                espn = await make_request.json()                   //formats the raw request into JSON
-
-                                if (espn.team.nextEvent[0] != undefined) {
-                                    prediction = []
-                                 
-                                    hometeam = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName
-                                    awayteam = espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName
-                                    homename = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName
-                                    awayname = espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName
-                                    homescore = randomNumber(minscore, maxscore)
-                                    awayscore = randomNumber(minscore, maxscore)
-                                    eventDate = espn.team.nextEvent[0].date                                 
-
-                                    if ((new Date().getTime()) - (Date.parse(espn.team.nextEvent[0].date)) > 0){
-                                        message.channel.send('I\'m not really sure who they\'re playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>')
-                                    }else{
-                                        prediction.push(hometeam, homename, homescore, awayteam, awayname, awayscore, eventDate)
-                                        message.channel.send('Hmmmmm..... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>')
-                                   }
-
-                                   if (prediction.length > 0){
-                                    scores.kirika.prediction.push(prediction)
-                                   }
-                                    
-                                    
-                                    fs.writeFile('scorepredictions.json', JSON.stringify(scores), (err) => {
-                                        if (err) throw err;
-
-                                    })
-
-                                    resolve(hometeam, homescore ,awayteam, awayscore, eventDate)
-                                } else {
-                                    reject()
+                        } else {
+                            newpredict = 0
+                            for (let i = 0; i < scores.kirika.prediction.length; i++) {
+                                if (scores.kirika.prediction[i].includes(squad)) {
+                                    if ((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6])) < 5400000) {
+                                        message.channel.send(scores.kirika.prediction[i][4] + ' ' + scores.kirika.prediction[i][5] + ', ' + scores.kirika.prediction[i][1] + ' ' + scores.kirika.prediction[i][2] + ' <:beatzWICKED:1165575471153549342>')
+                                        newpredict = 1
+                                        break;
+                                    } else {
+                                        console.log(scores.kirika.prediction.splice(i, 1))
+                                    }
                                 }
-                            } catch (err) {
-                                message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second')
-                                console.log(err)
                             }
-                        })
-                    }
 
-                }), 2000})
+                            if (newpredict === 0) {
+                                console.log(SPORT, LEAGUE, ABBR)
+                                getPrediction(SPORT, LEAGUE, ABBR)
+                            }
+                        }
+
+                        function getPrediction(sport, league, abbr) {
+                            return new Promise(async function (resolve, reject) {
+                                try {
+                                    const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
+                                        method: 'get',
+                                        headers: {},
+                                        redirect: 'follow'
+                                    });
+                                    make_request = await fetch(req)                                                              //sends the request
+                                    espn = await make_request.json()                   //formats the raw request into JSON
+
+                                    if (espn.team.nextEvent[0] != undefined) {
+                                        prediction = []
+
+                                        hometeam = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName
+                                        awayteam = espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName
+                                        homename = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName
+                                        awayname = espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName
+                                        homescore = randomNumber(minscore, maxscore)
+                                        awayscore = randomNumber(minscore, maxscore)
+                                        eventDate = espn.team.nextEvent[0].date
+
+                                        if ((new Date().getTime()) - (Date.parse(espn.team.nextEvent[0].date)) > 0) {
+                                            message.channel.send('I\'m not really sure who they\'re playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>')
+                                        } else {
+                                            prediction.push(hometeam, homename, homescore, awayteam, awayname, awayscore, eventDate)
+                                            message.channel.send('Hmmmmm..... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>')
+                                        }
+
+                                        if (prediction.length > 0) {
+                                            scores.kirika.prediction.push(prediction)
+                                        }
+
+
+                                        fs.writeFile('scorepredictions.json', JSON.stringify(scores), (err) => {
+                                            if (err) throw err;
+
+                                        })
+
+                                        resolve(hometeam, homescore, awayteam, awayscore, eventDate)
+                                    } else {
+                                        reject()
+                                    }
+                                } catch (err) {
+                                    message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second')
+                                    console.log(err)
+                                }
+                            })
+                        }
+
+                    }), 2000
+                })
 
 
 
-                
+
 
 
             }
