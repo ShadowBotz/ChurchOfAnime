@@ -38,6 +38,20 @@ client.on('messageCreate', message => {
         }
     }
 
+    function TitleCase(Input) {
+        Input = Input.toLowerCase().split(" ");
+
+        for (var i = 0; i < Input.length; i++) {
+            if (Input[i].length === 2) {
+                Input[i] = Input[i].toUpperCase();
+            } else {
+                Input[i] = Input[i].charAt(0).toUpperCase() + Input[i].slice(1);
+            }
+        }
+
+        return Input.join(' ');
+    }
+
     if (message.channel.type != undefined && message.author != null) {
         if (message.content === '!alertsoff') {
             client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.remove('607809003665489930')
@@ -173,9 +187,9 @@ client.on('messageCreate', message => {
                         }
 
                         if (message.content[11] != 'X') {
-                            message.channel.send(score + ' points.\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
+                            message.channel.send(score + ' points.')//\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
                         } else {
-                            message.channel.send('Lol. I got it in ' + randomNumber(1, 6) + '. ' + score + ' points.\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
+                            message.channel.send('Lol. I got it in ' + randomNumber(1, 6) + '. ' + score + ' points.')//\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
                         }
 
                         fs.writeFile('wordlescores.json', JSON.stringify(wordle), (err) => {
@@ -224,6 +238,176 @@ client.on('messageCreate', message => {
         // if (message.channel.name === 'test' && message.author.username != 'Fuyumi') {
         //     console.log((message.content).charCodeAt(0).toString(16))
         // }
+
+        if (splt[0] === '!prediction') {
+            squad = TitleCase(splt.slice(1).join(' '))
+            SPORT = undefined
+            LEAGUE = undefined
+            ABBR = undefined
+            
+            if (squad != undefined) {
+                fs.readFile('sports.json', 'utf8', (err, data) => {
+                    sports = JSON.parse(data)
+
+                    let LeaguesEntries = Object.entries(sports)
+
+                    for (let i = 0; i < LeaguesEntries.length; i++) {
+                        let TeamsEntries = Object.entries(LeaguesEntries[i][1])
+                        for (let j = 0; j < TeamsEntries.length; j++) {
+                            if (TeamsEntries[j][0].includes(squad)) {
+                                LEAGUE = LeaguesEntries[i][0].toLowerCase()
+                                ABBR = TeamsEntries[j][1].abbr
+                            }
+                        }
+                    }
+                    if (LEAGUE === 'nfl') {
+                        SPORT = 'football'
+                        variant = 6
+                    }
+                    if (LEAGUE === 'nhl') {
+                        SPORT = 'hockey'
+                        variant = 2
+                    }
+                    if (LEAGUE === 'nba') {
+                        SPORT = 'basketball'
+                        variant = 10
+                    }
+                    if (LEAGUE === 'mlb') {
+                        SPORT = 'baseball'
+                        variant = 3
+                    }
+                    if (LEAGUE === 'ncaaf') {
+                        SPORT = 'football'
+                        LEAGUE = 'college-football'
+                        variant = 14
+                    }
+                    if (LEAGUE === 'xfl') {
+                        SPORT = 'football'
+                        variant = 6
+                    }
+                    if (LEAGUE === 'wnba') {
+                        SPORT = 'basketball'
+                        variant = 10
+                    }
+                    if (LEAGUE === 'mls') {
+                        SPORT = 'soccer'
+                        LEAGUE = 'usa.1'
+                        variant = 1
+                    }
+                })
+
+                setTimeout(() => {
+                    fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
+                        scores = JSON.parse(data)
+
+                        function randomScore(a, b, c){
+                            let x = Math.floor(((a+b)/2)+randomNumber(-c, c))
+
+                            if (x < 0){
+                                return 0
+                            } else {
+                                return x
+                            }
+                        }
+
+                            async function Predict() {
+                                try {
+                                let a = await getPrediction(SPORT, LEAGUE, ABBR)
+
+                                ABBR = a.opponent
+                                team1 = a.fullName 
+                                team1Name = a.shortName 
+                                team1PF = a.pf 
+                                team1PA = a.pa 
+                                lastDate = a.eventDate
+
+                                let b = await getPrediction(SPORT, LEAGUE, ABBR)
+                                team2 = b.fullName 
+                                team2Name = b.shortName 
+                                team2PF = b.pf 
+                                team2PA = b.pa
+
+                                team1Score = randomScore(team1PF, team2PA, variant)
+                                team2Score = randomScore(team2PF, team1PA, variant)
+
+                                message.channel.send(team1Name + ' ' + team1Score + ' - ' + team2Name + ' ' + team2Score)
+                                scores.fuyumi.prediction.push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
+
+                                fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
+                                    if (err) throw err;
+
+                                })
+                            
+                            } catch (err) {
+                                console.log(err)
+                            }
+                        }
+
+                            newpredict = 0
+                            for (let i = 0; i < scores.fuyumi.prediction.length; i++) {
+                                if (scores.fuyumi.prediction[i].includes(squad)) {
+                                    if ((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6])) < 5400000) {
+                                        if (scores.fuyumi.prediction[i][5] >= scores.fuyumi.prediction[i][2]){
+                                            message.channel.send(scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5] + ', ' + scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2])
+                                        } else {
+                                            message.channel.send(scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2] + ', ' + scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5])
+                                        }
+                                        
+                                        newpredict = 1
+                                        break;
+                                    } else {
+                                        console.log(scores.fuyumi.prediction.splice(i, 1))
+                                    }
+                                }
+                            }
+
+                            if (newpredict === 0){
+                                console.log(SPORT, LEAGUE, ABBR)
+                                Predict()
+                            }
+                            
+                        async function getPrediction(sport, league, abbr) {
+                                try {
+                                    const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
+                                        method: 'get',
+                                        headers: {},
+                                        redirect: 'follow'
+                                    });
+
+                                    make_request = await fetch(req)                                                             
+                                    espn = await make_request.json()                  
+
+                                    if (espn.team.nextEvent[0] != undefined) {
+
+                                        pf = espn.team.record.items[0].stats[3].value
+                                        pa = espn.team.record.items[0].stats[2].value
+                                        eventDate = espn.team.nextEvent[0].date
+
+                                        if (espn.team.nextEvent[0].competitions[0].competitors[0].team.abbreviation === abbr){
+                                            fullName = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName                                       
+                                            shortName = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName 
+                                            opponent = espn.team.nextEvent[0].competitions[0].competitors[1].team.abbreviation
+                                        } else {
+                                            fullName = espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName                                       
+                                            shortName = espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName
+                                            opponent = espn.team.nextEvent[0].competitions[0].competitors[0].team.abbreviation
+                                        }
+
+                                        return {fullName, shortName, opponent, pf, pa, eventDate}
+                                    } else {
+                                        return Promise.reject('Fuyumi Promise Error')
+                                    }                    
+                                } catch (err) {
+                                    console.log('Fuyumi Error')
+                                    console.log(err)
+                                }
+                            
+                        }
+
+                    })
+            }), 1000
+        }
+        }
 
         if (message.channel.name === 'test' && message.content.includes(' would like their birthday removed')) {
             message.react('🍰')
