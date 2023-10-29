@@ -948,7 +948,7 @@ client.on("messageCreate", message => {
                 })
 
                 setTimeout(() => {
-                    fs.readFile('scorepredictions.json', 'utf8', (err, data) => {
+                    fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
                         scores = JSON.parse(data)
 
                         let LeaguesEntries = Object.entries(scores)
@@ -964,7 +964,7 @@ client.on("messageCreate", message => {
                         }
 
                         if (scores.kirika === undefined) {
-                            console.log(SPORT, LEAGUE, ABBR)
+                            console.log(SPORT, LEAGUE, ABBR, '1')
                             getPrediction(SPORT, LEAGUE, ABBR)
                         } else {
                             newpredict = 0
@@ -981,7 +981,7 @@ client.on("messageCreate", message => {
                             }
 
                             if (newpredict === 0) {
-                                console.log(SPORT, LEAGUE, ABBR)
+                                console.log(SPORT, LEAGUE, ABBR, '2')
                                 getPrediction(SPORT, LEAGUE, ABBR)
                             }
                         }
@@ -1020,7 +1020,7 @@ client.on("messageCreate", message => {
                                         }
 
 
-                                        fs.writeFile('scorepredictions.json', JSON.stringify(scores), (err) => {
+                                        fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
                                             if (err) throw err;
 
                                         })
@@ -1036,16 +1036,9 @@ client.on("messageCreate", message => {
                             })
                         }
 
-                    }), 2000
+                    }), 1000
                 })
-
-
-
-
-
-
             }
-
         }
 
         if (message.channelId === '931407561792565280' && splt[0] === 'Wordle') {
