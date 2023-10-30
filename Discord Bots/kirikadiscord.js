@@ -666,6 +666,44 @@ client.on("messageCreate", message => {
 
         if (splt[0] === '!teamscores') {
             if (splt[1] != undefined) {
+                let kirikapred = []
+                let fuyumipred = []
+
+                fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
+                    kpred = JSON.parse(data)
+                    squad = TitleCase(splt.slice(1).join(' '))
+
+                    for (let i = 0; i < kpred.kirika.prediction.length; i++) {
+                        if (kpred.kirika.prediction[i].includes(squad)) {
+                            if ((new Date().getTime()) - (Date.parse(kpred.kirika.prediction[i][6])) < 36000000) {
+                                if (kpred.kirika.prediction[i][5] >= kpred.kirika.prediction[i][2]){
+                                    kirikapred.push('(Kirika: '+kpred.kirika.prediction[i][4]+' ',+kpred.kirika.prediction[i][5]+' - ', kpred.kirika.prediction[i][1]+' ', kpred.kirika.prediction[i][2]+')')
+                                } else {
+                                    kirikapred.push('(Kirika: '+kpred.kirika.prediction[i][1]+' ', kpred.kirika.prediction[i][2]+' - ', kpred.kirika.prediction[i][4]+' ', kpred.kirika.prediction[i][5]+')')
+                                }
+                                break;
+                            }
+                        }
+                    }          
+                })
+
+                fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
+                    fpred = JSON.parse(data)
+                    squad = TitleCase(splt.slice(1).join(' '))
+
+                    for (let i = 0; i < fpred.fuyumi.prediction.length; i++) {
+                        if (fpred.fuyumi.prediction[i].includes(squad)) {
+                            if ((new Date().getTime()) - (Date.parse(fpred.fuyumi.prediction[i][6])) < 36000000) {
+                                if (fpred.fuyumi.prediction[i][5] >= fpred.fuyumi.prediction[i][2]){
+                                    fuyumipred.push('(Fuyumi: '+fpred.fuyumi.prediction[i][4]+' ',+fpred.fuyumi.prediction[i][5]+' - ', fpred.fuyumi.prediction[i][1]+' ', fpred.fuyumi.prediction[i][2]+')')
+                                } else {
+                                    fuyumipred.push('(Fuyumi: '+fpred.fuyumi.prediction[i][1]+' ', fpred.fuyumi.prediction[i][2]+' - ', fpred.fuyumi.prediction[i][4]+' ', fpred.fuyumi.prediction[i][5]+')')
+                                }
+                                break;
+                            }
+                        }
+                    }          
+                })
 
                 fs.readFile('sports.json', 'utf8', (err, data) => {
                     sports = JSON.parse(data)
@@ -755,7 +793,7 @@ client.on("messageCreate", message => {
                             if (games.length < 1) {
                                 message.channel.send('```prolog\n ' + squad + ' didn\'t play today```')
                             } else {
-                                message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') + '``` ' + highlights.join('\n'))
+                                message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') + '\n\n'+(kirikapred.join('')).replaceAll(',', '')+'\n'+(fuyumipred.join('')).replaceAll(',', '')+'``` ' + highlights.join('\n'))
                             }
                         })
                     }
@@ -951,17 +989,17 @@ client.on("messageCreate", message => {
                     fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
                         scores = JSON.parse(data)
 
-                        let LeaguesEntries = Object.entries(scores)
+                        // let LeaguesEntries = Object.entries(scores)
 
-                        for (let i = 0; i < LeaguesEntries.length; i++) {
-                            let TeamsEntries = Object.entries(LeaguesEntries[i][1])
-                            for (let j = 0; j < TeamsEntries.length; j++) {
-                                if (TeamsEntries[j][0].includes(squad)) {
-                                    LEAGUE = LeaguesEntries[i][0].toLowerCase()
-                                    ABBR = TeamsEntries[j][1].abbr
-                                }
-                            }
-                        }
+                        // for (let i = 0; i < LeaguesEntries.length; i++) {
+                        //     let TeamsEntries = Object.entries(LeaguesEntries[i][1])
+                        //     for (let j = 0; j < TeamsEntries.length; j++) {
+                        //         if (TeamsEntries[j][0].includes(squad)) {
+                        //             LEAGUE = LeaguesEntries[i][0].toLowerCase()
+                        //             ABBR = TeamsEntries[j][1].abbr
+                        //         }
+                        //     }
+                        // }
 
                         if (scores.kirika === undefined) {
                             console.log(SPORT, LEAGUE, ABBR, '1')
