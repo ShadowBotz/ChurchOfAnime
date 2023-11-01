@@ -1,12 +1,13 @@
 // Import packages/set variables (constants)
 
-const { Client, Intents } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS], partials: ["CHANNEL"] });
+const { Client, GatewayIntentBits } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMembers], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
-const fetch = require('node-fetch');
-
+const fetch = (...args) =>
+    import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const fs = require('fs');
 var oauth = require('./oauth.js');
+const { EmbedBuilder } = require('discord.js');
 
 //Each discord bot has a unique token
 client.login(oauth.KirikaID);
@@ -270,7 +271,7 @@ client.on("messageCreate", message => {
                 if (client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname != null) {
                     return client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname
                 } else {
-                    return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.username
+                    return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.globalName
                 }
             } else {
                 return ("a mystery person")
@@ -533,21 +534,21 @@ client.on("messageCreate", message => {
                 function getScores(sport, league) {
                     return new Promise(async function (resolve, reject) {
                         try {
-                            const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+                            const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
                                 method: 'get',
                                 headers: {},
                                 redirect: 'follow'
                             });
 
-                            make_request = await fetch(req)                                                              //sends the request
-                            format_resolved_request = await make_request.json()                   //formats the raw request into JSON
+                            //sends the request
+                            format_resolved_request = await req.json()                   //formats the raw request into JSON
 
                             if (format_resolved_request.events[0] != undefined) {
                                 games = []
 
                                 for (i = 0; i < format_resolved_request.events.length; i++) {
 
-                                    games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
+                                    games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.shortDisplayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.shortDisplayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
                                 }
 
                                 //console.log(games)
@@ -557,11 +558,17 @@ client.on("messageCreate", message => {
                                 reject()
                             }
 
-                            //   setTimeout(()=>{console.log(games, (err)=>{
-                            // 	if (err) throw err;
-                            // 	})
-                            //   }, 4000)
-                            message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') + '```')
+                            const scoresEmbed = new EmbedBuilder()
+                                    .setColor(8446019)
+                                    .setAuthor({ name: LEAGUE.toUpperCase()+' Scoreboard', iconURL: ''+format_resolved_request.leagues[0].logos[0].href, url: 'https://www.'+LEAGUE+'.com' })
+                                    .addFields(
+                                        { name: '===================================', value: ''+games.join('\n\n').replaceAll(',', '') }
+                                    )
+                                    
+
+
+                                    message.channel.send({ embeds: [scoresEmbed] })
+                            //message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') + '```')
                         } catch (err) {
                             message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second')
                         }
@@ -573,6 +580,8 @@ client.on("messageCreate", message => {
                     getScores(SPORT, LEAGUE)
                 }
                 //})
+            } else {
+                message.channel.send('You gotta tell me which league you want the scores for <:KirikaSmile:608201680374464532> Try one of the following: NFL, NHL, MLB, NBA, WNBA, MLS, NCAAF or XFL (No college basketball though. Too many games. Makes my head hurt <:monkaW:717247350397075466> )')
             }
         }
 
@@ -624,13 +633,13 @@ client.on("messageCreate", message => {
                 function getScores(sport, league) {
                     return new Promise(async function (resolve, reject) {
 
-                        const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+                        const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
                             method: 'get',
                             headers: {},
                             redirect: 'follow'
                         });
-                        make_request = await fetch(req)                                                              //sends the request
-                        format_resolved_request = await make_request.json()                   //formats the raw request into JSON
+                        //sends the request
+                        format_resolved_request = await req.json()                   //formats the raw request into JSON
 
                         if (format_resolved_request.events[0] != undefined) {
                             livegames = []
@@ -661,11 +670,13 @@ client.on("messageCreate", message => {
                 } else {
                     getScores(SPORT, LEAGUE)
                 }
+            } else {
+                message.channel.send('You gotta tell me which league you want the scores for <:KirikaSmile:608201680374464532> Try one of the following: NFL, NHL, MLB, NBA, WNBA, MLS, NCAAF or XFL (No college basketball though. Too many games. Makes my head hurt <:monkaW:717247350397075466> )')
             }
         }
 
         if (splt[0] === '!teamscores') {
-            if (splt[1] != undefined) {
+            if (splt[1] != '') {
                 let kirikapred = []
                 let fuyumipred = []
 
@@ -676,15 +687,15 @@ client.on("messageCreate", message => {
                     for (let i = 0; i < kpred.kirika.prediction.length; i++) {
                         if (kpred.kirika.prediction[i].includes(squad)) {
                             if ((new Date().getTime()) - (Date.parse(kpred.kirika.prediction[i][6])) < 36000000) {
-                                if (kpred.kirika.prediction[i][5] >= kpred.kirika.prediction[i][2]){
-                                    kirikapred.push('(Kirika: '+kpred.kirika.prediction[i][4]+' ',+kpred.kirika.prediction[i][5]+' - ', kpred.kirika.prediction[i][1]+' ', kpred.kirika.prediction[i][2]+')')
+                                if (kpred.kirika.prediction[i][5] >= kpred.kirika.prediction[i][2]) {
+                                    kirikapred.push('(Kirika: ' + kpred.kirika.prediction[i][4] + ' ', +kpred.kirika.prediction[i][5] + ' - ', kpred.kirika.prediction[i][1] + ' ', kpred.kirika.prediction[i][2] + ')')
                                 } else {
-                                    kirikapred.push('(Kirika: '+kpred.kirika.prediction[i][1]+' ', kpred.kirika.prediction[i][2]+' - ', kpred.kirika.prediction[i][4]+' ', kpred.kirika.prediction[i][5]+')')
+                                    kirikapred.push('(Kirika: ' + kpred.kirika.prediction[i][1] + ' ', kpred.kirika.prediction[i][2] + ' - ', kpred.kirika.prediction[i][4] + ' ', kpred.kirika.prediction[i][5] + ')')
                                 }
                                 break;
                             }
                         }
-                    }          
+                    }
                 })
 
                 fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
@@ -694,15 +705,15 @@ client.on("messageCreate", message => {
                     for (let i = 0; i < fpred.fuyumi.prediction.length; i++) {
                         if (fpred.fuyumi.prediction[i].includes(squad)) {
                             if ((new Date().getTime()) - (Date.parse(fpred.fuyumi.prediction[i][6])) < 36000000) {
-                                if (fpred.fuyumi.prediction[i][5] >= fpred.fuyumi.prediction[i][2]){
-                                    fuyumipred.push('(Fuyumi: '+fpred.fuyumi.prediction[i][4]+' ',+fpred.fuyumi.prediction[i][5]+' - ', fpred.fuyumi.prediction[i][1]+' ', fpred.fuyumi.prediction[i][2]+')')
+                                if (fpred.fuyumi.prediction[i][5] >= fpred.fuyumi.prediction[i][2]) {
+                                    fuyumipred.push('(Fuyumi: ' + fpred.fuyumi.prediction[i][4] + ' ', +fpred.fuyumi.prediction[i][5] + ' - ', fpred.fuyumi.prediction[i][1] + ' ', fpred.fuyumi.prediction[i][2] + ')')
                                 } else {
-                                    fuyumipred.push('(Fuyumi: '+fpred.fuyumi.prediction[i][1]+' ', fpred.fuyumi.prediction[i][2]+' - ', fpred.fuyumi.prediction[i][4]+' ', fpred.fuyumi.prediction[i][5]+')')
+                                    fuyumipred.push('(Fuyumi: ' + fpred.fuyumi.prediction[i][1] + ' ', fpred.fuyumi.prediction[i][2] + ' - ', fpred.fuyumi.prediction[i][4] + ' ', fpred.fuyumi.prediction[i][5] + ')')
                                 }
                                 break;
                             }
                         }
-                    }          
+                    }
                 })
 
                 fs.readFile('sports.json', 'utf8', (err, data) => {
@@ -710,6 +721,7 @@ client.on("messageCreate", message => {
                     squad = TitleCase(splt.slice(1).join(' '))
                     SPORT = undefined
                     LEAGUE = undefined
+                    ABBR = undefined
 
                     let LeaguesEntries = Object.entries(sports)
 
@@ -718,6 +730,7 @@ client.on("messageCreate", message => {
                         for (let j = 0; j < TeamsEntries.length; j++) {
                             if (TeamsEntries[j][0].includes(squad)) {
                                 LEAGUE = LeaguesEntries[i][0].toLowerCase()
+                                ABBR = TeamsEntries[j][1].abbr
                             }
                         }
                     }
@@ -758,49 +771,74 @@ client.on("messageCreate", message => {
                     // let LeaguesEntries = Object.entries(sports)
                     // let outcome = undefined
 
-                    function getScores(sport, league, team) {
+                    function getScores(sport, league, abbr) {
                         return new Promise(async function (resolve, reject) {
-                            const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+                            try {
+                            let logo
+                            let games = []
+                            let color
+                            //try {
+                            const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
                                 method: 'get',
                                 headers: {},
                                 redirect: 'follow'
                             });
-                            make_request = await fetch(req)                                                              //sends the request
-                            format_resolved_request = await make_request.json()                   //formats the raw request into JSON
+                            //sends the request
+                            espn = await req.json()                   //formats the raw request into JSON
 
-                            if (format_resolved_request.events[0] != undefined) {
-                                games = []
-                                highlights = []
+                            if (espn.team != undefined) {
+                                
+                                //highlights = []
 
-                                for (i = 0; i < format_resolved_request.events.length; i++) {
-
-                                    if (format_resolved_request.events[i].name.includes(team)) {
-                                        games.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
-                                        if (format_resolved_request.events[i].competitions[0].headlines != undefined) { //(format_resolved_request.events[i].competitions[0].status.type.state === 'post')
-                                            highlights.push(format_resolved_request.events[i].competitions[0].headlines[0].video[0].links.source.mezzanine.href)
+                                    if (espn.team.nextEvent[0] != undefined) {
+                                        if (espn.team.nextEvent[0].competitions[0].competitors[0].score != undefined){
+                                            games.push([espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName + " ", espn.team.nextEvent[0].competitions[0].competitors[1].score.displayValue + " - ", espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName + " ", espn.team.nextEvent[0].competitions[0].competitors[0].score.displayValue + " (", espn.team.nextEvent[0].competitions[0].status.type.shortDetail + ")"])
+                                        }else{
+                                            games.push([espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName + " vs. ", espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName + " (", espn.team.nextEvent[0].competitions[0].status.type.shortDetail + ")"])
                                         }
+                                        
+                                        // if (format_resolved_request.events[i].competitions[0].headlines != undefined) { //(format_resolved_request.events[i].competitions[0].status.type.state === 'post')
+                                        //     highlights.push(format_resolved_request.events[i].competitions[0].headlines[0].video[0].links.source.mezzanine.href)
+                                        // }
+                                            logo = espn.team.logos[1].href
+                                        if (espn.team.color === '000000'){
+                                            color = espn.team.alternateColor
+                                        }else{
+                                            color = espn.team.color
+                                        }
+                                            
+                                        
                                     }
-
-                                }
-
-                                //console.log(games)
-
                                 resolve(games)
                             } else {
                                 reject()
                             }
 
+                            const scoresEmbed = new EmbedBuilder()
+                                    .setColor(color)
+                                    .setTitle(squad+' Game')
+                                    .setThumbnail(logo)
+                                    .addFields(
+                                        { name: '===================================', value: ''+games.join('\n\n').replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') + '\n\n' + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
+                                    )
+
                             if (games.length < 1) {
                                 message.channel.send('```prolog\n ' + squad + ' didn\'t play today```')
                             } else {
-                                message.channel.send('```prolog\n' + (games.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') + '\n\n'+(kirikapred.join('')).replaceAll(',', '')+'\n'+(fuyumipred.join('')).replaceAll(',', '')+'``` ' + highlights.join('\n'))
+                                message.channel.send({ embeds: [scoresEmbed] })
                             }
+                        }catch (err) {
+                                message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second')
+                                console.log(err)
+                            }
+                            
                         })
                     }
                     if (LEAGUE === undefined) {
                         message.channel.send('I\'m sorry, I don\'t recognize that team <:KirikaSmile:608201680374464532> Make sure you\'re including both the city *and* team name and you\'re using the official team spelling as well')
                     } else {
-                        getScores(SPORT, LEAGUE, squad)
+                        console.log(SPORT, LEAGUE, ABBR)
+                        getScores(SPORT, LEAGUE, ABBR)
                     }
                 })
             }
@@ -887,13 +925,13 @@ client.on("messageCreate", message => {
                             league = fetchDeez[l][1]
                             team = fetchDeez[l][2]
 
-                            const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+                            const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
                                 method: 'get',
                                 headers: {},
                                 redirect: 'follow'
                             });
-                            make_request = await fetch(req)
-                            format_resolved_request = await make_request.json()
+
+                            format_resolved_request = await req.json()
 
                             for (i = 0; i < format_resolved_request.events.length; i++) {
                                 if (format_resolved_request.events[i].name.includes(team)) {
@@ -904,10 +942,17 @@ client.on("messageCreate", message => {
 
 
                         }
+                        const scoresEmbed = new EmbedBuilder()
+                                    .setColor(8446019)
+                                    .setAuthor({ name: username(id)+'\'s Scoreboard', iconURL: ''+client.guilds.cache.get('172065393525915648').members.cache.get(id).user.displayAvatarURL(), url: 'https://discord.gg/churchofanime' })
+                                    .addFields(
+                                        { name: '===================================', value: ''+scores.join('\n\n').replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') }
+                                    )
+                                    
                         if (scores.length === 0) {
                             message.channel.send('Doesn\'t look like any of your teams played today. Nice day off <:KirikaSmile:608201680374464532>')
                         } else {
-                            message.channel.send('```prolog\n' + (scores.join('\n\n')).replaceAll(',', '').replaceAll('New York Giants', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') + '```')
+                            message.channel.send({ embeds: [scoresEmbed] })
                         }
                     }
                     getScores(fetchDeez)
@@ -917,11 +962,12 @@ client.on("messageCreate", message => {
 
         if (splt[0] === '!prediction') {
             squad = TitleCase(splt.slice(1).join(' '))
+            console.log(squad)
             SPORT = undefined
             LEAGUE = undefined
             ABBR = undefined
 
-            if (squad === undefined) {
+            if (squad === '') {
                 message.channel.send('<@' + message.author.id + '> You gotta tell me which team you want my prediction for <:KirikaSmile:608201680374464532>')
             } else {
                 fs.readFile('sports.json', 'utf8', (err, data) => {
@@ -935,6 +981,7 @@ client.on("messageCreate", message => {
                             if (TeamsEntries[j][0].includes(squad)) {
                                 LEAGUE = LeaguesEntries[i][0].toLowerCase()
                                 ABBR = TeamsEntries[j][1].abbr
+                                console.log(LEAGUE, ABBR)
                             }
                         }
                     }
@@ -984,98 +1031,99 @@ client.on("messageCreate", message => {
                         message.channel.send('I\'m sorry, I don\'t recognize that team <:KirikaSmile:608201680374464532> Make sure you\'re including both the city *and* team name and you\'re using the official team spelling as well')
                     }
                 })
-
                 setTimeout(() => {
-                    fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
-                        scores = JSON.parse(data)
+                    if (LEAGUE != undefined) {
+                        console.log('we ball')
+                        fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
+                            scores = JSON.parse(data)
 
-                        // let LeaguesEntries = Object.entries(scores)
-
-                        // for (let i = 0; i < LeaguesEntries.length; i++) {
-                        //     let TeamsEntries = Object.entries(LeaguesEntries[i][1])
-                        //     for (let j = 0; j < TeamsEntries.length; j++) {
-                        //         if (TeamsEntries[j][0].includes(squad)) {
-                        //             LEAGUE = LeaguesEntries[i][0].toLowerCase()
-                        //             ABBR = TeamsEntries[j][1].abbr
-                        //         }
-                        //     }
-                        // }
-
-                        if (scores.kirika === undefined) {
-                            console.log(SPORT, LEAGUE, ABBR, '1')
-                            getPrediction(SPORT, LEAGUE, ABBR)
-                        } else {
-                            newpredict = 0
-                            for (let i = 0; i < scores.kirika.prediction.length; i++) {
-                                if (scores.kirika.prediction[i].includes(squad)) {
-                                    if ((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6])) < 5400000) {
-                                        message.channel.send(scores.kirika.prediction[i][4] + ' ' + scores.kirika.prediction[i][5] + ', ' + scores.kirika.prediction[i][1] + ' ' + scores.kirika.prediction[i][2] + ' <:beatzWICKED:1165575471153549342>')
-                                        newpredict = 1
-                                        break;
-                                    } else {
-                                        console.log(scores.kirika.prediction.splice(i, 1))
-                                    }
-                                }
-                            }
-
-                            if (newpredict === 0) {
-                                console.log(SPORT, LEAGUE, ABBR, '2')
+                            if (scores.kirika === undefined) {
+                                console.log(SPORT, LEAGUE, ABBR, '1')
                                 getPrediction(SPORT, LEAGUE, ABBR)
-                            }
-                        }
-
-                        function getPrediction(sport, league, abbr) {
-                            return new Promise(async function (resolve, reject) {
-                                try {
-                                    const req = new fetch.Request('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
-                                        method: 'get',
-                                        headers: {},
-                                        redirect: 'follow'
-                                    });
-                                    make_request = await fetch(req)                                                              //sends the request
-                                    espn = await make_request.json()                   //formats the raw request into JSON
-
-                                    if (espn.team.nextEvent[0] != undefined) {
-                                        prediction = []
-
-                                        hometeam = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName
-                                        awayteam = espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName
-                                        homename = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName
-                                        awayname = espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName
-                                        homescore = randomNumber(minscore, maxscore)
-                                        awayscore = randomNumber(minscore, maxscore)
-                                        eventDate = espn.team.nextEvent[0].date
-
-                                        if ((new Date().getTime()) - (Date.parse(espn.team.nextEvent[0].date)) > 0) {
-                                            message.channel.send('I\'m not really sure who they\'re playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>')
+                            } else {
+                                newpredict = 0
+                                for (let i = 0; i < scores.kirika.prediction.length; i++) {
+                                    if (scores.kirika.prediction[i].includes(squad)) {
+                                        if ((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6])) < 5400000) {
+                                            message.channel.send(scores.kirika.prediction[i][4] + ' ' + scores.kirika.prediction[i][5] + ', ' + scores.kirika.prediction[i][1] + ' ' + scores.kirika.prediction[i][2] + ' <:beatzWICKED:1165575471153549342>')
+                                            newpredict = 1
                                         } else {
-                                            prediction.push(hometeam, homename, homescore, awayteam, awayname, awayscore, eventDate)
-                                            message.channel.send('Hmmmmm..... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>')
+                                            console.log(scores.kirika.prediction.splice(i, 1))
+                                            getPrediction(SPORT, LEAGUE, ABBR)
+                                            newpredict = 1
                                         }
-
-                                        if (prediction.length > 0) {
-                                            scores.kirika.prediction.push(prediction)
-                                        }
-
-
-                                        fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
-                                            if (err) throw err;
-
-                                        })
-
-                                        resolve(hometeam, homescore, awayteam, awayscore, eventDate)
-                                    } else {
-                                        reject()
                                     }
-                                } catch (err) {
-                                    message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second')
-                                    console.log(err)
                                 }
-                            })
-                        }
 
-                    }), 1000
-                })
+                                if (newpredict === 0) {
+                                    console.log(SPORT, LEAGUE, ABBR, '2')
+                                    getPrediction(SPORT, LEAGUE, ABBR)
+                                }
+                            }
+
+                            function getPrediction(sport, league, abbr) {
+                                return new Promise(async function (resolve, reject) {
+                                    try {
+                                        const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
+                                            method: 'get',
+                                            headers: {},
+                                            redirect: 'follow'
+                                        });
+                                        //sends the request
+                                        espn = await req.json()                   //formats the raw request into JSON
+
+                                        if (espn.team.nextEvent[0] != undefined) {
+                                            prediction = []
+
+                                            hometeam = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName
+                                            awayteam = espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName
+                                            homename = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName
+                                            awayname = espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName
+                                            homescore = randomNumber(minscore, maxscore)
+                                            awayscore = randomNumber(minscore, maxscore)
+                                            eventDate = espn.team.nextEvent[0].date
+
+                                            if (homescore === awayscore) {
+                                                console.log('Tiebreak' + homescore, awayscore)
+                                                winningteam = randomNumber(1, 2)
+                                                if (winningteam === 1) {
+                                                    homescore = (homescore + randomNumber(1, 2))
+                                                } else {
+                                                    awayscore = (awayscore + randomNumber(1, 2))
+                                                }
+                                            }
+
+                                            if ((new Date().getTime()) - (Date.parse(espn.team.nextEvent[0].date)) > 0) {
+                                                message.channel.send('I\'m not really sure who they\'re playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>')
+                                            } else {
+                                                prediction.push(hometeam, homename, homescore, awayteam, awayname, awayscore, eventDate)
+                                                message.channel.send('Hmmmmm..... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>')
+                                            }
+
+                                            if (prediction.length > 0) {
+                                                scores.kirika.prediction.push(prediction)
+                                            }
+
+
+                                            fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
+                                                if (err) throw err;
+
+                                            })
+
+                                            resolve(hometeam, homescore, awayteam, awayscore, eventDate)
+                                        } else {
+                                            reject()
+                                        }
+                                    } catch (err) {
+                                        message.channel.send('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second')
+                                        console.log(err)
+                                    }
+                                })
+                            }
+
+                        })
+                    }
+                }, 1000)
             }
         }
 
@@ -1088,7 +1136,7 @@ client.on("messageCreate", message => {
                         fs.readFile('wordlescores.json', 'utf8', (err, data) => {
                             wordle = JSON.parse(data)
 
-                            if (wordle[id].GAMES === 1) {
+                            if (wordle[id].careerGAMES === 1) {
                                 message.channel.send('<@' + message.author.id + '> Hey <:KirikaSmile:608201680374464532> Looks like you\'re new to the database! If you want, you can paste a screenshot of your Wordle stats in here and we can get your career logged <:beatzHYPE:1165575358079303680> You could even ping ShadowBeatz if you want <:beatzWICKED:1165575471153549342>')
                             }
                         })
@@ -1142,7 +1190,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
         if (a != undefined) {
             newMember.activities.forEach((element, index) => {
-                if (element.type === 'STREAMING') {
+                if (element.type === 1) {
                     currentlyStreaming += 1
                 }
             })
@@ -1150,7 +1198,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
         if (b != undefined) {
             oldMember.activities.forEach((element, index) => {
-                if (element.type === 'STREAMING') {
+                if (element.type === 1) {
                     beenStreaming += 1
                 }
             })
@@ -1172,7 +1220,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
                 console.log(time + client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username + ' started streaming (' + streamingrn + ')')
                 if (newMember.userId === '124044415634243584') {
                     if (oldMember.activities[0] != undefined) {
-                        if (oldMember.activities[0].type != 'STREAMING') {
+                        if (oldMember.activities[0].type != 1) {
                             client.channels.cache.get('607817203588268062').send(('<@&607809003665489930> Streaming some ' + a.state + ' <:KirikaSmile:608201680374464532> "' + a.details + '" http://www.twitch.tv/ShadowBeatz'))
                         }
                     }
@@ -1198,7 +1246,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 
         if (a === undefined && oldMember != null) {
             if (oldMember.activities[0] != undefined) {
-                if (oldMember.activities[0].type === 'STREAMING') {
+                if (oldMember.activities[0].type === 1) {
                     if (client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId) != undefined) {
                         client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.remove('610621341984489472')
                         //console.log(time+client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username+' stopped streaming')
