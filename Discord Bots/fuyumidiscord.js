@@ -390,8 +390,12 @@ client.on('messageCreate', message => {
                                     }
                                 }
 
-                                message.channel.send(team1Name + ' ' + team1Score + ' - ' + team2Name + ' ' + team2Score)
-                                scores.fuyumi.prediction.push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
+                                if ((new Date().getTime()) - (Date.parse(lastDate)) > -604800000){
+                                    if ((new Date().getTime()) - (Date.parse(lastDate)) < 0){
+                                        message.channel.send(team1Name + ' ' + team1Score + ' - ' + team2Name + ' ' + team2Score)
+                                        scores.fuyumi.prediction.push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
+                                    }
+                                }  
 
                                 fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
                                     if (err) throw err;
@@ -412,9 +416,7 @@ client.on('messageCreate', message => {
                                     } else {
                                         message.channel.send(scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2] + ', ' + scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5])
                                     }
-
                                     newpredict = 1
-                                    break;
                                 } else {
                                     console.log(scores.fuyumi.prediction.splice(i, 1))
                                     Predict()
