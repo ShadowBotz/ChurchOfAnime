@@ -1,5 +1,6 @@
 // Import packages/set variables (constants)
-const { Client, GatewayIntentBits } = require('discord.js');
+
+const { Client, GatewayIntentBits, Collection, Events } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMembers], partials: ["CHANNEL"] });
 const schedule = require('node-schedule');
 const fetch = (...args) =>
@@ -7,9 +8,10 @@ const fetch = (...args) =>
 const fs = require('fs');
 var oauth = require('./oauth.js');
 const { EmbedBuilder } = require('discord.js');
+const path = require('node:path');
 
 //Each discord bot has a unique token
-client.login(oauth.FuyumiID);
+client.login(oauth.FuyumiToken);
 
 // Creates an event listener for bot ready-state
 client.on('ready', () => {
@@ -17,6 +19,46 @@ client.on('ready', () => {
     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
 
     console.log(time + 'bot running')
+});
+
+client.commands = new Collection();
+const foldersPath = path.join(__dirname, 'fuyumicommands');
+const commandFolders = fs.readdirSync(foldersPath);
+
+for (const folder of commandFolders) {
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		// Set a new item in the Collection with the key as the command name and the value as the exported module
+		if ('data' in command && 'execute' in command) {
+			client.commands.set(command.data.name, command);
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
+
+	const command = interaction.client.commands.get(interaction.commandName);
+
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
 });
 
 // Creates an event listener for messages
@@ -204,67 +246,13 @@ client.on('messageCreate', message => {
 
         if (message.channelId === '931407561792565280') {
             if (message.content.toLowerCase() === '!stats') {
-
-                fs.readFile('wordlescores.json', 'utf8', (err, data) => {
-                    id = message.author.id
-                    wordle = JSON.parse(data)
-
-                    const wordleStatsEmbed = new EmbedBuilder()
-                        .setColor(2173288)
-	                    .setTitle(username(id) +' Wordle Stats')
-                        .setThumbnail(client.guilds.cache.get('172065393525915648').members.cache.get(id).user.displayAvatarURL())
-                        .addFields(
-                            { name: '\u200B', value: 'Monthly Average Score: ' + Math.round((wordle[id].SCORE / wordle[id].GAMES + Number.EPSILON) * 1000) / 1000 + '\nMonthly Average Guesses: ' + Math.round((wordle[id].GUESSES / wordle[id].GAMES + Number.EPSILON) * 1000) / 1000 + '\nMonthly Total Score: ' + wordle[id].SCORE + '\nMonthly Games: ' + wordle[id].GAMES + '\n===================================\nBest Score: ' + wordle[id].bestSCORE + '\nCareer Games: ' + wordle[id].careerGAMES + '\nCareer Average Guesses: ' + Math.round((wordle[id].careerGUESSES / wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000 + '\nCareer Games Failed: ' + wordle[id].careerFAILURES}
-                            // { name: 'Monthly Average Score', value: ''+Math.round((wordle[id].SCORE / wordle[id].GAMES + Number.EPSILON) * 1000) / 1000, inline: true},
-                            // { name: 'Monthly Average Guesses', value: ''+Math.round((wordle[id].GUESSES / wordle[id].GAMES + Number.EPSILON) * 1000) / 1000, inline: true},
-                            // { name: '\u200B', value: '\u200B' },
-                            // { name: 'Monthly Total Score', value: ''+wordle[id].SCORE,inline: true},
-                            // { name: 'Monthly Games', value: ''+wordle[id].GAMES, inline: true},
-                            // { name: '\u200B', value: '\u200B' },
-                            // { name: 'Best Score', value: ''+wordle[id].bestSCORE, inline: true},
-                            // { name: 'Career Games', value: ''+wordle[id].careerGAMES, inline: true},
-                            // { name: '\u200B', value: '\u200B' },
-                            // { name: 'Career Average Guesses', value: ''+Math.round((wordle[id].careerGUESSES / wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000, inline: true},
-                            // { name: 'Career Games Failed', value: ''+wordle[id].careerFAILURES, inline: true},
-                        )
-
-                        setTimeout(() => {message.channel.send({ embeds: [wordleStatsEmbed] })},1000)
-                    //message.channel.send('```prolog\n' + username(id) + ' Wordle Stats\n\n===================================\nMonthly Average Score: ' + Math.round((wordle[id].SCORE / wordle[id].GAMES + Number.EPSILON) * 1000) / 1000 + '\nMonthly Average Guesses: ' + Math.round((wordle[id].GUESSES / wordle[id].GAMES + Number.EPSILON) * 1000) / 1000 + '\nMonthly Total Score: ' + wordle[id].SCORE + '\nMonthly Games: ' + wordle[id].GAMES + '\n===================================\nBest Score: ' + wordle[id].bestSCORE + '\nCareer Games: ' + wordle[id].careerGAMES + '\nCareer Average Guesses: ' + Math.round((wordle[id].careerGUESSES / wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000 + '\nCareer Games Failed: ' + wordle[id].careerFAILURES + '```')
-                })
+                message.channel.send('It\'s a slash command now. Just do /stats')
             }
         }
 
         if (message.channelId === '931407561792565280') {
             if (message.content.toLowerCase() === '!leaderboard') {
-
-                fs.readFile('wordlescores.json', 'utf8', (err, data) => {
-                    wordle = JSON.parse(data)
-                    leaderboard = []
-                    let WordleEntries = Object.entries(wordle)
-
-                    for (let i = 0; i < WordleEntries.length; i++) {
-                        if (WordleEntries[i][1].GAMES > 0) {
-                            if (WordleEntries[i][1].GAMES === 1){
-                                leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, ' average --- ', username(WordleEntries[i][0]) + ' (', WordleEntries[i][1].GAMES + ' game)'])
-                            }else{
-                                leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, ' average --- ', username(WordleEntries[i][0]) + ' (', WordleEntries[i][1].GAMES + ' games)'])
-                            }
-                        }
-                    }
-
-                    leaderboard = leaderboard.sort((firstItem, secondItem) => firstItem[0] - secondItem[0])
-
-                    const leaderboardEmbed = new EmbedBuilder()
-                        .setColor(2173288)
-                        .setAuthor({ name: 'Church of Anime Wordle Leaderboard', iconURL: 'https://static.wikia.nocookie.net/logopedia/images/4/45/Wordle_2022_Icon.png/revision/latest?cb=20220514191523', url: 'https://www.nytimes.com/games/wordle/index.html' })
-                        .addFields(
-                            { name: '\u200B', value: leaderboard.join('\n\n').replaceAll(',', '') }
-                        )
-
-                    //console.log(leaderboard)
-
-                    message.channel.send({ embeds: [leaderboardEmbed] })
-                })
+                message.channel.send('It\'s a slash command now. Just do /leaderboard')
             }
         }
 
@@ -331,18 +319,9 @@ client.on('messageCreate', message => {
                         LEAGUE = 'college-football'
                         variant = 14
                     }
-                    if (LEAGUE === 'xfl') {
-                        SPORT = 'football'
-                        variant = 6
-                    }
                     if (LEAGUE === 'wnba') {
                         SPORT = 'basketball'
                         variant = 10
-                    }
-                    if (LEAGUE === 'mls') {
-                        SPORT = 'soccer'
-                        LEAGUE = 'usa.1'
-                        variant = 1
                     }
                 })
 
