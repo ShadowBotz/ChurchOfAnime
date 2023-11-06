@@ -9,6 +9,9 @@
 /Discord Bots/wordlescores.json
 /Discord Bots/kirikapredictions.json
 /Discord Bots/fuyumipredictions.json
+/Discord Bots/deploy-commands.js
+/Discord Bots/fuyumicommands
+/Discord Bots/kirikacommands
 /Twitch Bots/.vscode/
 /Twitch Bots/node_modules/
 /Twitch Bots/oauth.js
