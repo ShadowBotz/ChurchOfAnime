@@ -9,6 +9,7 @@ const fs = require('fs');
 var oauth = require('./oauth.js');
 const { EmbedBuilder } = require('discord.js');
 const path = require('node:path');
+const wait = require('node:timers/promises').setTimeout;
 
 //Each discord bot has a unique token
 client.login(oauth.FuyumiToken);
@@ -26,39 +27,45 @@ const foldersPath = path.join(__dirname, 'fuyumicommands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-		// Set a new item in the Collection with the key as the command name and the value as the exported module
-		if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
-		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-		}
-	}
+    const commandsPath = path.join(foldersPath, folder);
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const filePath = path.join(commandsPath, file);
+        const command = require(filePath);
+        // Set a new item in the Collection with the key as the command name and the value as the exported module
+        if ('data' in command && 'execute' in command) {
+            client.commands.set(command.data.name, command);
+        } else {
+            console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+        }
+    }
 }
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+    if (!interaction.isChatInputCommand()) return;
 
-	const command = interaction.client.commands.get(interaction.commandName);
+    // if (interaction.commandName === 'stats' || interaction.commandName === 'leaderboard') {
+    // 	await interaction.deferReply();
+    // 	await wait(4000);
+    // 	await interaction.editReply('Pong!');
+    // }
 
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
+    const command = interaction.client.commands.get(interaction.commandName);
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-	}
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+        } else {
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+    }
 });
 
 // Creates an event listener for messages
@@ -244,6 +251,26 @@ client.on('messageCreate', message => {
             }
         }
 
+        if (message.channelId === '931407561792565280' && splt[0] === 'Wordle') {
+            if (!isNaN(message.content[7])) {
+                id = message.author.id
+
+                fs.readFile('pastgames.json', 'utf8', (err, data) => {
+                    wordle = JSON.parse(data)
+
+                    if (wordle[splt[1]] === undefined) {
+                        wordle[splt[1]] = [[id, splt[2]]]
+                    } else {
+                        wordle[splt[1]].push([id, splt[2]])
+                    }
+
+                    fs.writeFile('pastgames.json', JSON.stringify(wordle), (err) => {
+                        if (err) throw err;
+                    })
+                })
+            }
+        }
+
         if (message.channelId === '931407561792565280') {
             if (message.content.toLowerCase() === '!stats') {
                 message.channel.send('It\'s a slash command now. Just do /stats')
@@ -256,22 +283,22 @@ client.on('messageCreate', message => {
             }
         }
 
-    //     const exampleEmbed = new EmbedBuilder()
-	// .setColor(0x0099FF)
-	// .setTitle('Some title')
-	// .setAuthor({ name: 'Some name', iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
-	// .setDescription('Some description here')
-	// .setThumbnail('https://i.imgur.com/AfFp7pu.png')
-	// .addFields(
-	// 	{ name: 'Regular field title', value: 'Some value here' },
-	// 	{ name: '\u200B', value: '\u200B' },
-	// 	{ name: 'Inline field title', value: 'Some value here', inline: true },
-	// 	{ name: 'Inline field title', value: 'Some value here', inline: true },
-	// )
-	// .addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
-	// .setImage('https://i.imgur.com/AfFp7pu.png')
-	// .setTimestamp()
-	// .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
+        //     const exampleEmbed = new EmbedBuilder()
+        // .setColor(0x0099FF)
+        // .setTitle('Some title')
+        // .setAuthor({ name: 'Some name', iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
+        // .setDescription('Some description here')
+        // .setThumbnail('https://i.imgur.com/AfFp7pu.png')
+        // .addFields(
+        // 	{ name: 'Regular field title', value: 'Some value here' },
+        // 	{ name: '\u200B', value: '\u200B' },
+        // 	{ name: 'Inline field title', value: 'Some value here', inline: true },
+        // 	{ name: 'Inline field title', value: 'Some value here', inline: true },
+        // )
+        // .addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
+        // .setImage('https://i.imgur.com/AfFp7pu.png')
+        // .setTimestamp()
+        // .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
 
         // if (message.channel.name === 'test' && message.author.username != 'Fuyumi') {
         //     console.log((message.content).charCodeAt(0).toString(16))
@@ -369,12 +396,12 @@ client.on('messageCreate', message => {
                                     }
                                 }
 
-                                if ((new Date().getTime()) - (Date.parse(lastDate)) > -604800000){
-                                    if ((new Date().getTime()) - (Date.parse(lastDate)) < 0){
+                                if ((new Date().getTime()) - (Date.parse(lastDate)) > -604800000) {
+                                    if ((new Date().getTime()) - (Date.parse(lastDate)) < 0) {
                                         message.channel.send(team1Name + ' ' + team1Score + ' - ' + team2Name + ' ' + team2Score)
                                         scores.fuyumi.prediction.push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
                                     }
-                                }  
+                                }
 
                                 fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
                                     if (err) throw err;
