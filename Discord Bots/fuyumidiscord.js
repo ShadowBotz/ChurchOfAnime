@@ -11,15 +11,15 @@ const { EmbedBuilder } = require('discord.js');
 const path = require('node:path');
 const wait = require('node:timers/promises').setTimeout;
 
+
 //Each discord bot has a unique token
 client.login(oauth.FuyumiToken);
 
 // Creates an event listener for bot ready-state
 client.on('ready', () => {
-    var d = new Date();
-    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-
-    console.log(time + 'bot running')
+    let d = new Date();
+    let time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
+    console.log(`${time} bot running`)
 });
 
 client.commands = new Collection();
@@ -283,26 +283,26 @@ client.on('messageCreate', message => {
             }
         }
 
-        //     const exampleEmbed = new EmbedBuilder()
-        // .setColor(0x0099FF)
-        // .setTitle('Some title')
-        // .setAuthor({ name: 'Some name', iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
-        // .setDescription('Some description here')
-        // .setThumbnail('https://i.imgur.com/AfFp7pu.png')
-        // .addFields(
-        // 	{ name: 'Regular field title', value: 'Some value here' },
-        // 	{ name: '\u200B', value: '\u200B' },
-        // 	{ name: 'Inline field title', value: 'Some value here', inline: true },
-        // 	{ name: 'Inline field title', value: 'Some value here', inline: true },
-        // )
-        // .addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
-        // .setImage('https://i.imgur.com/AfFp7pu.png')
-        // .setTimestamp()
-        // .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
-
-        // if (message.channel.name === 'test' && message.author.username != 'Fuyumi') {
-        //     console.log((message.content).charCodeAt(0).toString(16))
-        // }
+        if (message.channelId === '607815006633066496') {
+            if (message.content.toLowerCase() === '!test') {
+                fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
+                    scores = JSON.parse(data)
+            
+                        if (scores.fuyumi != undefined) {
+                            for (i = scores.fuyumi.prediction.length - 1; i >= 0; i--) {
+                                console.log(new Date().getTime() - Date.parse(scores.fuyumi.prediction[i][6]), scores.fuyumi.prediction[i][6])
+                                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6]))) > 0) {
+                                    scores.fuyumi.prediction.splice(i, 1)
+                                }
+                            }
+                        }
+                fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
+                    if (err) throw err;
+                })
+            
+                })
+            }
+        }
 
         if (splt[0] === '!prediction') {
             squad = TitleCase(splt.slice(1).join(' '))
@@ -530,4 +530,29 @@ schedule.scheduleJob('0 58 23 * * *', function () {
     if (randomUser != undefined) {
         client.guilds.cache.get('172065393525915648').members.cache.get(randomUser).roles.remove('762186129918394399');
     }
+});
+
+schedule.scheduleJob('5 0 2 * * *', function () {
+    fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
+        scores = JSON.parse(data)
+        let x = 0
+        let total = 0
+
+        if (scores.fuyumi != undefined) {
+            for (i = scores.fuyumi.prediction.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6]))) > 0) {
+                    scores.fuyumi.prediction.splice(i, 1)
+                    x++
+                }
+            }
+            
+            fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
+                var d = new Date();
+                var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
+                if (err) throw err;
+                console.log(`${time} Removed ${x} of ${total} predictions`)
+            })
+        }
+    })
 });
