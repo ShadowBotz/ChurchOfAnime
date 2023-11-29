@@ -326,7 +326,7 @@ Bot.on('join', () => {
 
                             fs.readFile('C:/Users/shado/Documents/Snip/Snip_Metadata.json', 'utf8', (err, data) => {
                                 nowplaying = JSON.parse(data)
-                                artist = []
+                                artist = [] 
 
                                 let x = 0
                                 do {
@@ -362,7 +362,7 @@ Bot.on('join', () => {
                         const letter3 = String.fromCharCode(ascii + letterIndex3);
                         const random = `${letter1}${letter2}${letter3}`
 
-                        if (random == 'fag' || random == "fgt" || random == "ngr" || random == "nig" || random == "kkk" || random == "sjv" || random == 'jap' || random == 'nga') {
+                        if (random == 'fag' || random == "fgt" || random == "ngr" || random == "nig" || random == "kkk" || random == "sjv" || random == 'jap' || random == 'nga' || random == 'kys' || random == 'kms') {
                             Bot.say('I\'d rather not get cancelled.')
                         } else {
                             Bot.say('I wanna have ' + random + ' with @' + chatter.display_name + '.')

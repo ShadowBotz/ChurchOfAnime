@@ -9,7 +9,7 @@ const fs = require('fs');
 var oauth = require('./oauth.js');
 const { EmbedBuilder } = require('discord.js');
 const path = require('node:path');
-const wait = require('node:timers/promises').setTimeout;
+const wait = require('node:timers/promises').setTimeout; 
 
 
 //Each discord bot has a unique token

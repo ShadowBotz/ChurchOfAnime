@@ -115,6 +115,17 @@ messagecount = 0
 allie = 0
 let pokerGameInProgress = 0
 let players = []
+let board = []
+let turkey = 1
+
+const epoints = (input) => {
+    array = []
+    for (let i = input; i > 0; i--){
+        array.push('!')
+    }
+
+    return array.join('').replaceAll(',','')
+}
 
 last_use = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 let cards = ['A :clubs:', 'A :diamonds:', 'A :hearts:', 'A :spades:', '2 :clubs:', '2 :diamonds:', '2 :hearts:', '2 :spades:', '3 :clubs:', '3 :diamonds:', '3 :hearts:', '3 :spades:', '4 :clubs:', '4 :diamonds:', '4 :hearts:', '4 :spades:', '5 :clubs:', '5 :diamonds:', '5 :hearts:', '5 :spades:', '6 :clubs:', '6 :diamonds:', '6 :hearts:', '6 :spades:', '7 :clubs:', '7 :diamonds:', '7 :hearts:', '7 :spades:', '8 :clubs:', '8 :diamonds:', '8 :hearts:', '8 :spades:', '9 :clubs:', '9 :diamonds:', '9 :hearts:', '9 :spades:', '10 :clubs:', '10 :diamonds:', '10 :hearts:', '10 :spades:', 'J :clubs:', 'J :diamonds:', 'J :hearts:', 'J :spades:', 'Q :clubs:', 'Q :diamonds:', 'Q :hearts:', 'Q :spades:', 'K :clubs:', 'K :diamonds:', 'K :hearts:', 'K :spades:']
@@ -339,6 +350,11 @@ Bot.on('join', () => {
                 last_use[29] = new Date().getTime()
                 Bot.say('@' + chatter.display_name + ' Here is someone else\'s animelist that coincidentally has all of the anime that Shadow has watched as well. Sort by score and anything 8 and above is what he recommends beatzHauu http://myanimelist.net/animelist/KyonIwasawa')
             }
+        }
+
+        if (chatter.message.toLowerCase().includes('thanksgiving')) {
+            Bot.say(`:turkey: ${epoints(turkey)}`)
+            turkey = turkey + 1
         }
 
         if (chatter.message.includes('!weeblist')) {
