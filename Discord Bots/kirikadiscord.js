@@ -11,6 +11,52 @@ const { EmbedBuilder } = require('discord.js');
 const path = require('node:path');
 const wait = require('node:timers/promises').setTimeout;
 
+let pokerGameInProgress = 0
+let players = []
+
+last_use = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+let cards = ['A :clubs:', 'A :diamonds:', 'A :hearts:', 'A :spades:', '2 :clubs:', '2 :diamonds:', '2 :hearts:', '2 :spades:', '3 :clubs:', '3 :diamonds:', '3 :hearts:', '3 :spades:', '4 :clubs:', '4 :diamonds:', '4 :hearts:', '4 :spades:', '5 :clubs:', '5 :diamonds:', '5 :hearts:', '5 :spades:', '6 :clubs:', '6 :diamonds:', '6 :hearts:', '6 :spades:', '7 :clubs:', '7 :diamonds:', '7 :hearts:', '7 :spades:', '8 :clubs:', '8 :diamonds:', '8 :hearts:', '8 :spades:', '9 :clubs:', '9 :diamonds:', '9 :hearts:', '9 :spades:', '10 :clubs:', '10 :diamonds:', '10 :hearts:', '10 :spades:', 'J :clubs:', 'J :diamonds:', 'J :hearts:', 'J :spades:', 'Q :clubs:', 'Q :diamonds:', 'Q :hearts:', 'Q :spades:', 'K :clubs:', 'K :diamonds:', 'K :hearts:', 'K :spades:']
+
+const dealHand = (handSize, deck) => {
+    let hand = []
+
+    for (let i = 0; i < handSize; i++) {
+        hand.push(deck.splice(randomNumber(0, (deck.length - 1)), 1))
+    }
+    
+    return hand
+}
+
+const randomNumber = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+const TitleCase = (Input) => {
+    Input = Input.toLowerCase().split(" ");
+
+    for (var i = 0; i < Input.length; i++) {
+        if (Input[i].length === 2) {
+            Input[i] = Input[i].toUpperCase();
+        } else {
+            Input[i] = Input[i].charAt(0).toUpperCase() + Input[i].slice(1);
+        }
+    }
+
+    return Input.join(' ');
+}
+
+const username = (Input) => {
+    if (client.guilds.cache.get('172065393525915648').members.cache.get(Input) != undefined) {
+        if (client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname != null) {
+            return client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname
+        } else {
+            return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.globalName
+        }
+    } else {
+        return ("a mystery person")
+    }
+}
+
 //Each discord bot has a unique token
 client.login(oauth.KirikaToken);
 
@@ -71,36 +117,6 @@ client.on(Events.InteractionCreate, async interaction => {
 client.on("messageCreate", message => {
     //console.log(message)
     splt = message.content.split(" ")
-
-    function randomNumber(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min)
-    }
-
-    function TitleCase(Input) {
-        Input = Input.toLowerCase().split(" ");
-
-        for (var i = 0; i < Input.length; i++) {
-            if (Input[i].length === 2) {
-                Input[i] = Input[i].toUpperCase();
-            } else {
-                Input[i] = Input[i].charAt(0).toUpperCase() + Input[i].slice(1);
-            }
-        }
-
-        return Input.join(' ');
-    }
-
-    function username(Input) {
-        if (client.guilds.cache.get('172065393525915648').members.cache.get(Input) != undefined) {
-            if (client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname != null) {
-                return client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname
-            } else {
-                return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.globalName
-            }
-        } else {
-            return ("a mystery person")
-        }
-    }
 
     if (message.channel.type != undefined && message.author != null) {
         if (message.content === '!alerts' && message.author != undefined) {
@@ -351,8 +367,69 @@ client.on("messageCreate", message => {
     		break;
         case "!fansplits":
     		message.channel.send('"!fansplits" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /fansplits')
-    		break;	
+    		break;
+        case "!poker":
+
+                    if (pokerGameInProgress === 0) {
+                        let board = []
+                        i = 2
+                        message.channel.send('Poker hand has started KirikaSmile !poker to join. I\'ll deal the board in 30 seconds')
+                        pokerGameInProgress = 1
+                        board.push(dealHand(5, cards))
+                        board.push([username(message.author.id), dealHand(2, cards)])
+
+                        message.channel.send(`${board[1][1][0]} ${board[1][1][1]} ${board[1][0]}`)
+
+                        players.push(username(message.author.id))
+
+                        board[1][0] = [board[0][0], board[0][1], board[0][2], board[0][3], board[0][4], board[1][1][0], board[1][1][1], board[1][0]]
+
+                        const spades = board[1][0].filter((card) => card.toString().includes(':spades:'))
+                        const hearts = board[1][0].filter((card) => card.toString().includes(':hearts:'))
+                        const clubs = board[1][0].filter((card) => card.toString().includes(':clubs:'))
+                        const diamonds = board[1][0].filter((card) => card.toString().includes(':diamonds:'))
+                        
+                        if (spades.length >= 5){
+                            board[1][0].push(5)
+                        } else if (hearts.length >= 5){
+                            board[1][0].push(5)
+                        } else if (clubs.length >= 5){
+                            board[1][0].push(5)
+                        } else if (diamonds.length >= 5){
+                            board[1][0].push(5)
+                        }
+
+                        setTimeout(() => { message.channel.send('10 seconds KirikaSmile') }, 20000)
+
+                        setTimeout(() => {
+                            message.channel.send(`${board[0][0]} ${board[0][1]} ${board[0][2]}`)
+                            message.channel.send(`${board[0][3]} ${board[0][4]}`)
+                            cards = ['A :clubs:', 'A :diamonds:', 'A :hearts:', 'A :spades:', '2 :clubs:', '2 :diamonds:', '2 :hearts:', '2 :spades:', '3 :clubs:', '3 :diamonds:', '3 :hearts:', '3 :spades:', '4 :clubs:', '4 :diamonds:', '4 :hearts:', '4 :spades:', '5 :clubs:', '5 :diamonds:', '5 :hearts:', '5 :spades:', '6 :clubs:', '6 :diamonds:', '6 :hearts:', '6 :spades:', '7 :clubs:', '7 :diamonds:', '7 :hearts:', '7 :spades:', '8 :clubs:', '8 :diamonds:', '8 :hearts:', '8 :spades:', '9 :clubs:', '9 :diamonds:', '9 :hearts:', '9 :spades:', '10 :clubs:', '10 :diamonds:', '10 :hearts:', '10 :spades:', 'J :clubs:', 'J :diamonds:', 'J :hearts:', 'J :spades:', 'Q :clubs:', 'Q :diamonds:', 'Q :hearts:', 'Q :spades:', 'K :clubs:', 'K :diamonds:', 'K :hearts:', 'K :spades:']
+                            
+                            pokerGameInProgress = 0
+                            board = []
+                            players = []
+                            i = 2
+                        }, 30000)
+
+                    } else {
+                        if (players.length < 8) {
+                            if (players.includes(username(message.author.id))) {
+                                message.channel.send('You\'re already in the hand beatzSus')
+                            } else {                              
+                                board.push([username(message.author.id), dealHand(2, cards)])
+                                message.channel.send(`${board[i][1][0]} ${board[i][1][1]} ${board[i][0]}`)
+                                players.push(username(message.author.id))
+                                i = i + 1
+                            }
+                        } else {
+                            message.channel.send(`Sorry ${username(message.author.id)}, max of 8 players allowed per hand beatzFeels you can get in next time KirikaSmile`)
+                        }
+                    }
+                    break;          
     	}     
+
+        
 
         if (splt[0] === '!prediction') {
             squad = TitleCase(splt.slice(1).join(' '))
