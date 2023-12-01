@@ -11,6 +11,17 @@ const { EmbedBuilder } = require('discord.js');
 const path = require('node:path');
 const wait = require('node:timers/promises').setTimeout; 
 
+function username(Input) {
+    if (client.guilds.cache.get('172065393525915648').members.cache.get(Input) != undefined) {
+        if (client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname != null) {
+            return client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname
+        } else {
+            return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.globalName
+        }
+    } else {
+        return ("a mystery person")
+    }
+}
 
 //Each discord bot has a unique token
 client.login(oauth.FuyumiToken);
@@ -75,18 +86,6 @@ client.on('messageCreate', message => {
 
     function randomNumber(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min)
-    }
-
-    function username(Input) {
-        if (client.guilds.cache.get('172065393525915648').members.cache.get(Input) != undefined) {
-            if (client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname != null) {
-                return client.guilds.cache.get('172065393525915648').members.cache.get(Input).nickname
-            } else {
-                return client.guilds.cache.get('172065393525915648').members.cache.get(Input).user.globalName
-            }
-        } else {
-            return ("a mystery person")
-        }
     }
 
     function TitleCase(Input) {
@@ -530,6 +529,53 @@ schedule.scheduleJob('0 58 23 * * *', function () {
     if (randomUser != undefined) {
         client.guilds.cache.get('172065393525915648').members.cache.get(randomUser).roles.remove('762186129918394399');
     }
+});
+
+schedule.scheduleJob('0 0 0 1 * *', function () {
+    fs.readFile('wordlescores copy.json', 'utf8', (err, data) => {
+        wordle = JSON.parse(data)
+        leaderboard = []
+        let WordleEntries = Object.entries(wordle)
+
+        const month = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+        const date = new Date()
+        let name = month[date.getMonth()]
+  
+            for (let i = 0; i < WordleEntries.length; i++) {
+                if (WordleEntries[i][1].GAMES > 9) {
+                    leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, ' average --- ', username(WordleEntries[i][0]) + ' (', WordleEntries[i][1].GAMES + ' game)'])
+                }              
+            }
+
+        leaderboard = leaderboard.sort((firstItem, secondItem) => firstItem[0] - secondItem[0])
+    
+        fs.readFile('leaderboardhistory.json', 'utf8', (err, data2) => {
+            history = JSON.parse(data2)
+
+            history[name] = { leaderboard }
+
+            fs.writeFile('leaderboardhistory.json', JSON.stringify(history), (err) => {
+                var d = new Date();
+                var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
+                if (err) throw err;
+                console.log(`${time} Stored this month's wordle leaderboard.`)
+            })
+        })
+       
+            for (let i = 0; i < WordleEntries.length; i++) {
+                WordleEntries[i][1].SCORE = 0
+                WordleEntries[i][1].GUESSES = 0 
+                WordleEntries[i][1].GAMES = 0 
+                WordleEntries[i][1].FAILURES = 0 
+            }
+        
+            fs.writeFile('wordlescores copy.json', JSON.stringify(wordle), (err) => {
+                var d = new Date();
+                var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
+                if (err) throw err;
+                console.log(`${time} Wordle scores reset.`)
+            })
+    })
 });
 
 schedule.scheduleJob('5 0 2 * * *', function () {
