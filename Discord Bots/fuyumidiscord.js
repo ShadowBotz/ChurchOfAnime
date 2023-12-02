@@ -532,18 +532,20 @@ schedule.scheduleJob('0 58 23 * * *', function () {
 });
 
 schedule.scheduleJob('0 0 0 1 * *', function () {
-    fs.readFile('wordlescores copy.json', 'utf8', (err, data) => {
+    fs.readFile('wordlescores.json', 'utf8', (err, data) => {
         wordle = JSON.parse(data)
         leaderboard = []
         let WordleEntries = Object.entries(wordle)
 
-        const month = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+        const month = ["December","January","February","March","April","May","June","July","August","September","October","November"]
         const date = new Date()
         let name = month[date.getMonth()]
+        let year = date.getFullYear();
+        let mthyr = `${name} ${year}`
   
             for (let i = 0; i < WordleEntries.length; i++) {
                 if (WordleEntries[i][1].GAMES > 9) {
-                    leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, ' average --- ', username(WordleEntries[i][0]) + ' (', WordleEntries[i][1].GAMES + ' game)'])
+                    leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, username(WordleEntries[i][0]), WordleEntries[i][1].GAMES + ' games)'])
                 }              
             }
 
@@ -552,7 +554,7 @@ schedule.scheduleJob('0 0 0 1 * *', function () {
         fs.readFile('leaderboardhistory.json', 'utf8', (err, data2) => {
             history = JSON.parse(data2)
 
-            history[name] = { leaderboard }
+            history[mthyr] = { leaderboard }
 
             fs.writeFile('leaderboardhistory.json', JSON.stringify(history), (err) => {
                 var d = new Date();
@@ -569,7 +571,7 @@ schedule.scheduleJob('0 0 0 1 * *', function () {
                 WordleEntries[i][1].FAILURES = 0 
             }
         
-            fs.writeFile('wordlescores copy.json', JSON.stringify(wordle), (err) => {
+            fs.writeFile('wordlescores.json', JSON.stringify(wordle), (err) => {
                 var d = new Date();
                 var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
                 if (err) throw err;
