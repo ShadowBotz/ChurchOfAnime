@@ -193,9 +193,11 @@ client.on('messageCreate', message => {
         }
 
         if (message.channelId === '931407561792565280' && splt[0] === 'Wordle') {
+            console.log(message)
             if (!isNaN(message.content[7])) {
-                if (message.content[11] === 'X' || Number(message.content[11]) < 7) {
-                    id = message.author.id
+                if (message.content[13] === 'X' || Number(message.content[13]) < 7) {
+                    let id = message.author.id
+                    let name = message.author.username
                     score = 0
 
                     fs.readFile('wordlescores.json', 'utf8', (err, data) => {
@@ -213,8 +215,8 @@ client.on('messageCreate', message => {
                             }
                         }
 
-                        if (message.content[11] != 'X') {
-                            guesses = Number(message.content[11])
+                        if (message.content[13] != 'X') {
+                            guesses = Number(message.content[13])
                         } else {
                             failures = 1
                             guesses = 7
@@ -230,13 +232,14 @@ client.on('messageCreate', message => {
                             wordle[id].careerGUESSES = wordle[id].careerGUESSES + guesses
                             wordle[id].careerGAMES = wordle[id].careerGAMES + 1
                             wordle[id].careerFAILURES = wordle[id].careerFAILURES + failures
+                            wordle[id].USERNAME = name
                         }
 
                         if (score < wordle[id].bestSCORE) {
                             wordle[id].bestSCORE = score
                         }
 
-                        if (message.content[11] != 'X') {
+                        if (message.content[13] != 'X') {
                             message.channel.send(score + ' points.')//\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
                         } else {
                             message.channel.send('Lol. I got it in ' + randomNumber(1, 6) + '. ' + score + ' points.')//\n\n```prolog\n'+username(id)+' Wordle Stats\n\n===================================\nMonthly Average Score: '+Math.round((wordle[id].SCORE/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Average Guesses: '+Math.round((wordle[id].GUESSES/wordle[id].GAMES + Number.EPSILON) * 1000) / 1000+'\nMonthly Total Score: '+wordle[id].SCORE+'\nMonthly Games: '+wordle[id].GAMES+'\n===================================\nBest Score: '+wordle[id].bestSCORE+'\nCareer Games: '+wordle[id].careerGAMES+'\nCareer Average Guesses: '+Math.round((wordle[id].careerGUESSES/wordle[id].careerGAMES + Number.EPSILON) * 1000) / 1000+'\nCareer Games Failed: '+wordle[id].careerFAILURES+'```')
@@ -257,10 +260,10 @@ client.on('messageCreate', message => {
                 fs.readFile('pastgames.json', 'utf8', (err, data) => {
                     wordle = JSON.parse(data)
 
-                    if (wordle[splt[1]] === undefined) {
-                        wordle[splt[1]] = [[id, splt[2]]]
+                    if (wordle[splt[1].replaceAll(',', '')] === undefined) {
+                        wordle[splt[1].replaceAll(',', '')] = [[id, splt[2]]]
                     } else {
-                        wordle[splt[1]].push([id, splt[2]])
+                        wordle[splt[1].replaceAll(',', '')].push([id, splt[2]])
                     }
 
                     fs.writeFile('pastgames.json', JSON.stringify(wordle), (err) => {
@@ -284,21 +287,13 @@ client.on('messageCreate', message => {
 
         if (message.channelId === '607815006633066496') {
             if (message.content.toLowerCase() === '!test') {
-                fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
-                    scores = JSON.parse(data)
+                fs.readFile('wordlescores.json', 'utf8', (err, data) => {
+                    wordle = JSON.parse(data)
+                    let WordleEntries = Object.entries(wordle)
+
+                    console.log(WordleEntries[1][0])
             
-                        if (scores.fuyumi != undefined) {
-                            for (i = scores.fuyumi.prediction.length - 1; i >= 0; i--) {
-                                console.log(new Date().getTime() - Date.parse(scores.fuyumi.prediction[i][6]), scores.fuyumi.prediction[i][6])
-                                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6]))) > 0) {
-                                    scores.fuyumi.prediction.splice(i, 1)
-                                }
-                            }
-                        }
-                fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
-                    if (err) throw err;
-                })
-            
+                    
                 })
             }
         }
@@ -422,10 +417,6 @@ client.on('messageCreate', message => {
                                         message.channel.send(scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2] + ', ' + scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5])
                                     }
                                     newpredict = 1
-                                } else {
-                                    console.log(scores.fuyumi.prediction.splice(i, 1))
-                                    Predict()
-                                    newpredict = 1
                                 }
                             }
                         }
@@ -545,7 +536,7 @@ schedule.scheduleJob('0 0 0 1 * *', function () {
   
             for (let i = 0; i < WordleEntries.length; i++) {
                 if (WordleEntries[i][1].GAMES > 9) {
-                    leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, username(WordleEntries[i][0]), WordleEntries[i][1].GAMES + ' games)'])
+                    leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, WordleEntries[i][0], WordleEntries[i][1].GAMES + ' games)'])
                 }              
             }
 

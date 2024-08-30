@@ -23,7 +23,7 @@ const dealHand = (handSize, deck) => {
     for (let i = 0; i < handSize; i++) {
         hand.push(deck.splice(randomNumber(0, (deck.length - 1)), 1))
     }
-    
+
     return hand
 }
 
@@ -89,12 +89,12 @@ for (const folder of commandFolders) {
 client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
+    // if (interaction.commandName === 'teams') {
+    // 	await interaction.deferReply();
+    //     await command.execute(interaction);
+    // }
+
     const command = interaction.client.commands.get(interaction.commandName);
-    // if (interaction.commandName === 'addteam') {
-	// 	await interaction.deferReply();
-	// 	await wait(3000);
-	// 	// await interaction.editReply('Pong!');
-	// }
 
     if (!command) {
         console.error(`No command matching ${interaction.commandName} was found.`);
@@ -344,92 +344,97 @@ client.on("messageCreate", message => {
 
 
         switch (splt[0]) {
-    	case "!addteam":
-    		message.channel.send('"!addteam" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /addteam to register your favorite teams')
-    		break;
-        case "!fans":
-            message.channel.send('"!fans" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /fans')
-            break;
-        case "!teams":
-    		message.channel.send('"!teams" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /teams')
-    		break;
-        case "!scores":
-    		message.channel.send('"!scores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /scores')
-    		break;
-        case "!teamscores":
-    		message.channel.send('"!teamscores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /teamscores')
-    		break;
-        case "!myscores":
-    		message.channel.send('"!myscores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /myscores')
-    		break;
-        case "!livescores":
-    		message.channel.send('"!livescores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /livescores')
-    		break;
-        case "!fansplits":
-    		message.channel.send('"!fansplits" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /fansplits')
-    		break;
-        case "!poker":
+            case "!addteam":
+                message.channel.send('"!addteam" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /addteam to register your favorite teams')
+                break;
+            case "!fans":
+                message.channel.send('"!fans" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /fans')
+                break;
+            case "!teams":
+                message.channel.send('"!teams" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /teams')
+                break;
+            case "!scores":
+                message.channel.send('"!scores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /scores')
+                break;
+            case "!teamscores":
+                message.channel.send('"!teamscores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /teamscores')
+                break;
+            case "!myscores":
+                message.channel.send('"!myscores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /myscores')
+                break;
+            case "!livescores":
+                message.channel.send('"!livescores" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /livescores')
+                break;
+            case "!fansplits":
+                message.channel.send('"!fansplits" is a fancy slash command now <:KirikaSmile:608201680374464532> Try /fansplits')
+                break;
+            case "!poker":
+                message.channel.send('changed the command get fucked idiot')
+                break;
+            case "!noe":
 
-                    if (pokerGameInProgress === 0) {
-                        let board = []
-                        i = 2
-                        message.channel.send('Poker hand has started KirikaSmile !poker to join. I\'ll deal the board in 30 seconds')
-                        pokerGameInProgress = 1
-                        board.push(dealHand(5, cards))
-                        board.push([username(message.author.id), dealHand(2, cards)])
+                if (pokerGameInProgress === 0) {
+                    let board = []
+                    i = 2
+                    message.channel.send('Poker hand has started KirikaSmile !poker to join. I\'ll deal the board in 30 seconds')
+                    pokerGameInProgress = 1
+                    board.push(dealHand(5, cards))
+                    board.push([username(message.author.id), dealHand(2, cards)])
 
-                        message.channel.send(`${board[1][1][0]} ${board[1][1][1]} ${board[1][0]}`)
+                    message.channel.send(`${board[1][1][0]} ${board[1][1][1]} ${board[1][0]}`)
 
-                        players.push(username(message.author.id))
+                    players.push(username(message.author.id))
 
-                        board[1][0] = [board[0][0], board[0][1], board[0][2], board[0][3], board[0][4], board[1][1][0], board[1][1][1], board[1][0]]
+                    board[1][0] = [board[0][0], board[0][1], board[0][2], board[0][3], board[0][4], board[1][1][0], board[1][1][1], board[1][0]]
 
-                        const spades = board[1][0].filter((card) => card.toString().includes(':spades:'))
-                        const hearts = board[1][0].filter((card) => card.toString().includes(':hearts:'))
-                        const clubs = board[1][0].filter((card) => card.toString().includes(':clubs:'))
-                        const diamonds = board[1][0].filter((card) => card.toString().includes(':diamonds:'))
-                        
-                        if (spades.length >= 5){
-                            board[1][0].push(5)
-                        } else if (hearts.length >= 5){
-                            board[1][0].push(5)
-                        } else if (clubs.length >= 5){
-                            board[1][0].push(5)
-                        } else if (diamonds.length >= 5){
-                            board[1][0].push(5)
-                        }
+                    const spades = board[1][0].filter((card) => card.toString().includes(':spades:'))
+                    const hearts = board[1][0].filter((card) => card.toString().includes(':hearts:'))
+                    const clubs = board[1][0].filter((card) => card.toString().includes(':clubs:'))
+                    const diamonds = board[1][0].filter((card) => card.toString().includes(':diamonds:'))
 
-                        setTimeout(() => { message.channel.send('10 seconds KirikaSmile') }, 20000)
-
-                        setTimeout(() => {
-                            message.channel.send(`${board[0][0]} ${board[0][1]} ${board[0][2]}`)
-                            message.channel.send(`${board[0][3]} ${board[0][4]}`)
-                            cards = ['A :clubs:', 'A :diamonds:', 'A :hearts:', 'A :spades:', '2 :clubs:', '2 :diamonds:', '2 :hearts:', '2 :spades:', '3 :clubs:', '3 :diamonds:', '3 :hearts:', '3 :spades:', '4 :clubs:', '4 :diamonds:', '4 :hearts:', '4 :spades:', '5 :clubs:', '5 :diamonds:', '5 :hearts:', '5 :spades:', '6 :clubs:', '6 :diamonds:', '6 :hearts:', '6 :spades:', '7 :clubs:', '7 :diamonds:', '7 :hearts:', '7 :spades:', '8 :clubs:', '8 :diamonds:', '8 :hearts:', '8 :spades:', '9 :clubs:', '9 :diamonds:', '9 :hearts:', '9 :spades:', '10 :clubs:', '10 :diamonds:', '10 :hearts:', '10 :spades:', 'J :clubs:', 'J :diamonds:', 'J :hearts:', 'J :spades:', 'Q :clubs:', 'Q :diamonds:', 'Q :hearts:', 'Q :spades:', 'K :clubs:', 'K :diamonds:', 'K :hearts:', 'K :spades:']
-                            
-                            pokerGameInProgress = 0
-                            board = []
-                            players = []
-                            i = 2
-                        }, 30000)
-
-                    } else {
-                        if (players.length < 8) {
-                            if (players.includes(username(message.author.id))) {
-                                message.channel.send('You\'re already in the hand beatzSus')
-                            } else {                              
-                                board.push([username(message.author.id), dealHand(2, cards)])
-                                message.channel.send(`${board[i][1][0]} ${board[i][1][1]} ${board[i][0]}`)
-                                players.push(username(message.author.id))
-                                i = i + 1
-                            }
-                        } else {
-                            message.channel.send(`Sorry ${username(message.author.id)}, max of 8 players allowed per hand beatzFeels you can get in next time KirikaSmile`)
-                        }
+                    if (spades.length >= 5) {
+                        board[1][0].push(5)
+                    } else if (hearts.length >= 5) {
+                        board[1][0].push(5)
+                    } else if (clubs.length >= 5) {
+                        board[1][0].push(5)
+                    } else if (diamonds.length >= 5) {
+                        board[1][0].push(5)
                     }
-                    break;          
-    	}     
 
-        
+                    console.log(spades)
+
+                    setTimeout(() => { message.channel.send('10 seconds KirikaSmile') }, 20000)
+
+                    setTimeout(() => {
+                        message.channel.send(`${board[0][0]} ${board[0][1]} ${board[0][2]}`)
+                        message.channel.send(`${board[0][3]} ${board[0][4]}`)
+                        cards = ['A :clubs:', 'A :diamonds:', 'A :hearts:', 'A :spades:', '2 :clubs:', '2 :diamonds:', '2 :hearts:', '2 :spades:', '3 :clubs:', '3 :diamonds:', '3 :hearts:', '3 :spades:', '4 :clubs:', '4 :diamonds:', '4 :hearts:', '4 :spades:', '5 :clubs:', '5 :diamonds:', '5 :hearts:', '5 :spades:', '6 :clubs:', '6 :diamonds:', '6 :hearts:', '6 :spades:', '7 :clubs:', '7 :diamonds:', '7 :hearts:', '7 :spades:', '8 :clubs:', '8 :diamonds:', '8 :hearts:', '8 :spades:', '9 :clubs:', '9 :diamonds:', '9 :hearts:', '9 :spades:', '10 :clubs:', '10 :diamonds:', '10 :hearts:', '10 :spades:', 'J :clubs:', 'J :diamonds:', 'J :hearts:', 'J :spades:', 'Q :clubs:', 'Q :diamonds:', 'Q :hearts:', 'Q :spades:', 'K :clubs:', 'K :diamonds:', 'K :hearts:', 'K :spades:']
+
+                        pokerGameInProgress = 0
+                        board = []
+                        players = []
+                        i = 2
+                    }, 30000)
+
+                } else {
+                    if (players.length < 8) {
+                        if (players.includes(username(message.author.id))) {
+                            message.channel.send('You\'re already in the hand beatzSus')
+                        } else {
+                            board.push([username(message.author.id), dealHand(2, cards)])
+                            message.channel.send(`${board[i][1][0]} ${board[i][1][1]} ${board[i][0]}`)
+                            players.push(username(message.author.id))
+                            i = i + 1
+                        }
+                    } else {
+                        message.channel.send(`Sorry ${username(message.author.id)}, max of 8 players allowed per hand beatzFeels you can get in next time KirikaSmile`)
+                    }
+                }
+                break;
+        }
+
+
 
         if (splt[0] === '!prediction') {
             squad = TitleCase(splt.slice(1).join(' '))
@@ -506,10 +511,6 @@ client.on("messageCreate", message => {
                                     if (scores.kirika.prediction[i].includes(squad)) {
                                         if ((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6])) < 5400000) {
                                             message.channel.send(scores.kirika.prediction[i][4] + ' ' + scores.kirika.prediction[i][5] + ', ' + scores.kirika.prediction[i][1] + ' ' + scores.kirika.prediction[i][2] + ' <:beatzWICKED:1165575471153549342>')
-                                            newpredict = 1
-                                        } else {
-                                            console.log(scores.kirika.prediction.splice(i, 1))
-                                            getPrediction(SPORT, LEAGUE, ABBR)
                                             newpredict = 1
                                         }
                                     }
@@ -631,6 +632,9 @@ streamingrn = 0
 
 client.on('presenceUpdate', (oldMember, newMember) => {
     if (oldMember != null) {
+        // if (newMember.userId === '306578848177192960') {
+             //console.log(newMember.userId, ' '+username(newMember.userId))
+        // }
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
@@ -640,22 +644,18 @@ client.on('presenceUpdate', (oldMember, newMember) => {
             // console.log(newMember.activities[0])
         }
 
-        // if (newMember.activities[0] != undefined){
-        //   if (newMember.activities[0].type === 'CUSTOM_STATUS'){
-        //     console.log(newMember.activities)
-        //     console.log(client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).user.username)
-        //   }
-        // }  
-
         a = newMember.activities[0]
         b = oldMember.activities[0]
         currentlyStreaming = 0
         beenStreaming = 0
 
+
         if (a != undefined) {
             newMember.activities.forEach((element, index) => {
                 if (element.type === 1) {
-                    currentlyStreaming += 1
+                    if (element.name === 'Twitch') {
+                        currentlyStreaming += 1
+                    }
                 }
             })
         }
@@ -663,7 +663,9 @@ client.on('presenceUpdate', (oldMember, newMember) => {
         if (b != undefined) {
             oldMember.activities.forEach((element, index) => {
                 if (element.type === 1) {
-                    beenStreaming += 1
+                    if (element.name === 'Twitch') {
+                        beenStreaming += 1
+                    }
                 }
             })
         }
@@ -677,7 +679,12 @@ client.on('presenceUpdate', (oldMember, newMember) => {
         // }
 
         if (currentlyStreaming >= 1) {
-            client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
+            // if (newMember.userId != '306578848177192960' || newMember.userId != '205980021251244032') {
+                client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
+            //     console.log(newMember)
+            // }else{
+            //     console.log('lol '+username(newMember.userId)+' tried it ', newMember.userId)
+            // }
             // if (a.type === 'STREAMING'){
             if (beenStreaming === 0) {
                 streamingrn += 1
@@ -718,6 +725,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
                 }
             }
         }
+
     }
 });
 
@@ -734,6 +742,10 @@ client.on('guildMemberUpdate', (oldMember, newMember) => {
 
 schedule.scheduleJob('2 0 8 * * *', function () {
     client.channels.cache.get('172252229145853953').send(('Good morning <:KirikaSmile:608201680374464532>'))
+});
+
+schedule.scheduleJob('2 30 22 * * *', function () {
+    client.channels.cache.get('172252229145853953').send(('Good morning India <:KirikaSmile:608201680374464532>'))
 });
 
 // Gets Kirika to give the Birthday Weeb role to whoever's birthday it is
@@ -787,21 +799,21 @@ schedule.scheduleJob('0 0 2 * * *', function () {
         let x = 0
         let total = 0
 
-            if (scores.kirika != undefined) {
-                for (i = scores.kirika.prediction.length - 1; i >= 0; i--) {
-                    total++
-                    if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6]))) > 0) {
-                        scores.kirika.prediction.splice(i, 1)
-                        x++
-                    }
+        if (scores.kirika != undefined) {
+            for (i = scores.kirika.prediction.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6]))) > 0) {
+                    scores.kirika.prediction.splice(i, 1)
+                    x++
                 }
-
-                fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
-                    var d = new Date();
-                    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
-                    if (err) throw err;
-                    console.log(`${time} Removed ${x} of ${total} predictions :O`)
-                })
             }
+
+            fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
+                var d = new Date();
+                var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
+                if (err) throw err;
+                console.log(`${time} Removed ${x} of ${total} predictions :O`)
+            })
+        }
     })
 });
