@@ -24,6 +24,25 @@ module.exports = {
         
 	async execute(interaction) {
 
+        const guild = interaction.member.guild;
+        const ID = interaction.user.id
+
+        function username(Input) {
+            if (guild.members.cache.get(Input) != undefined) {
+                if (guild.members.cache.get(Input).nickname != null) {
+                    return guild.members.cache.get(Input).nickname
+                } else {
+                    return guild.members.cache.get(Input).user.globalName
+                }
+            } else {
+                return ("a mystery person")
+            }
+        }
+
+        var d = new Date();
+        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+        console.log(`${time} ${username(ID)} used /faprediction`)
+
         let LEAGUE = interaction.options.getString('league');
         let PLAYER = interaction.options.getString('player');
 

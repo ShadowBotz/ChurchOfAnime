@@ -8,16 +8,17 @@ module.exports = {
         .setDescription('Displays the fans of a team in this discord (add teams with /addteam).')
         .addStringOption(option =>
             option.setName('teamcity')
-                .setDescription('The city of the team to add')
+                .setDescription('The city of the team to look up')
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName('teamname')
-                .setDescription('The name of the team to add')
+                .setDescription('The name of the team to look up')
                 .setRequired(true)
         ),
     async execute(interaction) {
         const guild = interaction.member.guild;
+        const ID = interaction.user.id
 
         function username(Input) {
             if (guild.members.cache.get(Input) != undefined) {
@@ -30,6 +31,10 @@ module.exports = {
                 return ("a mystery person")
             }
         }
+
+        var d = new Date();
+        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+        console.log(`${time} ${username(ID)} used /fans`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");

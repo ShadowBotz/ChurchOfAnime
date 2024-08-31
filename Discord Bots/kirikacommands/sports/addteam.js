@@ -30,7 +30,23 @@ module.exports = {
         
 	async execute(interaction) {
         const guild = interaction.member.guild;
-        const AID = interaction.user.id
+        const ID = interaction.user.id
+
+        function username(Input) {
+            if (guild.members.cache.get(Input) != undefined) {
+                if (guild.members.cache.get(Input).nickname != null) {
+                    return guild.members.cache.get(Input).nickname
+                } else {
+                    return guild.members.cache.get(Input).user.globalName
+                }
+            } else {
+                return ("a mystery person")
+            }
+        }
+
+        var d = new Date();
+        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+        console.log(`${time} ${username(ID)} used /addteam`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
@@ -62,22 +78,22 @@ module.exports = {
                 if (sports[league][team] === undefined) {
                     return interaction.reply({ content: 'That\'s not a real team <:beatzSusAF:549413960948908063> Are you sure you spelled it right?', ephemeral: true})
                 } else {
-                    if (sports[league][team].fans.find(element => element === AID) != undefined) {
+                    if (sports[league][team].fans.find(element => element === ID) != undefined) {
                         return interaction.reply({content:'You already added that <:beatzSusAF:549413960948908063>', ephemeral: true})
                     } else {
                         chant = sports[league][team].chant
                         modifier = sports[league][team].modifier
 
-                        sports[league][team].fans.push(AID)
+                        sports[league][team].fans.push(ID)
                         fs.writeFile('sports.json', JSON.stringify(sports), (err) => {
                             if (err) throw err;
 
                             if (sports[league][team].fans.length < 2) {
 
-                                return interaction.reply('<@' + AID + '> A fan of ' + modifier + '' + team + ' huh? ' + chant + '')
+                                return interaction.reply('<@' + ID + '> A fan of ' + modifier + '' + team + ' huh? ' + chant + '')
 
                             } else {
-                                return interaction.reply('<@' + AID + '> Another fan of ' + modifier + '' + team + '! You\'re among friends here ' + chant + '')
+                                return interaction.reply('<@' + ID + '> Another fan of ' + modifier + '' + team + '! You\'re among friends here ' + chant + '')
                             }
 
                         })

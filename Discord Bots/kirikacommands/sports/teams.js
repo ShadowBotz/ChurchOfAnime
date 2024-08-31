@@ -27,6 +27,10 @@ module.exports = {
             }
         }
 
+        var d = new Date();
+        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+        console.log(`${time} ${username(ID)} used /teams`)
+
         async function getTeamInfo(sport, league, abbr) {
             try {
                 const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
@@ -65,24 +69,11 @@ module.exports = {
                                 teaminfo.push('<:beatzWICKED:1165575471153549342>')
                             } else {
                                 if (espn.team.record.items != undefined) {
-                                    if (espn.team.record.items[0].stats[4].name === 'clincher') {
-                                        if (espn.team.record.items[0].stats[18].value < 0.5) {
-                                            teaminfo.push('<:beatzDespair:1019839939522859109>')
-                                        } else {
-                                            teaminfo.push('<:KirikaSmile:608201680374464532>')
-                                        }
-                                    } else if (espn.team.record.items[0].stats[0].name === 'OTLosses') {
-                                        if (espn.team.record.items[0].stats[15].value < 0.5) {
-                                            teaminfo.push('<:beatzDespair:1019839939522859109>')
-                                        } else {
-                                            teaminfo.push('<:KirikaSmile:608201680374464532>')
-                                        }
+                                    if ((espn.team.record.items[0].summary.split("-")[0]) < (espn.team.record.items[0].summary.split("-")[1])) {
+                                        console.log(espn.team.displayName,espn.team.record.items[0].summary.split("-")[0],espn.team.record.items[0].summary.split("-")[1])
+                                        teaminfo.push('<:beatzDespair:1019839939522859109>')
                                     } else {
-                                        if (espn.team.record.items[0].stats[17].value < 0.5) {
-                                            teaminfo.push('<:beatzDespair:1019839939522859109>')
-                                        } else {
-                                            teaminfo.push('<:KirikaSmile:608201680374464532>')
-                                        }
+                                        teaminfo.push('<:KirikaSmile:608201680374464532>')
                                     }
                                 } else {
                                     teaminfo.push('<:KirikaSmile:608201680374464532>')
@@ -106,7 +97,7 @@ module.exports = {
                     return Promise.reject('getTeamInfo() Kirika Promise Error')
                 }
             } catch (err) {
-                return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
+                return interaction.editReply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
                     console.log('getTeamInfo\n' + err)
             }
         }
@@ -157,7 +148,7 @@ module.exports = {
                 }
 
                 if (userfandom.length < 1) {
-                    return interaction.reply('' + username(id) + ' hasn\'t told me who their favorite teams are yet <:beatzDespair:1019839939522859109> Maybe they don\'t like sports')
+                    return interaction.editReply('' + username(id) + ' hasn\'t told me who their favorite teams are yet <:beatzDespair:1019839939522859109> Maybe they don\'t like sports')
                 } else {
                     teamArray()
 
@@ -176,7 +167,7 @@ module.exports = {
                                 { name: '=======================================', value: teamarray.join().replaceAll(',', '') }
                             )
 
-                        return interaction.reply({ embeds: [teamsEmbed] })
+                        return interaction.editReply({ embeds: [teamsEmbed] })
                     }
                 }
             })
