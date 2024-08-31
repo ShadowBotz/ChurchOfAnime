@@ -82,6 +82,8 @@ client.on(Events.InteractionCreate, async interaction => {
 // Creates an event listener for messages
 client.on('messageCreate', message => {
 
+    console.log(message)
+
     splt = message.content.split(" ")
 
     function randomNumber(min, max) {
