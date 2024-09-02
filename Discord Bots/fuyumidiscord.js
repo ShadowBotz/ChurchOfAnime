@@ -82,7 +82,7 @@ client.on(Events.InteractionCreate, async interaction => {
 // Creates an event listener for messages
 client.on('messageCreate', message => {
 
-    console.log(message)
+    //console.log(message)
 
     splt = message.content.split(" ")
 
@@ -147,31 +147,10 @@ client.on('messageCreate', message => {
             }
         }
 
-        if (message.content.includes('!bd')) {
-            if (message.content.substring(0, 3) === '!bd') {
-                if (message.author.username != 'ShadowBeatz') {
-                    fs.readFile('birthdays.json', 'utf8', (err, data) => {
-                        birthday = JSON.parse(data)
-                        AID = message.author.id
-                        //console.log(typeof AID)
-
-                        temp = 0
-                        Object.keys(birthday).forEach(function (key) {
-                            if (birthday[key].ID.includes(AID)) {
-                                temp = temp + 1
-                            }
-                        })
-                        if (temp == 0) {
-                            if (message.content.toLowerCase() === '!bd feb 29') {
-                                message.channel.send('You were not born on February 29th you damn liar.')
-                            }
-                        } else {
-                            message.channel.send('Your birthday is already logged. Ask Shadow to fix it if you messed it up.')
-                            temp = 0
-                        }
-                    })
-                }
-            }
+        if (message.content.includes('Oh wow. A leap year baby!')) {
+                if (message.author.username == 'Kirika') {
+                    message.channel.send('You were not born on February 29th you damn liar.')
+                }        
         }
 
         if (message.content.toLowerCase() === '!remove') {
