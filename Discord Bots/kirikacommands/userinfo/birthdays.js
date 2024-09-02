@@ -124,7 +124,7 @@ module.exports = {
                     if (month === 'undefined') {
                         message.channel.send('I\'m sorry, you\'re going to have to help me out here. I was shot in the head after all <:KirikaSmile:608201680374464532> Try formatting your birthday with the first 3 letters of the month, then two digits for the day. Like "Jun 09"')
                     } else if (["00", "02", "04", "06", "07", "09", "11"].includes(month)) {
-                        if (day < "32") {
+                        if (day < "32" && day > "0") {
                             if (birthday[bday] === undefined) {
                                 birthday[bday] = { "ID": [AID] }
                                 setTimeout(() => {
@@ -142,10 +142,10 @@ module.exports = {
                             }
                             return interaction.reply('Got it <:KirikaSmile:608201680374464532>')
                         } else {
-                            return interaction.reply(`Funny joke but please enter a day that actually exists. You won\'t get the pretty gold name otherwise ${month} ${day} <:KirikaSmile:608201680374464532>`)
+                            return interaction.reply(`Funny joke but please enter a day that actually exists. You won\'t get the pretty gold name otherwise <:KirikaSmile:608201680374464532>`)
                         }
                     } else if (["03", "05", "08", "10"].includes(month)) {
-                        if (day < "31") {
+                        if (day < "31" && day > "0") {
                             if (birthday[bday] === undefined) {
                                 birthday[bday] = { "ID": [AID] }
                                 setTimeout(() => {
@@ -163,10 +163,10 @@ module.exports = {
                             }
                             return interaction.reply('Got it <:KirikaSmile:608201680374464532>')
                         } else {
-                            return interaction.reply(`Funny joke but please enter a day that actually exists. You won\'t get the pretty gold name otherwise <:KirikaSmile:608201680374464532> ${month} ${day}`)
+                            return interaction.reply(`Funny joke but please enter a day that actually exists. You won\'t get the pretty gold name otherwise <:KirikaSmile:608201680374464532>`)
                         }
                     } else if (month === "01") {
-                        if (day < "29") {
+                        if (day < "29" && day > "0") {
                             if (birthday[bday] === undefined) {
                                 birthday[bday] = { "ID": [AID] }
                                 setTimeout(() => {
@@ -201,7 +201,7 @@ module.exports = {
                             }
                             return interaction.reply('Oh wow. A leap year baby! <:KirikaSmile:608201680374464532>')
                         } else {
-                            return interaction.reply(`${month} ${day} Funny joke but please enter a day that actually exists. You won\'t get the pretty gold name otherwise <:KirikaSmile:608201680374464532>`)
+                            return interaction.reply(`Funny joke but please enter a day that actually exists. You won\'t get the pretty gold name otherwise <:KirikaSmile:608201680374464532>`)
                         }
                     }
                 } else {
