@@ -181,21 +181,24 @@ module.exports = {
                                                 return interaction.reply('It seems the ' + squad + ' are on a bye this week <:KirikaSmile:608201680374464532>')
                                             }
                                         } else if ((new Date().getTime()) - (Date.parse(eventDate)) > 0) {
+                                            console.log((new Date().getTime()), (Date.parse(eventDate)), (new Date().getTime()) - (Date.parse(eventDate)))
                                             return interaction.reply('I don\'t know who they\'re playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>')
                                         } else {
                                             prediction.push(hometeam, homename, homescore, awayteam, awayname, awayscore, eventDate)
-                                            return interaction.reply('Hmmmmm..... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>')
+                                            return interaction.reply('Hmmmmm..... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>'),
+                                            scores.kirika.prediction.push(prediction),
+                                            fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
+                                                if (err) throw err;
+    
+                                            })
                                         }
 
-                                        if (prediction.length > 0) {
-                                            scores.kirika.prediction.push(prediction)
-                                        }
 
+                                        // if (prediction.length > 0) {
+                                            
+                                        // }
 
-                                        fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
-                                            if (err) throw err;
-
-                                        })
+                                        
 
                                         resolve(hometeam, homescore, awayteam, awayscore, eventDate)
                                     } else {
