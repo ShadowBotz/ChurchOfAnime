@@ -9,7 +9,7 @@ const fs = require('fs');
 var oauth = require('./oauth.js');
 const { EmbedBuilder } = require('discord.js');
 const path = require('node:path');
-const wait = require('node:timers/promises').setTimeout; 
+const wait = require('node:timers/promises').setTimeout;
 
 function username(Input) {
     if (client.guilds.cache.get('172065393525915648').members.cache.get(Input) != undefined) {
@@ -84,7 +84,10 @@ client.on('messageCreate', message => {
 
     //console.log(message)
 
-    splt = message.content.split(" ")
+    splt = message.content.split(" ");
+    spl = message.content.split("?");
+    var teamGet = spl.join(" ");
+    //console.log(teamGet.slice(4, -5))
 
     function randomNumber(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min)
@@ -148,9 +151,9 @@ client.on('messageCreate', message => {
         }
 
         if (message.content.includes('Oh wow. A leap year baby!')) {
-                if (message.author.username == 'Kirika') {
-                    message.channel.send('You were not born on February 29th you damn liar.')
-                }        
+            if (message.author.username == 'Kirika') {
+                message.channel.send('You were not born on February 29th you damn liar.')
+            }
         }
 
         if (message.content.toLowerCase() === '!remove') {
@@ -273,179 +276,181 @@ client.on('messageCreate', message => {
                     let WordleEntries = Object.entries(wordle)
 
                     console.log(WordleEntries[1][0])
-            
-                    
+
+
                 })
             }
         }
 
-        if (splt[0] === '!prediction') {
-            squad = TitleCase(splt.slice(1).join(' '))
-            SPORT = undefined
-            LEAGUE = undefined
-            ABBR = undefined
+        if (message.channelId === '608509082835484702') {
+            if (splt[0] === '!prediction') {
+                squad = TitleCase(splt.slice(1).join(' '))
+                SPORT = undefined
+                LEAGUE = undefined
+                ABBR = undefined
 
-            if (squad != '') {
-                fs.readFile('sports.json', 'utf8', (err, data) => {
-                    sports = JSON.parse(data)
+                if (squad != '') {
+                    fs.readFile('sports.json', 'utf8', (err, data) => {
+                        sports = JSON.parse(data)
 
-                    let LeaguesEntries = Object.entries(sports)
+                        let LeaguesEntries = Object.entries(sports)
 
-                    for (let i = 0; i < LeaguesEntries.length; i++) {
-                        let TeamsEntries = Object.entries(LeaguesEntries[i][1])
-                        for (let j = 0; j < TeamsEntries.length; j++) {
-                            if (TeamsEntries[j][0].includes(squad)) {
-                                LEAGUE = LeaguesEntries[i][0].toLowerCase()
-                                ABBR = TeamsEntries[j][1].abbr
-                            }
-                        }
-                    }
-                    if (LEAGUE === 'nfl') {
-                        SPORT = 'football'
-                        variant = 6
-                    }
-                    if (LEAGUE === 'nhl') {
-                        SPORT = 'hockey'
-                        variant = 2
-                    }
-                    if (LEAGUE === 'nba') {
-                        SPORT = 'basketball'
-                        variant = 10
-                    }
-                    if (LEAGUE === 'mlb') {
-                        SPORT = 'baseball'
-                        variant = 3
-                    }
-                    if (LEAGUE === 'ncaaf') {
-                        SPORT = 'football'
-                        LEAGUE = 'college-football'
-                        variant = 14
-                    }
-                    if (LEAGUE === 'wnba') {
-                        SPORT = 'basketball'
-                        variant = 10
-                    }
-                })
-
-                setTimeout(() => {
-                    fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
-                        scores = JSON.parse(data)
-
-                        function randomScore(a, b, c) {
-                            let x = Math.floor(((a + b) / 2) + randomNumber(-c, c))
-
-                            if (x < 0) {
-                                return 0
-                            } else {
-                                return x
-                            }
-                        }
-
-                        async function Predict() {
-                            try {
-                                let a = await getPrediction(SPORT, LEAGUE, ABBR)
-
-                                ABBR = a.opponent
-                                team1 = a.fullName
-                                team1Name = a.shortName
-                                team1PF = a.pf
-                                team1PA = a.pa
-                                lastDate = a.eventDate
-
-                                let b = await getPrediction(SPORT, LEAGUE, ABBR)
-                                team2 = b.fullName
-                                team2Name = b.shortName
-                                team2PF = b.pf
-                                team2PA = b.pa
-
-                                team1Score = randomScore(team1PF, team2PA, variant)
-                                team2Score = randomScore(team2PF, team1PA, variant)
-
-                                if (team1Score === team2Score) {
-                                    console.log('Tiebreak' + team1Score, team2Score)
-                                    winningteam = randomNumber(1, 2)
-                                    if (winningteam === 1) {
-                                        team1Score = (team1Score + randomNumber(1, 2))
-                                    } else {
-                                        team2Score = (team2Score + randomNumber(1, 2))
-                                    }
-                                }
-
-                                if ((new Date().getTime()) - (Date.parse(lastDate)) > -604800000) {
-                                    if ((new Date().getTime()) - (Date.parse(lastDate)) < 0) {
-                                        message.channel.send(team1Name + ' ' + team1Score + ' - ' + team2Name + ' ' + team2Score)
-                                        scores.fuyumi.prediction.push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
-                                    }
-                                }
-
-                                fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
-                                    if (err) throw err;
-
-                                })
-
-                            } catch (err) {
-                                console.log(err)
-                            }
-                        }
-
-                        newpredict = 0
-                        for (let i = 0; i < scores.fuyumi.prediction.length; i++) {
-                            if (scores.fuyumi.prediction[i].includes(squad)) {
-                                if ((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6])) < 5400000) {
-                                    if (scores.fuyumi.prediction[i][5] >= scores.fuyumi.prediction[i][2]) {
-                                        message.channel.send(scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5] + ', ' + scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2])
-                                    } else {
-                                        message.channel.send(scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2] + ', ' + scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5])
-                                    }
-                                    newpredict = 1
+                        for (let i = 0; i < LeaguesEntries.length; i++) {
+                            let TeamsEntries = Object.entries(LeaguesEntries[i][1])
+                            for (let j = 0; j < TeamsEntries.length; j++) {
+                                if (TeamsEntries[j][0].includes(squad)) {
+                                    LEAGUE = LeaguesEntries[i][0].toLowerCase()
+                                    ABBR = TeamsEntries[j][1].abbr
                                 }
                             }
                         }
-
-                        if (newpredict === 0) {
-                            console.log(SPORT, LEAGUE, ABBR)
-                            Predict()
+                        if (LEAGUE === 'nfl') {
+                            SPORT = 'football'
+                            variant = 6
                         }
-
-                        async function getPrediction(sport, league, abbr) {
-                            try {
-                                const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
-                                    method: 'get',
-                                    headers: {},
-                                    redirect: 'follow'
-                                });
-
-                                espn = await req.json()
-
-                                if (espn.team.nextEvent[0] != undefined) {
-
-                                    pf = espn.team.record.items[0].stats[3].value
-                                    pa = espn.team.record.items[0].stats[2].value
-                                    eventDate = espn.team.nextEvent[0].date
-
-                                    if (espn.team.nextEvent[0].competitions[0].competitors[0].team.abbreviation === abbr) {
-                                        fullName = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName
-                                        shortName = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName
-                                        opponent = espn.team.nextEvent[0].competitions[0].competitors[1].team.abbreviation
-                                    } else {
-                                        fullName = espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName
-                                        shortName = espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName
-                                        opponent = espn.team.nextEvent[0].competitions[0].competitors[0].team.abbreviation
-                                    }
-
-                                    return { fullName, shortName, opponent, pf, pa, eventDate }
-                                } else {
-                                    return Promise.reject('Fuyumi Promise Error')
-                                }
-                            } catch (err) {
-                                console.log('Fuyumi Error')
-                                console.log(err)
-                            }
-
+                        if (LEAGUE === 'nhl') {
+                            SPORT = 'hockey'
+                            variant = 2
                         }
-
+                        if (LEAGUE === 'nba') {
+                            SPORT = 'basketball'
+                            variant = 10
+                        }
+                        if (LEAGUE === 'mlb') {
+                            SPORT = 'baseball'
+                            variant = 3
+                        }
+                        if (LEAGUE === 'ncaaf') {
+                            SPORT = 'football'
+                            LEAGUE = 'college-football'
+                            variant = 14
+                        }
+                        if (LEAGUE === 'wnba') {
+                            SPORT = 'basketball'
+                            variant = 10
+                        }
                     })
-                }), 1000
+
+                    setTimeout(() => {
+                        fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
+                            scores = JSON.parse(data)
+
+                            function randomScore(a, b, c) {
+                                let x = Math.floor(((a + b) / 2) + randomNumber(-c, c))
+
+                                if (x < 0) {
+                                    return 0
+                                } else {
+                                    return x
+                                }
+                            }
+
+                            async function Predict() {
+                                try {
+                                    let a = await getPrediction(SPORT, LEAGUE, ABBR)
+
+                                    ABBR = a.opponent
+                                    team1 = a.fullName
+                                    team1Name = a.shortName
+                                    team1PF = a.pf
+                                    team1PA = a.pa
+                                    lastDate = a.eventDate
+
+                                    let b = await getPrediction(SPORT, LEAGUE, ABBR)
+                                    team2 = b.fullName
+                                    team2Name = b.shortName
+                                    team2PF = b.pf
+                                    team2PA = b.pa
+
+                                    team1Score = randomScore(team1PF, team2PA, variant)
+                                    team2Score = randomScore(team2PF, team1PA, variant)
+
+                                    if (team1Score === team2Score) {
+                                        console.log('Tiebreak' + team1Score, team2Score)
+                                        winningteam = randomNumber(1, 2)
+                                        if (winningteam === 1) {
+                                            team1Score = (team1Score + randomNumber(1, 2))
+                                        } else {
+                                            team2Score = (team2Score + randomNumber(1, 2))
+                                        }
+                                    }
+
+                                    if ((new Date().getTime()) - (Date.parse(lastDate)) > -604800000) {
+                                        if ((new Date().getTime()) - (Date.parse(lastDate)) < 0) {
+                                            client.channels.cache.get('299346622985273344').send(team1Name + ' ' + team1Score + ' - ' + team2Name + ' ' + team2Score)
+                                            scores.fuyumi.prediction.push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
+                                        }
+                                    }
+
+                                    fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
+                                        if (err) throw err;
+
+                                    })
+
+                                } catch (err) {
+                                    console.log(err)
+                                }
+                            }
+
+                            newpredict = 0
+                            for (let i = 0; i < scores.fuyumi.prediction.length; i++) {
+                                if (scores.fuyumi.prediction[i].includes(squad)) {
+                                    if ((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6])) < 5400000) {
+                                        if (scores.fuyumi.prediction[i][5] >= scores.fuyumi.prediction[i][2]) {
+                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5] + ', ' + scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2])
+                                        } else {
+                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2] + ', ' + scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5])
+                                        }
+                                        newpredict = 1
+                                    }
+                                }
+                            }
+
+                            if (newpredict === 0) {
+                                console.log(SPORT, LEAGUE, ABBR)
+                                Predict()
+                            }
+
+                            async function getPrediction(sport, league, abbr) {
+                                try {
+                                    const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
+                                        method: 'get',
+                                        headers: {},
+                                        redirect: 'follow'
+                                    });
+
+                                    espn = await req.json()
+
+                                    if (espn.team.nextEvent[0] != undefined) {
+
+                                        pf = espn.team.record.items[0].stats[3].value
+                                        pa = espn.team.record.items[0].stats[2].value
+                                        eventDate = espn.team.nextEvent[0].date
+
+                                        if (espn.team.nextEvent[0].competitions[0].competitors[0].team.abbreviation === abbr) {
+                                            fullName = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName
+                                            shortName = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName
+                                            opponent = espn.team.nextEvent[0].competitions[0].competitors[1].team.abbreviation
+                                        } else {
+                                            fullName = espn.team.nextEvent[0].competitions[0].competitors[1].team.displayName
+                                            shortName = espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName
+                                            opponent = espn.team.nextEvent[0].competitions[0].competitors[0].team.abbreviation
+                                        }
+
+                                        return { fullName, shortName, opponent, pf, pa, eventDate }
+                                    } else {
+                                        return Promise.reject('Fuyumi Promise Error')
+                                    }
+                                } catch (err) {
+                                    console.log('Fuyumi Error')
+                                    console.log(err)
+                                }
+
+                            }
+
+                        })
+                    }), 1000
+                }
             }
         }
 
@@ -509,20 +514,20 @@ schedule.scheduleJob('0 0 0 1 * *', function () {
         leaderboard = []
         let WordleEntries = Object.entries(wordle)
 
-        const month = ["December","January","February","March","April","May","June","July","August","September","October","November"]
+        const month = ["December", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November"]
         const date = new Date()
         let name = month[date.getMonth()]
         let year = date.getFullYear();
         let mthyr = `${name} ${year}`
-  
-            for (let i = 0; i < WordleEntries.length; i++) {
-                if (WordleEntries[i][1].GAMES > 9) {
-                    leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, WordleEntries[i][0], WordleEntries[i][1].GAMES + ' games)'])
-                }              
+
+        for (let i = 0; i < WordleEntries.length; i++) {
+            if (WordleEntries[i][1].GAMES > 9) {
+                leaderboard.push([Math.round((WordleEntries[i][1].SCORE / WordleEntries[i][1].GAMES + Number.EPSILON) * 1000) / 1000, WordleEntries[i][0], WordleEntries[i][1].GAMES + ' games)'])
             }
+        }
 
         leaderboard = leaderboard.sort((firstItem, secondItem) => firstItem[0] - secondItem[0])
-    
+
         fs.readFile('leaderboardhistory.json', 'utf8', (err, data2) => {
             history = JSON.parse(data2)
 
@@ -535,20 +540,20 @@ schedule.scheduleJob('0 0 0 1 * *', function () {
                 console.log(`${time} Stored this month's wordle leaderboard.`)
             })
         })
-       
-            for (let i = 0; i < WordleEntries.length; i++) {
-                WordleEntries[i][1].SCORE = 0
-                WordleEntries[i][1].GUESSES = 0 
-                WordleEntries[i][1].GAMES = 0 
-                WordleEntries[i][1].FAILURES = 0 
-            }
-        
-            fs.writeFile('wordlescores.json', JSON.stringify(wordle), (err) => {
-                var d = new Date();
-                var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
-                if (err) throw err;
-                console.log(`${time} Wordle scores reset.`)
-            })
+
+        for (let i = 0; i < WordleEntries.length; i++) {
+            WordleEntries[i][1].SCORE = 0
+            WordleEntries[i][1].GUESSES = 0
+            WordleEntries[i][1].GAMES = 0
+            WordleEntries[i][1].FAILURES = 0
+        }
+
+        fs.writeFile('wordlescores.json', JSON.stringify(wordle), (err) => {
+            var d = new Date();
+            var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
+            if (err) throw err;
+            console.log(`${time} Wordle scores reset.`)
+        })
     })
 });
 
@@ -566,7 +571,7 @@ schedule.scheduleJob('5 0 2 * * *', function () {
                     x++
                 }
             }
-            
+
             fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
                 var d = new Date();
                 var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
