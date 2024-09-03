@@ -23,6 +23,7 @@ module.exports = {
 
     async execute(interaction) {
 
+        const channel = interaction.guild.channels.cache.get('608509082835484702')//.send({ content: 'your message' });
         const guild = interaction.member.guild;
         const ID = interaction.user.id
 
@@ -56,11 +57,15 @@ module.exports = {
             return Input.join(' ');
         }
         
+        
         teamcity = interaction.options.getString('teamcity')
         teamname = interaction.options.getString('teamname')
         teamInput = teamcity+' '+teamname
         squad = TitleCase(teamInput)
         console.log(squad)
+
+        channel.send(`!prediction ${squad}`)
+        
         SPORT = undefined
         LEAGUE = undefined
         ABBR = undefined
@@ -185,7 +190,7 @@ module.exports = {
                                             return interaction.reply('I don\'t know who they\'re playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>')
                                         } else {
                                             prediction.push(hometeam, homename, homescore, awayteam, awayname, awayscore, eventDate)
-                                            return interaction.reply('Hmmmmm..... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>'),
+                                            return interaction.reply('The ' + squad + ' game? Hmmm.... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>'),
                                             scores.kirika.prediction.push(prediction),
                                             fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
                                                 if (err) throw err;
