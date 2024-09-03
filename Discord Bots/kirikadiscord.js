@@ -203,7 +203,8 @@ client.on("messageCreate", message => {
                 message.channel.send('changed the command get fucked idiot')
                 break;
             case "!prediction":
-                message.channel.send('I use a fancy slash command for !prediction now <:KirikaSmile:608201680374464532> Try /prediction')
+                if (message.author.id != '607807501722845202'){ //kirika's ID
+                message.channel.send('I use a fancy slash command for !prediction now <:KirikaSmile:608201680374464532> Try /prediction')}
                 break;
             case "!noe":
 
