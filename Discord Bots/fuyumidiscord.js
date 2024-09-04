@@ -284,6 +284,7 @@ client.on('messageCreate', message => {
 
         if (message.channelId === '608509082835484702') {
             if (splt[0] === '!prediction') {
+                message.channel.send(`They're all weebs. Do they even like sports?`)
                 squad = TitleCase(splt.slice(1).join(' '))
                 SPORT = undefined
                 LEAGUE = undefined
@@ -378,7 +379,7 @@ client.on('messageCreate', message => {
                                     if ((new Date().getTime()) - (Date.parse(lastDate)) > -604800000) {
                                         if ((new Date().getTime()) - (Date.parse(lastDate)) < 0) {
                                             client.channels.cache.get('299346622985273344').send(team1Name + ' ' + team1Score + ' - ' + team2Name + ' ' + team2Score)
-                                            scores.fuyumi.prediction.push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
+                                            scores.fuyumi.prediction[LEAGUE].push([team1, team1Name, team1Score, team2, team2Name, team2Score, lastDate])
                                         }
                                     }
 
@@ -393,13 +394,18 @@ client.on('messageCreate', message => {
                             }
 
                             newpredict = 0
-                            for (let i = 0; i < scores.fuyumi.prediction.length; i++) {
-                                if (scores.fuyumi.prediction[i].includes(squad)) {
-                                    if ((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6])) < 5400000) {
-                                        if (scores.fuyumi.prediction[i][5] >= scores.fuyumi.prediction[i][2]) {
-                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5] + ', ' + scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2])
+                            if (scores.fuyumi.prediction[LEAGUE] === undefined) {
+                                scores.fuyumi.prediction[LEAGUE] = []
+                                console.log(SPORT, LEAGUE, ABBR, '2')
+                                getPrediction(SPORT, LEAGUE, ABBR)
+                            } else {
+                            for (let i = 0; i < scores.fuyumi.prediction[LEAGUE].length; i++) {
+                                if (scores.fuyumi.prediction[LEAGUE][i].includes(squad)) {
+                                    if ((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[LEAGUE][i][6])) < 5400000) {
+                                        if (scores.fuyumi.prediction[LEAGUE][i][5] >= scores.fuyumi.prediction[LEAGUE][i][2]) {
+                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[LEAGUE][i][4] + ' ' + scores.fuyumi.prediction[LEAGUE][i][5] + ', ' + scores.fuyumi.prediction[LEAGUE][i][1] + ' ' + scores.fuyumi.prediction[LEAGUE][i][2])
                                         } else {
-                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[i][1] + ' ' + scores.fuyumi.prediction[i][2] + ', ' + scores.fuyumi.prediction[i][4] + ' ' + scores.fuyumi.prediction[i][5])
+                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[LEAGUE][i][1] + ' ' + scores.fuyumi.prediction[LEAGUE][i][2] + ', ' + scores.fuyumi.prediction[LEAGUE][i][4] + ' ' + scores.fuyumi.prediction[LEAGUE][i][5])
                                         }
                                         newpredict = 1
                                     }
@@ -407,9 +413,9 @@ client.on('messageCreate', message => {
                             }
 
                             if (newpredict === 0) {
-                                console.log(SPORT, LEAGUE, ABBR)
+                                console.log(SPORT, LEAGUE, ABBR, '3')
                                 Predict()
-                            }
+                            }}
 
                             async function getPrediction(sport, league, abbr) {
                                 try {
@@ -564,10 +570,10 @@ schedule.scheduleJob('5 0 2 * * *', function () {
         let total = 0
 
         if (scores.fuyumi != undefined) {
-            for (i = scores.fuyumi.prediction.length - 1; i >= 0; i--) {
+            for (i = scores.fuyumi.prediction[LEAGUE].length - 1; i >= 0; i--) {
                 total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[i][6]))) > 0) {
-                    scores.fuyumi.prediction.splice(i, 1)
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[LEAGUE][i][6]))) > 0) {
+                    scores.fuyumi.prediction[LEAGUE].splice(i, 1)
                     x++
                 }
             }
