@@ -14,12 +14,12 @@ module.exports = {
             option.setName('teamcity')
                 .setDescription('The city of the requested team')
                 .setRequired(true)
-                )
+        )
         .addStringOption(option =>
             option.setName('teamname')
                 .setDescription('The name of the requested team')
                 .setRequired(true)
-                ),
+        ),
 
     async execute(interaction) {
 
@@ -45,7 +45,7 @@ module.exports = {
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
-    
+
             for (var i = 0; i < Input.length; i++) {
                 if (Input[i].length === 2) {
                     Input[i] = Input[i].toUpperCase();
@@ -53,19 +53,20 @@ module.exports = {
                     Input[i] = Input[i].charAt(0).toUpperCase() + Input[i].slice(1);
                 }
             }
-    
+
             return Input.join(' ');
         }
-        
-        
+
+
         teamcity = interaction.options.getString('teamcity')
         teamname = interaction.options.getString('teamname')
-        teamInput = teamcity+' '+teamname
+        teamInput = teamcity + ' ' + teamname
         squad = TitleCase(teamInput)
         console.log(squad)
 
+        channel.send(`<@607824305119821855> Oh Fuyumiiiii :) prediction time`)
         channel.send(`!prediction ${squad}`)
-        
+
         SPORT = undefined
         LEAGUE = undefined
         ABBR = undefined
@@ -134,19 +135,25 @@ module.exports = {
                             getPrediction(SPORT, LEAGUE, ABBR)
                         } else {
                             newpredict = 0
-                            for (let i = 0; i < scores.kirika.prediction.length; i++) {
-                                if (scores.kirika.prediction[i].includes(squad)) {
-                                    if ((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6])) < 5400000) {
-                                        return interaction.reply(scores.kirika.prediction[i][4] + ' ' + scores.kirika.prediction[i][5] + ', ' + scores.kirika.prediction[i][1] + ' ' + scores.kirika.prediction[i][2] + ' <:beatzWICKED:1165575471153549342>'),
-                                        newpredict = 1
-                                    }
-                                }
-                            }
-
-                            if (newpredict === 0) {
+                            if (scores.kirika.prediction[LEAGUE] === undefined) {
+                                scores.kirika.prediction[LEAGUE] = []
                                 console.log(SPORT, LEAGUE, ABBR, '2')
                                 getPrediction(SPORT, LEAGUE, ABBR)
-                            }
+                            } else {
+                                for (let i = 0; i < scores.kirika.prediction[LEAGUE].length; i++) {
+                                    if (scores.kirika.prediction[LEAGUE][i].includes(squad)) {
+                                        if ((new Date().getTime()) - (Date.parse(scores.kirika.prediction[LEAGUE][i][6])) < 5400000) {
+                                            return interaction.reply(scores.kirika.prediction[LEAGUE][i][4] + ' ' + scores.kirika.prediction[LEAGUE][i][5] + ', ' + scores.kirika.prediction[LEAGUE][i][1] + ' ' + scores.kirika.prediction[LEAGUE][i][2] + ' <:beatzWICKED:1165575471153549342>'),
+                                                newpredict = 1
+                                        }
+                                    }
+                                }
+
+                                if (newpredict === 0) {
+                                    console.log(SPORT, LEAGUE, ABBR, '3')
+                                    getPrediction(SPORT, LEAGUE, ABBR)
+                                }
+                            }                           
                         }
 
                         function getPrediction(sport, league, abbr) {
@@ -184,26 +191,21 @@ module.exports = {
                                         if ((new Date().getTime()) - (Date.parse(eventDate)) < -604800000) {
                                             if (league === 'nfl') {
                                                 return interaction.reply('It seems the ' + squad + ' are on a bye this week <:KirikaSmile:608201680374464532>')
+                                            } else if (league != 'nfl') {
+                                                return interaction.reply(`I don\'t know who the ${TitleCase(teamname)} are playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>`)
                                             }
                                         } else if ((new Date().getTime()) - (Date.parse(eventDate)) > 0) {
                                             console.log((new Date().getTime()), (Date.parse(eventDate)), (new Date().getTime()) - (Date.parse(eventDate)))
-                                            return interaction.reply('I don\'t know who they\'re playing next. Try again when the season gets closer <:KirikaSmile:608201680374464532>')
+                                            return interaction.reply(`I don\'t know who the ${TitleCase(teamname)} are playing next. Try again when their game gets closer <:KirikaSmile:608201680374464532>`)
                                         } else {
                                             prediction.push(hometeam, homename, homescore, awayteam, awayname, awayscore, eventDate)
                                             return interaction.reply('The ' + squad + ' game? Hmmm.... I\'m thinkin ' + awayname + ': ' + awayscore + ' - ' + homename + ': ' + homescore + ' <:KirikaSmile:608201680374464532>'),
-                                            scores.kirika.prediction.push(prediction),
-                                            fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
-                                                if (err) throw err;
-    
-                                            })
+                                                scores.kirika.prediction[LEAGUE].push(prediction),
+                                                fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
+                                                    if (err) throw err;
+
+                                                })
                                         }
-
-
-                                        // if (prediction.length > 0) {
-                                            
-                                        // }
-
-                                        
 
                                         resolve(hometeam, homescore, awayteam, awayscore, eventDate)
                                     } else {
@@ -211,7 +213,7 @@ module.exports = {
                                     }
                                 } catch (err) {
                                     return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
-                                    console.log(err)
+                                        console.log(err)
                                 }
                             })
                         }
@@ -220,7 +222,6 @@ module.exports = {
                 }
             }, 1000)
         }
-    
+
     }
-    }
-        
+}
