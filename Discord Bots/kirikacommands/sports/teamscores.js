@@ -141,41 +141,8 @@ module.exports = {
         teamname = interaction.options.getString('teamname')
         teamInput = teamcity+' '+teamname
         squad = TitleCase(teamInput)
-
-        fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
-            kpred = JSON.parse(data)           
-
-            for (let i = 0; i < kpred.kirika.prediction.length; i++) {
-                if (kpred.kirika.prediction[i].includes(squad)) {
-    
-                        if (kpred.kirika.prediction[i][5] >= kpred.kirika.prediction[i][2]) {
-                            kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[i][4] + ' ', +kpred.kirika.prediction[i][5] + ' - ', kpred.kirika.prediction[i][1] + ' ', kpred.kirika.prediction[i][2] + '')
-                        } else {
-                            kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[i][1] + ' ', kpred.kirika.prediction[i][2] + ' - ', kpred.kirika.prediction[i][4] + ' ', kpred.kirika.prediction[i][5] + '')
-                        }
-                        break;
-                    
-                }
-            }
-        })
-
-        fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
-            fpred = JSON.parse(data)
-
-            for (let i = 0; i < fpred.fuyumi.prediction.length; i++) {
-                if (fpred.fuyumi.prediction[i].includes(squad)) {
-                    
-                        if (fpred.fuyumi.prediction[i][5] >= fpred.fuyumi.prediction[i][2]) {
-                            fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[i][4] + ' ', +fpred.fuyumi.prediction[i][5] + ' - ', fpred.fuyumi.prediction[i][1] + ' ', fpred.fuyumi.prediction[i][2] + '')
-                        } else {
-                            fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[i][1] + ' ', fpred.fuyumi.prediction[i][2] + ' - ', fpred.fuyumi.prediction[i][4] + ' ', fpred.fuyumi.prediction[i][5] + '')
-                        }
-                        break;
-                    
-                }
-            }
-        })
-
+        
+        
         fs.readFile('sports.json', 'utf8', (err, data) => {
             sports = JSON.parse(data)
             SPORT = undefined
@@ -184,6 +151,7 @@ module.exports = {
             let games = []
             let logo
             let color = null
+            
 
             let LeaguesEntries = Object.entries(sports)
 
@@ -218,6 +186,42 @@ module.exports = {
             if (LEAGUE === 'wnba') {
                 SPORT = 'basketball'
             }
+        
+
+        fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
+            kpred = JSON.parse(data)           
+            for (let i = 0; i < kpred.kirika.prediction[LEAGUE].length; i++) {
+                if (kpred.kirika.prediction[LEAGUE][i].includes(squad)) {
+    
+                        if (kpred.kirika.prediction[LEAGUE][i][5] >= kpred.kirika.prediction[LEAGUE][i][2]) {
+                            kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][4] + ' ', +kpred.kirika.prediction[LEAGUE][i][5] + ' - ', kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + '')
+                        } else {
+                            kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + ' - ', kpred.kirika.prediction[LEAGUE][i][4] + ' ', kpred.kirika.prediction[LEAGUE][i][5] + '')
+                        }
+                        break;
+                    
+                }
+            }
+        })
+
+        fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
+            fpred = JSON.parse(data)
+
+            for (let i = 0; i < fpred.fuyumi.prediction[LEAGUE].length; i++) {
+                if (fpred.fuyumi.prediction[LEAGUE][i].includes(squad)) {
+                    
+                        if (fpred.fuyumi.prediction[LEAGUE][i][5] >= fpred.fuyumi.prediction[LEAGUE][i][2]) {
+                            fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[LEAGUE][i][4] + ' ', +fpred.fuyumi.prediction[LEAGUE][i][5] + ' - ', fpred.fuyumi.prediction[LEAGUE][i][1] + ' ', fpred.fuyumi.prediction[LEAGUE][i][2] + '')
+                        } else {
+                            fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[LEAGUE][i][1] + ' ', fpred.fuyumi.prediction[LEAGUE][i][2] + ' - ', fpred.fuyumi.prediction[LEAGUE][i][4] + ' ', fpred.fuyumi.prediction[LEAGUE][i][5] + '')
+                        }
+                        break;
+                    
+                }
+            }
+        })
+
+        
 
 
             async function getScores(sport, league, team) {
