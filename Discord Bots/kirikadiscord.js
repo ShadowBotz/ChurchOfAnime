@@ -203,8 +203,39 @@ client.on("messageCreate", message => {
                 message.channel.send('changed the command get fucked idiot')
                 break;
             case "!prediction":
-                if (message.author.id != '607807501722845202'){ //kirika's ID
-                message.channel.send('I use a fancy slash command for !prediction now <:KirikaSmile:608201680374464532> Try /prediction')}
+                if (message.author.id != '607807501722845202') { //kirika's ID
+                    message.channel.send('I use a fancy slash command for !prediction now <:KirikaSmile:608201680374464532> Try /prediction')
+                }
+                break;
+            case "!rope":
+                fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
+                    scores = JSON.parse(data)
+                    let x = 0
+                    let total = 0
+
+                    for (i = scores.kirika.prediction.nfl.length - 1; i >= 0; i--) {
+                        total++
+                        if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nfl[i][6]))) > 0) {
+                            scores.kirika.prediction.nfl.splice(i, 1)
+                            x++
+                        }
+                    }
+        
+                    for (i = scores.kirika.prediction.mlb.length - 1; i >= 0; i--) {
+                        total++
+                        if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
+                            scores.kirika.prediction.mlb.splice(i, 1)
+                            x++
+                        }
+                    }
+        
+                    fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
+                        var d = new Date();
+                        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
+                        if (err) throw err;
+                        console.log(`${time} Removed ${x} of ${total} predictions :O`)
+                    })
+                })
                 break;
             case "!noe":
 
@@ -477,10 +508,34 @@ schedule.scheduleJob('0 0 2 * * *', function () {
         let total = 0
 
         if (scores.kirika != undefined) {
-            for (i = scores.kirika.prediction.length - 1; i >= 0; i--) {
+            for (i = scores.kirika.prediction.nfl.length - 1; i >= 0; i--) {
                 total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction[i][6]))) > 0) {
-                    scores.kirika.prediction.splice(i, 1)
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nfl[i][6]))) > 0) {
+                    scores.kirika.prediction.nfl.splice(i, 1)
+                    x++
+                }
+            }
+
+            for (i = scores.kirika.prediction.mlb.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
+                    scores.kirika.prediction.mlb.splice(i, 1)
+                    x++
+                }
+            }
+
+            for (i = scores.kirika.prediction.nhl.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nfl[i][6]))) > 0) {
+                    scores.kirika.prediction.nfl.splice(i, 1)
+                    x++
+                }
+            }
+
+            for (i = scores.kirika.prediction.nba.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
+                    scores.kirika.prediction.mlb.splice(i, 1)
                     x++
                 }
             }

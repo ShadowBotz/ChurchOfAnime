@@ -570,10 +570,34 @@ schedule.scheduleJob('5 0 2 * * *', function () {
         let total = 0
 
         if (scores.fuyumi != undefined) {
-            for (i = scores.fuyumi.prediction[LEAGUE].length - 1; i >= 0; i--) {
+            for (i = scores.fuyumi.prediction.nfl.length - 1; i >= 0; i--) {
                 total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[LEAGUE][i][6]))) > 0) {
-                    scores.fuyumi.prediction[LEAGUE].splice(i, 1)
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nfl[i][6]))) > 0) {
+                    scores.fuyumi.prediction.nfl.splice(i, 1)
+                    x++
+                }
+            }
+
+            for (i = scores.fuyumi.prediction.mlb.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.mlb[i][6]))) > 0) {
+                    scores.fuyumi.prediction.mlb.splice(i, 1)
+                    x++
+                }
+            }
+
+            for (i = scores.fuyumi.prediction.nhl.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nfl[i][6]))) > 0) {
+                    scores.fuyumi.prediction.nfl.splice(i, 1)
+                    x++
+                }
+            }
+
+            for (i = scores.fuyumi.prediction.nba.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.mlb[i][6]))) > 0) {
+                    scores.fuyumi.prediction.mlb.splice(i, 1)
                     x++
                 }
             }
