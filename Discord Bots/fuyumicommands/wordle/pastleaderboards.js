@@ -34,6 +34,7 @@ module.exports = {
                 )),
     async execute(interaction) {
         const guild = interaction.member.guild;
+        const id = interaction.user.id
         const year = interaction.options.getInteger('year');
         const month = interaction.options.getString('month');
 
@@ -48,6 +49,11 @@ module.exports = {
                 return ("a mystery person")
             }
         }
+
+        var d = new Date();
+        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+
+        console.log(`${time} ${username(id)} used /pastleaderboards ${year} ${month}`)
 
         fs.readFile('leaderboardhistory.json', 'utf8', (err, data) => {
             wordle = JSON.parse(data)

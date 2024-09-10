@@ -50,7 +50,8 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(AID)} used /birthday`)
+
+        console.log(`${time} ${username(AID)} used /birthday ${month} ${day}`)
 
 
         // if (message.author.username === 'ShadowBeatz') {

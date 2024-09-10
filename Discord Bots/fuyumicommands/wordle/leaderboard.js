@@ -16,6 +16,7 @@ module.exports = {
                 )),
     async execute(interaction) {
         const guild = interaction.member.guild;
+        const id = interaction.user.id
         const stat = interaction.options.getString('stat');
 
         function username(Input) {
@@ -29,6 +30,11 @@ module.exports = {
                 return ("a mystery person")
             }
         }
+
+        var d = new Date();
+        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+
+        console.log(`${time} ${username(id)} used /leaderboard ${stat}`)
 
         fs.readFile('wordlescores.json', 'utf8', (err, data) => {
             wordle = JSON.parse(data)

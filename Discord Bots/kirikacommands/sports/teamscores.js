@@ -35,7 +35,14 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(ID)} used /teamscores`)
+        let kirikapred = []
+        let fuyumipred = []
+        teamcity = interaction.options.getString('teamcity')
+        teamname = interaction.options.getString('teamname')
+        teamInput = teamcity+' '+teamname
+        squad = TitleCase(teamInput)
+
+        console.log(`${time} ${username(ID)} used /teamscores ${squad}`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
@@ -134,14 +141,6 @@ module.exports = {
                 console.log('getTeamInfo\n' + err)
             }
         }
-
-        let kirikapred = []
-        let fuyumipred = []
-        teamcity = interaction.options.getString('teamcity')
-        teamname = interaction.options.getString('teamname')
-        teamInput = teamcity+' '+teamname
-        squad = TitleCase(teamInput)
-        
         
         fs.readFile('sports.json', 'utf8', (err, data) => {
             sports = JSON.parse(data)
@@ -271,7 +270,7 @@ module.exports = {
                                     .setTitle(squad + ' Game')
                                     .setDescription(record + ' (' + standings + ')')
                                     .addFields(
-                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks').replaceAll('Panthers', 'Most Trash Garbage Team In The Whole League') + nextgame + AngelPredictions + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
+                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks').replaceAll('White Sox', 'Most Trash Garbage Team In The Whole History') + nextgame + AngelPredictions + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
                                     )
 
                                 if (logo != undefined){
@@ -294,7 +293,7 @@ module.exports = {
                                     .setTitle(squad + ' Game')
                                     .setDescription(record + ' (' + standings + ')')
                                     .addFields(
-                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks').replaceAll('Panthers', 'Most Trash Garbage Team In The Whole League') + '\n\n' + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
+                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks').replaceAll('White Sox', 'Most Trash Garbage Team In The Whole History') + '\n\n' + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
                                     )
                                 
                                     if (logo != undefined){

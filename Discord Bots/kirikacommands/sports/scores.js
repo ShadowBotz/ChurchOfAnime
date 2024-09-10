@@ -35,10 +35,12 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(ID)} used /scores`)
-    
         LEAGUE = interaction.options.getString('league');
         SPORT = undefined
+
+        console.log(`${time} ${username(ID)} used /scores ${LEAGUE}`)
+    
+        
 
             if (LEAGUE === 'nfl') {
                 SPORT = 'football'

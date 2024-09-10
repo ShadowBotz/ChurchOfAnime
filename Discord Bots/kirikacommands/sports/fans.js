@@ -34,7 +34,12 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(ID)} used /fans`)
+        teamcity = interaction.options.getString('teamcity')
+        teamname = interaction.options.getString('teamname')
+        teamInput = teamcity + ' ' + teamname
+        team = TitleCase(teamInput)
+
+        console.log(`${time} ${username(ID)} used /fans ${team}`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
@@ -120,12 +125,6 @@ module.exports = {
                     console.log('getTeamInfo\n' + err)
             }
         }
-
-
-        teamcity = interaction.options.getString('teamcity')
-        teamname = interaction.options.getString('teamname')
-        teamInput = teamcity + ' ' + teamname
-        team = TitleCase(teamInput)
 
         fs.readFile('sports.json', 'utf8', (err, data) => {
             sports = JSON.parse(data)

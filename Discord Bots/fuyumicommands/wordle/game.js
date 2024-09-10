@@ -11,6 +11,7 @@ module.exports = {
                 .setRequired(true)),
 	async execute(interaction) {
         const guild = interaction.member.guild;
+        const id = interaction.user.id
 
         function username(Input) {
             if (guild.members.cache.get(Input) != undefined) {
@@ -24,11 +25,16 @@ module.exports = {
             }
         }
 
+        var d = new Date();
+        var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+        let gamenumber = interaction.options.getInteger('gamenumber')
+
+        console.log(`${time} ${username(id)} used /game ${gamenumber}`)
+
         fs.readFile('pastgames.json', 'utf8', (err, data) => {
             wordle = JSON.parse(data)
             games = []
-            gamenumber = interaction.options.getInteger('gamenumber')
-
+            
             if (wordle[gamenumber] != undefined) {
                 games = wordle[gamenumber]
 

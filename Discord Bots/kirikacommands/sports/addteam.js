@@ -46,7 +46,13 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(ID)} used /addteam`)
+        league = interaction.options.getString('league')
+        teamcity = interaction.options.getString('teamcity')
+        teamname = interaction.options.getString('teamname')
+        teamInput = teamcity+' '+teamname
+        team = TitleCase(teamInput)
+
+        console.log(`${time} ${username(ID)} used /addteam ${league} ${team}`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
@@ -65,11 +71,6 @@ module.exports = {
 
         fs.readFile('sports.json', 'utf8', (err, data) => {
             sports = JSON.parse(data)
-            league = interaction.options.getString('league')
-            teamcity = interaction.options.getString('teamcity')
-            teamname = interaction.options.getString('teamname')
-            teamInput = teamcity+' '+teamname
-            team = TitleCase(teamInput)
 
             if (sports[league] === undefined) {
                 return interaction.reply( { content: 'I\'m not familiar with that league <:beatzPosh:824832391792427011> Currently we\'re only keeping track of MLB, NFL, NHL, NBA, and WNBA teams, with college sports hopefully coming soon <:KirikaSmile:608201680374464532> Sorry if you feel left out but ShadowBeatz is just a dumb American and can only do so much :flag_us:', ephemeral: true })

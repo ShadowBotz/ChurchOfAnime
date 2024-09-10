@@ -36,9 +36,9 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(ID)} used /fansplits`)
-
         LEAGUE = interaction.options.getString('league');
+
+        console.log(`${time} ${username(ID)} used /fansplits ${LEAGUE}`)
     
         fs.readFile('sports.json', 'utf8', (err, data) => {
             sports = JSON.parse(data)

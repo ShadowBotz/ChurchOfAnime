@@ -41,7 +41,13 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(ID)} used /prediction`)
+        teamcity = interaction.options.getString('teamcity')
+        teamname = interaction.options.getString('teamname')
+        teamInput = teamcity + ' ' + teamname
+        squad = TitleCase(teamInput)
+        console.log(squad)
+
+        console.log(`${time} ${username(ID)} used /prediction ${squad}`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
@@ -56,13 +62,6 @@ module.exports = {
 
             return Input.join(' ');
         }
-
-
-        teamcity = interaction.options.getString('teamcity')
-        teamname = interaction.options.getString('teamname')
-        teamInput = teamcity + ' ' + teamname
-        squad = TitleCase(teamInput)
-        console.log(squad)
 
         channel.send(`<@607824305119821855> Oh Fuyumiiiii :) prediction time`)
         channel.send(`!prediction ${squad}`)

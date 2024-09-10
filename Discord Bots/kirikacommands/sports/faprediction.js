@@ -41,10 +41,10 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        console.log(`${time} ${username(ID)} used /faprediction`)
-
         let LEAGUE = interaction.options.getString('league');
         let PLAYER = interaction.options.getString('player');
+
+        console.log(`${time} ${username(ID)} used /faprediction ${LEAGUE} ${PLAYER}`)
 
         const randomNumber = (min, max) => {
             return Math.floor(Math.random() * (max - min + 1) + min)
