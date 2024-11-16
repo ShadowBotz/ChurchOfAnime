@@ -123,7 +123,7 @@ client.on('messageCreate', message => {
         }
 
         if (message.content === '!assoff') {
-            client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.remove('859218117833916437')
+            client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.remove('1307307788690788372')
                 .then(message.channel.send('Mmk. Role\'s removed'))
                 .then(console.log('anime squad role removed for ' + message.author.username + ''))
                 .catch(console.error);

@@ -129,7 +129,7 @@ client.on("messageCreate", message => {
 
         if (message.content === '!ass' && message.author != undefined) {
             //console.log(client.guilds.cache.get('172065393525915648'))
-            client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.add('607809003665489930')
+            client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.add('1307307788690788372')
                 .then(message.channel.send('You have been added to the A.S.S. (Anime Session Squad) <:KirikaSmile:608201680374464532>'))
                 .then(console.log('anime squad role added for ' + message.author.username + ''))
                 .catch(console.error);
