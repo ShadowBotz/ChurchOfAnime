@@ -127,6 +127,14 @@ client.on("messageCreate", message => {
                 .catch(console.error);
         }
 
+        if (message.content === '!ass' && message.author != undefined) {
+            //console.log(client.guilds.cache.get('172065393525915648'))
+            client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.add('607809003665489930')
+                .then(message.channel.send('You have been added to the A.S.S. (Anime Session Squad) <:KirikaSmile:608201680374464532>'))
+                .then(console.log('anime squad role added for ' + message.author.username + ''))
+                .catch(console.error);
+        }
+
         if (message.content === '!vtubeon' && message.author != undefined) {
             //console.log(client.guilds.cache.get('172065393525915648'))
             client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.add('859218117833916437')
@@ -508,6 +516,7 @@ schedule.scheduleJob('0 0 2 * * *', function () {
         let total = 0
 
         if (scores.kirika != undefined) {
+            if (scores.kirika.prediction.nfl.length > 0) {
             for (i = scores.kirika.prediction.nfl.length - 1; i >= 0; i--) {
                 total++
                 if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nfl[i][6]))) > 0) {
@@ -515,7 +524,9 @@ schedule.scheduleJob('0 0 2 * * *', function () {
                     x++
                 }
             }
+        }
 
+            if (scores.kirika.prediction.mlb.length > 0) {
             for (i = scores.kirika.prediction.mlb.length - 1; i >= 0; i--) {
                 total++
                 if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
@@ -523,22 +534,46 @@ schedule.scheduleJob('0 0 2 * * *', function () {
                     x++
                 }
             }
-
+        }
+            if (scores.kirika.prediction.nhl.length > 0) {
             for (i = scores.kirika.prediction.nhl.length - 1; i >= 0; i--) {
                 total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nfl[i][6]))) > 0) {
-                    scores.kirika.prediction.nfl.splice(i, 1)
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nhl[i][6]))) > 0) {
+                    scores.kirika.prediction.nhl.splice(i, 1)
                     x++
                 }
             }
+        }
 
+            if (scores.kirika.prediction.nba.length > 0) {
             for (i = scores.kirika.prediction.nba.length - 1; i >= 0; i--) {
                 total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
-                    scores.kirika.prediction.mlb.splice(i, 1)
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nba[i][6]))) > 0) {
+                    scores.kirika.prediction.nba.splice(i, 1)
                     x++
                 }
             }
+        }
+
+            if (scores.kirika.prediction.wnba.length > 0) {
+            for (i = scores.kirika.prediction.wnba.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nba[i][6]))) > 0) {
+                    scores.kirika.prediction.wnba.splice(i, 1)
+                    x++
+                }
+            }
+        }
+
+            if (scores.kirika.prediction.ncaaf.length > 0) {
+            for (i = scores.kirika.prediction.ncaaf.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.ncaaf[i][6]))) > 0) {
+                    scores.kirika.prediction.ncaaf.splice(i, 1)
+                    x++
+                }
+            }
+        }
 
             fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
                 var d = new Date();

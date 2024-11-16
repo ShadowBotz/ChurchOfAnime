@@ -122,6 +122,13 @@ client.on('messageCreate', message => {
                 .catch(console.error);
         }
 
+        if (message.content === '!assoff') {
+            client.guilds.cache.get('172065393525915648').members.cache.get(message.author.id).roles.remove('859218117833916437')
+                .then(message.channel.send('Mmk. Role\'s removed'))
+                .then(console.log('anime squad role removed for ' + message.author.username + ''))
+                .catch(console.error);
+        }
+
         if (message.channel.id === '608509082835484702' && message.author.id === '124044415634243584') {
             yeet = message.content.split(" ")
             poundDel = yeet[1].substring(2, yeet[1].length - 1)
@@ -570,6 +577,7 @@ schedule.scheduleJob('5 0 2 * * *', function () {
         let total = 0
 
         if (scores.fuyumi != undefined) {
+            if (scores.fuyumi.prediction.nfl.length > 0){
             for (i = scores.fuyumi.prediction.nfl.length - 1; i >= 0; i--) {
                 total++
                 if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nfl[i][6]))) > 0) {
@@ -577,7 +585,9 @@ schedule.scheduleJob('5 0 2 * * *', function () {
                     x++
                 }
             }
+        }
 
+            if (scores.fuyumi.prediction.mlb.length > 0){
             for (i = scores.fuyumi.prediction.mlb.length - 1; i >= 0; i--) {
                 total++
                 if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.mlb[i][6]))) > 0) {
@@ -585,22 +595,47 @@ schedule.scheduleJob('5 0 2 * * *', function () {
                     x++
                 }
             }
+        }
 
+            if (scores.fuyumi.prediction.nhl.length > 0){
             for (i = scores.fuyumi.prediction.nhl.length - 1; i >= 0; i--) {
                 total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nfl[i][6]))) > 0) {
-                    scores.fuyumi.prediction.nfl.splice(i, 1)
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nhl[i][6]))) > 0) {
+                    scores.fuyumi.prediction.nhl.splice(i, 1)
                     x++
                 }
             }
+        }
 
+            if (scores.fuyumi.prediction.nba.length > 0){
             for (i = scores.fuyumi.prediction.nba.length - 1; i >= 0; i--) {
                 total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.mlb[i][6]))) > 0) {
-                    scores.fuyumi.prediction.mlb.splice(i, 1)
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nba[i][6]))) > 0) {
+                    scores.fuyumi.prediction.nba.splice(i, 1)
                     x++
                 }
             }
+        }
+
+            if (scores.fuyumi.prediction.wnba.length > 0){
+            for (i = scores.fuyumi.prediction.wnba.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nba[i][6]))) > 0) {
+                    scores.fuyumi.prediction.wnba.splice(i, 1)
+                    x++
+                }
+            }
+        }
+
+            if (scores.fuyumi.prediction.ncaaf.length > 0){
+            for (i = scores.fuyumi.prediction.ncaaf.length - 1; i >= 0; i--) {
+                total++
+                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.ncaaf[i][6]))) > 0) {
+                    scores.fuyumi.prediction.ncaaf.splice(i, 1)
+                    x++
+                }
+            }
+        }
 
             fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
                 var d = new Date();
