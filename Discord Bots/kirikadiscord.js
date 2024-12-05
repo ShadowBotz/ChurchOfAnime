@@ -10,6 +10,8 @@ var oauth = require('./oauth.js');
 const { EmbedBuilder } = require('discord.js');
 const path = require('node:path');
 const wait = require('node:timers/promises').setTimeout;
+var d = new Date();
+var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
 
 let pokerGameInProgress = 0
 let players = []
@@ -341,6 +343,14 @@ client.on("messageCreate", message => {
         //console.log(message)
     }
 });
+
+        // copies the deleted message into a private channel
+
+client.on("messageDelete", message => {
+    console.log(`${time} ${message.author.username} said "${message.content}"`)
+    //client.channels.cache.get('1314217289737965598').send(`${time} ${message.author.username} said "${message.content}"`)
+
+})
 
 // Assigns the streamer role to anyone live on Twitch
 
