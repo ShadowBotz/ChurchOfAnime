@@ -3,6 +3,7 @@ var oauth = require('./oauth.js');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const fs = require('fs')
 const tts = require('say')
+
 //const WebSocket = require('ws');
 
 // {//twitch event sub stuff that, quite frankly, I don't really understand but it needs to be here
@@ -326,7 +327,7 @@ Bot.on('join', () => {
 
                             fs.readFile('C:/Users/shado/Documents/Snip/Snip_Metadata.json', 'utf8', (err, data) => {
                                 nowplaying = JSON.parse(data)
-                                artist = [] 
+                                artist = []
 
                                 let x = 0
                                 do {
@@ -347,9 +348,9 @@ Bot.on('join', () => {
                             })
                         }
                     })
-                    break;
                 }
-            case "!thots":
+                break;
+            case "!wantz":
                 if (online === 1) {
                     if (canSend(5, last_use[20])) {
                         last_use[20] = new Date().getTime()
@@ -438,7 +439,26 @@ Bot.on('join', () => {
             }
         }
 
-
+        if (chatter.message.toLowerCase().includes(' est') || chatter.message.toLowerCase().includes(' cst') || chatter.message.toLowerCase().includes(' mst') || chatter.message.toLowerCase().includes(' pst')) {
+            if (chatter.username != 'shadowbeatz') {
+                    if (chatter.mod == false) {
+                        timeout(chatter.user_id, "1", "incorrect timezone abbreviation")
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                            if (canSend(30, last_use[19])) {
+                                last_use[19] = new Date().getTime()
+                                Bot.say('@' + chatter.display_name + ' It\'s Daylight Savings Time. Please use the correct timezone abbreviation.')
+                            }
+                        
+                    } else {         
+                            if (canSend(30, last_use[19])) {
+                                last_use[19] = new Date().getTime()
+                                Bot.say('@' + chatter.display_name + ' Abuse of power lookin ass beatzSus')
+                            }      
+                        }
+                }  
+        }
 
         if (chatter.username === 'profbasara') {
             if (chatter.message.includes('live or')) {
@@ -505,7 +525,7 @@ async function mayne(name) {
 function speaketh() {
     return new Promise((resolve, reject) => {
         ttssay = ttsqueue.shift()
-        tts.speak(ttssay, 'IVONA 2 Brian OEM', 1.0, (err) => { //'Microsoft Haruka Desktop'
+        tts.speak(ttssay, 'Microsoft Haruka Desktop', 1.0, (err) => { //''IVONA 2 Brian OEM''
             if (err) {
                 reject(err)
             }
@@ -517,11 +537,12 @@ function speaketh() {
 
 Bot.on('message', highlight => {
 
+
     console.log(highlight)
 
     blacklist = highlight.message.toLowerCase()
     if (online === 1) {
-        if (highlight.msg_id == 'highlighted-message' && !blacklist.includes("nigger")) {
+        if (highlight.msg_id == 'highlighted-message' && !blacklist.includes("nigger")) {           
             ttsqueue.push(highlight.message)
             if (currently_speaking == false) {
                 mayne(highlight.display_name)
