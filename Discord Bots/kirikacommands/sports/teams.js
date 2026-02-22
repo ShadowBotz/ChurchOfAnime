@@ -48,21 +48,30 @@ module.exports = {
                 //formats the raw request into JSON
 
                 if (espn.team != undefined) {
-                    var M = league
+                    var M = espn.team.standingSummary
                     let teaminfo = []
+
+                    if (espn.team.standingSummary === undefined){
+                        if (league === 'mlb'){
+                            M = 'Spring Training'
+                        }else{
+                            M = 'Pre-season'
+                        }
+                        
+                    }
 
                     if (espn.team.color === '000000') {
                         if (espn.team.record.items != undefined) {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, M)
                         } else {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, "0-0", espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, "0-0", M)
                         }
 
                     } else {
                         if (espn.team.record.items != undefined) {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, espn.team.record.items[0].summary, espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, espn.team.record.items[0].summary, M)
                         } else {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, "0-0", espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, "0-0", M)
                         }
                     }
 
@@ -74,17 +83,25 @@ module.exports = {
                                 teaminfo.push('<:beatzWICKED:1165575471153549342>')
                             } else {
                                 if (espn.team.record.items != undefined) {
-                                    if ((espn.team.record.items[0].summary.split("-")[0]) < (espn.team.record.items[0].summary.split("-")[1])) {
-                                        console.log(espn.team.displayName,espn.team.record.items[0].summary.split("-")[0],espn.team.record.items[0].summary.split("-")[1])
+                                    if (league === 'nhl'){
+                                        if (((espn.team.record.items[0].summary.split("-")[0]) - (+(espn.team.record.items[0].summary.split("-")[1]) + +(espn.team.record.items[0].stats[0].value))) < 0) {
                                         teaminfo.push('<:beatzDespair:1019839939522859109>')
                                     } else {
                                         teaminfo.push('<:KirikaSmile:608201680374464532>')
                                     }
+                                    }else{
+                                    if (((espn.team.record.items[0].summary.split("-")[0]) - (espn.team.record.items[0].summary.split("-")[1])) < 0) {
+                                        teaminfo.push('<:beatzDespair:1019839939522859109>')
+                                    } else {
+                                        teaminfo.push('<:KirikaSmile:608201680374464532>')
+                                    }
+                                }
                                 } else {
                                     teaminfo.push('<:KirikaSmile:608201680374464532>')
                                 }
                             }
                         } else {
+                            M = 'Preseason'
                             teaminfo.push('<:KirikaSmile:608201680374464532>')
                         }
                     }
