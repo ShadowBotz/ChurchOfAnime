@@ -71,9 +71,18 @@ module.exports = {
                     let teaminfo = []
 
                     if (espn.team.color === '000000') {
-                        teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, espn.team.standingSummary)
+                        if (espn.team.record.items != undefined) {
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, espn.team.standingSummary)
+                        } else {
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, "0-0", espn.team.standingSummary)
+                        }
+
                     } else {
-                        teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, espn.team.record.items[0].summary, espn.team.standingSummary)
+                        if (espn.team.record.items != undefined) {
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, espn.team.record.items[0].summary, espn.team.standingSummary)
+                        } else {
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, "0-0", espn.team.standingSummary)
+                        }
                     }
 
                     if (espn.team.displayName.includes(' Eagles') || espn.team.displayName.includes(' Cowboys') || espn.team.displayName.includes(' Flyers') || espn.team.displayName.includes(' Phillies') || espn.team.displayName.includes(' Braves') || espn.team.displayName.includes(' Nationals') || espn.team.displayName.includes(' Yankees') || espn.team.displayName.includes(' Capitals')) {
@@ -83,24 +92,15 @@ module.exports = {
                             if (espn.team.standingSummary[0] === '1') {
                                 teaminfo.push('<:beatzWICKED:1165575471153549342>')
                             } else {
-                                if (espn.team.record.items[0].stats[4].name === 'clincher') {
-                                    if (espn.team.record.items[0].stats[18].value < 0.5) {
-                                        teaminfo.push('<:beatzDespair:1019839939522859109>')
-                                    } else {
-                                        teaminfo.push('<:KirikaSmile:608201680374464532>')
-                                    }
-                                } else if (espn.team.record.items[0].stats[0].name === 'otLosses') {
-                                    if (espn.team.record.items[0].stats[15].value < 0.5) {
+                                if (espn.team.record.items != undefined) {
+                                    if ((espn.team.record.items[0].summary.split("-")[0]) < (espn.team.record.items[0].summary.split("-")[1])) {
+                                        console.log(espn.team.displayName,espn.team.record.items[0].summary.split("-")[0],espn.team.record.items[0].summary.split("-")[1])
                                         teaminfo.push('<:beatzDespair:1019839939522859109>')
                                     } else {
                                         teaminfo.push('<:KirikaSmile:608201680374464532>')
                                     }
                                 } else {
-                                    if (espn.team.record.items[0].stats[17].value < 0.5) {
-                                        teaminfo.push('<:beatzDespair:1019839939522859109>')
-                                    } else {
-                                        teaminfo.push('<:KirikaSmile:608201680374464532>')
-                                    }
+                                    teaminfo.push('<:KirikaSmile:608201680374464532>')
                                 }
                             }
                         } else {
@@ -121,7 +121,7 @@ module.exports = {
                     return Promise.reject('getTeamInfo() Kirika Promise Error')
                 }
             } catch (err) {
-                return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
+                return interaction.editReply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
                     console.log('getTeamInfo\n' + err)
             }
         }
@@ -183,9 +183,10 @@ module.exports = {
 
                     console.log(a)
 
-                    logo = a[1]
-                    color = a[2]
-                    emote = a[5]
+                    if (a != undefined){
+                        logo = a[1]
+                        color = a[2]
+                        emote = a[5]
 
                     const fansEmbed = new EmbedBuilder()
                         .setColor(color)
@@ -197,6 +198,9 @@ module.exports = {
                         )
 
                     return interaction.reply({ embeds: [fansEmbed] })
+                    } else {
+                        
+                    return interaction.reply('Eh, I don\'t really feel like it')}
                 })
 
 
