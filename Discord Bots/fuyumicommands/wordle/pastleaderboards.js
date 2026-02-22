@@ -12,7 +12,9 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(
                     { name: '2023', value: 2023 },
-                    { name: '2024', value: 2024 }
+                    { name: '2024', value: 2024 },
+                    { name: '2025', value: 2025 },
+                    { name: '2026', value: 2026 }
                 ))
         .addStringOption(option =>
             option.setName('month')
