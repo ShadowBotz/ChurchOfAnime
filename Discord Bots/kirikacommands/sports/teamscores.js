@@ -4,8 +4,8 @@ const fs = require('fs');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('teamscores')
-		.setDescription('Displays the recent scores of a requested team')
+		.setName('teaminfo')
+		.setDescription('Displays information about a requested team')
         .addStringOption(option =>
             option.setName('teamcity')
                 .setDescription('The city of the requested team')
@@ -70,21 +70,30 @@ module.exports = {
                                   //formats the raw request into JSON
     
                 if (espn.team != undefined) {
-                    var M = league 
+                    var M = espn.team.standingSummary
                     let teaminfo = []
+
+                    if (espn.team.standingSummary === undefined){
+                        if (league === 'mlb'){
+                            M = 'Spring Training'
+                        }else{
+                            M = 'Pre-season'
+                        }
+                        
+                    }
     
                     if (espn.team.color === '000000') {
                         if (espn.team.record.items != undefined) {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, M)
                         } else {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, "0-0", espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, "0-0", M)
                         }
 
                     } else {
                         if (espn.team.record.items != undefined) {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, espn.team.record.items[0].summary, espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, espn.team.record.items[0].summary, M)
                         } else {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, "0-0", espn.team.standingSummary)
+                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, "0-0", M)
                         }
                     }
 
@@ -147,6 +156,8 @@ module.exports = {
             SPORT = undefined
             LEAGUE = undefined
             ABBR = undefined
+            var kirikaSeasonPred = "0-0"
+            var fuyumiSeasonPred = "0-0"
             let games = []
             let logo
             let color = null
@@ -160,6 +171,9 @@ module.exports = {
                     if (TeamsEntries[j][0].includes(squad)) {
                         LEAGUE = LeaguesEntries[i][0].toLowerCase()
                         ABBR = TeamsEntries[j][1].abbr
+                        kirikaSeasonPred = TeamsEntries[j][1].kirikaPrediction
+                        fuyumiSeasonPred = TeamsEntries[j][1].fuyumiPrediction
+                        break;
                     }
                 }
             }
@@ -188,24 +202,26 @@ module.exports = {
         
 
         fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
-            kpred = JSON.parse(data)           
-            for (let i = 0; i < kpred.kirika.prediction[LEAGUE].length; i++) {
-                if (kpred.kirika.prediction[LEAGUE][i].includes(squad)) {
-    
-                        if (kpred.kirika.prediction[LEAGUE][i][5] >= kpred.kirika.prediction[LEAGUE][i][2]) {
-                            kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][4] + ' ', +kpred.kirika.prediction[LEAGUE][i][5] + ' - ', kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + '')
-                        } else {
-                            kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + ' - ', kpred.kirika.prediction[LEAGUE][i][4] + ' ', kpred.kirika.prediction[LEAGUE][i][5] + '')
-                        }
-                        break;
-                    
+            kpred = JSON.parse(data)
+            if (LEAGUE != undefined){
+                for (let i = 0; i < kpred.kirika.prediction[LEAGUE].length; i++) {
+                    if (kpred.kirika.prediction[LEAGUE][i].includes(squad)) {
+        
+                            if (kpred.kirika.prediction[LEAGUE][i][5] >= kpred.kirika.prediction[LEAGUE][i][2]) {
+                                kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][4] + ' ', +kpred.kirika.prediction[LEAGUE][i][5] + ' - ', kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + '')
+                            } else {
+                                kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + ' - ', kpred.kirika.prediction[LEAGUE][i][4] + ' ', kpred.kirika.prediction[LEAGUE][i][5] + '')
+                            }
+                            break;
+                        
+                    }
                 }
-            }
+            }                      
         })
 
         fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
             fpred = JSON.parse(data)
-
+            if (LEAGUE != undefined){
             for (let i = 0; i < fpred.fuyumi.prediction[LEAGUE].length; i++) {
                 if (fpred.fuyumi.prediction[LEAGUE][i].includes(squad)) {
                     
@@ -218,6 +234,7 @@ module.exports = {
                     
                 }
             }
+        }
         })
 
         
@@ -267,10 +284,10 @@ module.exports = {
 
                                 const scoresEmbed = new EmbedBuilder()
                                     .setColor(color)
-                                    .setTitle(squad + ' Game')
-                                    .setDescription(record + ' (' + standings + ')')
+                                    .setTitle(squad)
+                                    .setDescription(`${record} (${standings})\n<:KirikaSmile:608201680374464532> ${kirikaSeasonPred} <:FuyumiJam:624560349101817856> ${fuyumiSeasonPred}`)
                                     .addFields(
-                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks').replaceAll('White Sox', 'Most Trash Garbage Team In The Whole History') + nextgame + AngelPredictions + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
+                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks') + nextgame + AngelPredictions + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
                                     )
 
                                 if (logo != undefined){
@@ -290,10 +307,10 @@ module.exports = {
 
                                 const scoresEmbed = new EmbedBuilder()
                                     .setColor(color)
-                                    .setTitle(squad + ' Game')
-                                    .setDescription(record + ' (' + standings + ')')
+                                    .setTitle(squad)
+                                    .setDescription(`${record} (${standings})\n<:KirikaSmile:608201680374464532> ${kirikaSeasonPred} <:FuyumiJam:624560349101817856> ${fuyumiSeasonPred}`)
                                     .addFields(
-                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks').replaceAll('White Sox', 'Most Trash Garbage Team In The Whole History') + '\n\n' + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
+                                        { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks') + '\n\n' + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
                                     )
                                 
                                     if (logo != undefined){
