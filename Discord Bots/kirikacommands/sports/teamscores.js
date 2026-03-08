@@ -42,7 +42,7 @@ module.exports = {
         teamInput = teamcity+' '+teamname
         squad = TitleCase(teamInput)
 
-        console.log(`${time} ${username(ID)} used /teamscores ${squad}`)
+        console.log(`${time} ${username(ID)} used /teaminfo ${squad}`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
