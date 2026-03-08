@@ -4,10 +4,10 @@ const fs = require('fs');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('seasonprediction')
-        .setDescription('Kirika will tell you how well a team will do in the upcoming season')
+        .setDescription('Kirika and Fuyumi predict the records of the upcoming season')
         .addStringOption(option =>
             option.setName('league')
-                .setDescription('The league that the team plays in')
+                .setDescription('The league to predict for')
                 .setRequired(true)
                 .addChoices(
                     { name: 'MLB', value: 'MLB' },
@@ -45,11 +45,7 @@ module.exports = {
             return Math.floor(Math.random() * (max - min + 1) + min)
         }
 
-        function randomRecord(games) {
-            let wins = randomNumber(0, games)
-            let losses = (games - wins)
-            return (`${wins}-${losses}`)
-        }
+
         fs.readFile('switches.json', 'utf8', (err, swtch) => {
             swtch = JSON.parse(swtch)
             if (swtch.predictions[LEAGUE] === false) {
@@ -83,9 +79,9 @@ module.exports = {
             } else {
                 swtch.predictions[LEAGUE] = false
                 fs.writeFile('switches.json', JSON.stringify(swtch), (err) => {
-                        if (err) throw err;
-                    })
-                    
+                    if (err) throw err;
+                })
+
                 fs.readFile('sports.json', 'utf8', (err, data) => {
                     sports = JSON.parse(data)
                     let divisions = []
@@ -96,27 +92,43 @@ module.exports = {
                     if (LEAGUE === 'NFL') {
                         SPORT = 'football'
                         games = 17
+                        maxwins = 17
+                        minwins = 0
                         var variant = 3
                     }
                     if (LEAGUE === 'NHL') {
                         SPORT = 'hockey'
                         games = 82
+                        maxwins = 61
+                        minwins = 9
                         var variant = 5
                     }
                     if (LEAGUE === 'NBA') {
                         SPORT = 'basketball'
                         games = 82
-                        var variant = 5
+                        maxwins = 72
+                        minwins = 9
+                        var variant = 8
                     }
                     if (LEAGUE === 'MLB') {
                         SPORT = 'baseball'
                         games = 162
+                        maxwins = 115
+                        minwins = 42
                         var variant = 15
                     }
                     if (LEAGUE === 'WNBA') {
                         SPORT = 'basketball'
                         games = 82
+                        maxwins = 72
+                        minwins = 9
                         var variant = 5
+                    }
+
+                    function randomRecord(games) {
+                        let wins = randomNumber(minwins, maxwins)
+                        let losses = (games - wins)
+                        return (`${wins}-${losses}`)
                     }
 
                     for (let i = 0; i < LeaguesEntries.length; i++) {
