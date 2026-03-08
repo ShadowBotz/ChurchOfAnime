@@ -251,10 +251,10 @@ client.on('messageCreate', message => {
                 fs.readFile('pastgames.json', 'utf8', (err, data) => {
                     wordle = JSON.parse(data)
 
-                    if (wordle[splt[1].replaceAll(',', '')] === undefined) {
-                        wordle[splt[1].replaceAll(',', '')] = [[id, splt[2]]]
+                    if (wordle[splt[1].replaceAll(',', '').replaceAll('.', '')] === undefined) {
+                        wordle[splt[1].replaceAll(',', '').replaceAll('.', '')] = [[id, splt[2]]]
                     } else {
-                        wordle[splt[1].replaceAll(',', '')].push([id, splt[2]])
+                        wordle[splt[1].replaceAll(',', '').replaceAll('.', '')].push([id, splt[2]])
                     }
 
                     fs.writeFile('pastgames.json', JSON.stringify(wordle), (err) => {
