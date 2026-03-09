@@ -41,7 +41,7 @@ module.exports = {
                     let TeamsEntries = Object.entries(LeaguesEntries[i][1])
                     for (let j = 0; j < TeamsEntries.length; j++) {
                         let FansEntries = Object.entries(TeamsEntries[j][1])
-                        if (FansEntries[0][1].includes(id)) {
+                        if (FansEntries[2][1].includes(id)) {
                             userfandom.push(LeaguesEntries[i][0], TeamsEntries[j][0])
                         }
                     }
