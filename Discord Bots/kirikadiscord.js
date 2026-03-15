@@ -24,9 +24,12 @@ const dealHand = (handSize, deck) => {
 
     for (let i = 0; i < handSize; i++) {
         hand.push(deck.splice(randomNumber(0, (deck.length - 1)), 1))
+   
     }
 
     return hand
+
+    
 }
 
 const randomNumber = (min, max) => {
@@ -69,6 +72,60 @@ client.on('ready', () => {
 
     console.log(time + 'bot running')
 });
+
+async function getWrapScores(sport, league) {
+
+            try {
+                const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+                    method: 'get',
+                    headers: {},
+                    redirect: 'follow'
+                });
+
+                //sends the request
+                espn = await req.json()                   //formats the raw request into JSON
+
+                fs.readFile('dailywrap.json', 'utf8', (err, data) => {
+                    var wrap = JSON.parse(data)
+
+                    if (espn.events[0] != undefined) {
+
+                        winners = []
+                        losers = []
+
+                        for (i = 0; i < espn.events.length; i++) {
+                            if ((new Date().getTime()) - (Date.parse(espn.events[i].competitions[0].date)) < 86400000) {
+                            if (espn.events[i].competitions[0].competitors[0].winner != undefined) {
+                                if (espn.events[i].competitions[0].competitors[0].winner === true) {
+                                winners.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                                losers.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                            } else {
+                                winners.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                                losers.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                            }
+                        }}}
+
+                        wrap[league.toUpperCase()] = {
+                            Winners: winners,
+                            Losers: losers
+                        }
+
+                        fs.writeFile('dailywrap.json', JSON.stringify(wrap), (err) => {
+                            if (err) {
+                                console.log(err)
+                            }})
+
+                    } else {
+                        return Promise.reject('getWrapScores() Kirika Promise Error')
+                    }
+                })
+            } catch (err) {
+                return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
+                    console.log(err)
+            }
+
+        }
+
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'kirikacommands');
@@ -248,37 +305,22 @@ client.on("messageCreate", message => {
                 })
                 break;
             case "!noe":
-
+                 if (message.author.userId == '124044415634243584'){
+                    
                 if (pokerGameInProgress === 0) {
                     let board = []
+                    message.author.username = []
+
                     i = 2
                     message.channel.send('Poker hand has started KirikaSmile !poker to join. I\'ll deal the board in 30 seconds')
                     pokerGameInProgress = 1
                     board.push(dealHand(5, cards))
-                    board.push([username(message.author.id), dealHand(2, cards)])
+                    message.author.username.push([username(message.author.id), dealHand(2, cards), board])
 
-                    message.channel.send(`${board[1][1][0]} ${board[1][1][1]} ${board[1][0]}`)
+                    console.log(message.author.username)
 
-                    players.push(username(message.author.id))
+                    //message.channel.send(message.author.username)
 
-                    board[1][0] = [board[0][0], board[0][1], board[0][2], board[0][3], board[0][4], board[1][1][0], board[1][1][1], board[1][0]]
-
-                    const spades = board[1][0].filter((card) => card.toString().includes(':spades:'))
-                    const hearts = board[1][0].filter((card) => card.toString().includes(':hearts:'))
-                    const clubs = board[1][0].filter((card) => card.toString().includes(':clubs:'))
-                    const diamonds = board[1][0].filter((card) => card.toString().includes(':diamonds:'))
-
-                    if (spades.length >= 5) {
-                        board[1][0].push(5)
-                    } else if (hearts.length >= 5) {
-                        board[1][0].push(5)
-                    } else if (clubs.length >= 5) {
-                        board[1][0].push(5)
-                    } else if (diamonds.length >= 5) {
-                        board[1][0].push(5)
-                    }
-
-                    console.log(spades)
 
                     setTimeout(() => { message.channel.send('10 seconds KirikaSmile') }, 20000)
 
@@ -307,6 +349,8 @@ client.on("messageCreate", message => {
                         message.channel.send(`Sorry ${username(message.author.id)}, max of 8 players allowed per hand beatzFeels you can get in next time KirikaSmile`)
                     }
                 }
+
+                 }
                 break;
         }
 
@@ -366,8 +410,8 @@ client.on('presenceUpdate', (oldMember, newMember) => {
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
 
         if (newMember.userId === '124044415634243584') {
-            // console.log(newMember)
-            // console.log(newMember.activities[0])
+            console.log(newMember)
+            console.log(newMember.activities[0])
         }
 
         a = newMember.activities[0]
@@ -407,7 +451,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
         if (currentlyStreaming >= 1) {
             // if (newMember.userId != '306578848177192960' || newMember.userId != '205980021251244032') {
             client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
-            //     console.log(newMember)
+                 console.log(newMember)
             // }else{
             //     console.log('lol '+username(newMember.userId)+' tried it ', newMember.userId)
             // }
@@ -502,10 +546,6 @@ schedule.scheduleJob('2 0 0 * * *', function () {
     })
 });
 
-schedule.scheduleJob('10 0 0 10 10 *', function () {
-    client.channels.cache.get('172252229145853953').send(('Happy Birthday <@171887129637552128>\'s daughter <:KirikaSmile:608201680374464532> :cake:'))
-});
-
 //Kirika assigns the tts role randomly at midnight
 
 schedule.scheduleJob('0 1 0 * * *', function () {
@@ -594,3 +634,50 @@ schedule.scheduleJob('0 0 2 * * *', function () {
         }
     })
 });
+schedule.scheduleJob('5 59 2 * * *', function () {
+    getWrapScores("baseball", "mlb")
+    console.log(`${time} Logged MLB Winners and Losers o7`)
+});
+schedule.scheduleJob('10 59 2 * * *', function () {
+    getWrapScores("football", "nfl")
+    console.log(`${time} Logged NFL Winners and Losers o7`)
+});
+schedule.scheduleJob('15 59 2 * * *', function () {
+    getWrapScores("basketball", "nba")
+    console.log(`${time} Logged NBA Winners and Losers o7`)
+});
+schedule.scheduleJob('20 59 2 * * *', function () {
+    getWrapScores("hockey", "nhl")
+    console.log(`${time} Logged NHL Winners and Losers o7`)
+});
+schedule.scheduleJob('25 59 2 * * *', function () {
+    getWrapScores("basketball", "wnba")
+    console.log(`${time} Logged WNBA Winners and Losers o7`)
+});
+schedule.scheduleJob('0 0 3 * * *', function () {
+    fs.readFile('dailywrap.json', 'utf8', (err, wdata) => {
+        var wrap1 = JSON.parse(wdata)
+        let daily = Object.entries(wrap1)
+    
+        fs.readFile('sports.json', 'utf8', (err, data) => {
+            var sports1 = JSON.parse(data)
+                        
+        for (i = 0; i < daily.length; i++) {                       
+            if  (daily[i][1].Winners.length > 0) {
+            for (j = 0; j < daily[i][1].Winners.length; j++) {                                                     
+                if (sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length > 0) {
+                    wins++
+                    truewins = truewins + +sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length
+                }                            
+                if (sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length > 0) {
+                    losses++
+                    truelosses = truelosses + +sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length
+                }
+            }
+        }
+        }
+    
+        client.channels.cache.get('299346622985273344').send(`Church of Anime went ${wins}-${losses} (${truewins}-${truelosses}) today <:KirikaSmile:608201680374464532>`)
+    })})
+    
+});       
