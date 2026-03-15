@@ -119,10 +119,10 @@ module.exports = {
                     }
                     if (LEAGUE === 'WNBA') {
                         SPORT = 'basketball'
-                        games = 82
-                        maxwins = 72
-                        minwins = 9
-                        var variant = 5
+                        games = 44
+                        maxwins = 33
+                        minwins = 6
+                        var variant = 4
                     }
 
                     function randomRecord(games) {
