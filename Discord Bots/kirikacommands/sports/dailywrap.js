@@ -117,14 +117,25 @@ module.exports = {
                     }
                     }
 
-                    // const wrapEmbed = new EmbedBuilder()
-                    //     .setColor(8446019)
-                    //     .setTitle(`Church of Anime Daily Wrap-Up for ${LEAGUE.toUpperCase()}`)
-                    //     .addFields(
-                    //         { name: 'Winners', value: '' + wrap[LEAGUE].Winners.join('\n').replaceAll(',', '') || 'No games finished yet today!' },
-                    //         { name: 'Losers', value: '' + wrap[LEAGUE].Losers.join('\n').replaceAll(',', '') || 'No games finished yet today!' }
-                    //     )
-                    return interaction.reply(`Church of Anime went ${wins}-${losses} (${truewins}-${truelosses}) yesterday <:KirikaSmile:608201680374464532>`)
+                    if (truewins - truelosses < 0) {
+                        const wrapEmbed = new EmbedBuilder()
+                        .setColor(8446019)
+                        .setTitle(`Church of Anime Wrap-Up for ${new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
+                        .addFields(
+                            { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:beatzDespair:1019839939522859109> ) yesterday` },
+                        )
+                        return interaction.reply({ embeds: [wrapEmbed] })
+                    } else {
+                        const wrapEmbed = new EmbedBuilder()
+                        .setColor(8446019)
+                        .setTitle(`Church of Anime Wrap-Up for ${new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
+                        .addFields(
+                            { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:KirikaSmile:608201680374464532> ) yesterday` },
+                        )
+                        return interaction.reply({ embeds: [wrapEmbed] })
+                    }
+                    
+                    
                 })})
 
             
