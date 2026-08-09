@@ -318,14 +318,14 @@ Bot.on('join', () => {
             case "!song":
                 if (canSend(30, last_use[19])) {
                     last_use[19] = new Date().getTime()
-                    fs.readFile('C:/Users/shado/Documents/Snip/Snip.txt', 'utf8', (err, data) => {
+                    fs.readFile('C:/Users/shado/Downloads/Snip-v8.0.2/Snip/Snip.txt', 'utf8', (err, data) => {
                         if (data === '') {
 
                             Bot.say('@' + chatter.display_name + ' There\'s nothing playing beatzSus')
 
                         } else {
 
-                            fs.readFile('C:/Users/shado/Documents/Snip/Snip_Metadata.json', 'utf8', (err, data) => {
+                            fs.readFile('C:/Users/shado/Downloads/Snip-v8.0.2/Snip/Snip_Metadata.json', 'utf8', (err, data) => {
                                 nowplaying = JSON.parse(data)
                                 artist = []
 
@@ -363,7 +363,7 @@ Bot.on('join', () => {
                         const letter3 = String.fromCharCode(ascii + letterIndex3);
                         const random = `${letter1}${letter2}${letter3}`
 
-                        if (random == 'fag' || random == "fgt" || random == "ngr" || random == "nig" || random == "kkk" || random == "sjv" || random == 'jap' || random == 'nga' || random == 'kys' || random == 'kms') {
+                        if (random == 'fag' || random == "fgt" || random == "fqt" || random == "ngr" || random == "nig" || random == "kkk" || random == "sjv" || random == 'jap' || random == 'nga' || random == 'kys' || random == 'kms') {
                             Bot.say('I\'d rather not get cancelled.')
                         } else {
                             Bot.say('I wanna have ' + random + ' with @' + chatter.display_name + '.')
@@ -439,7 +439,28 @@ Bot.on('join', () => {
             }
         }
 
-        if (chatter.message.toLowerCase().includes(' est') || chatter.message.toLowerCase().includes(' cst') || chatter.message.toLowerCase().includes(' mst') || chatter.message.toLowerCase().includes(' pst')) {
+        if (chatter.message.toLowerCase().includes(' est ') || chatter.message.toLowerCase().includes(' cst ') || chatter.message.toLowerCase().includes(' mst ') || chatter.message.toLowerCase().includes(' pst ')) {
+            if (chatter.username != 'shadowbeatz') {
+                    if (chatter.mod == false) {
+                        timeout(chatter.user_id, "1", "incorrect timezone abbreviation")
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                            if (canSend(30, last_use[19])) {
+                                last_use[19] = new Date().getTime()
+                                Bot.say('@' + chatter.display_name + ' It\'s Daylight Savings Time. Please use the correct timezone abbreviation.')
+                            }
+                        
+                    } else {         
+                            if (canSend(30, last_use[19])) {
+                                last_use[19] = new Date().getTime()
+                                Bot.say('@' + chatter.display_name + ' Abuse of power lookin ass beatzSus')
+                            }      
+                        }
+                }  
+        }
+
+        if (chatter.message.toLowerCase() === 'est' || chatter.message.toLowerCase() === 'cst' || chatter.message.toLowerCase() === 'mst' || chatter.message.toLowerCase() === 'pst') {
             if (chatter.username != 'shadowbeatz') {
                     if (chatter.mod == false) {
                         timeout(chatter.user_id, "1", "incorrect timezone abbreviation")
