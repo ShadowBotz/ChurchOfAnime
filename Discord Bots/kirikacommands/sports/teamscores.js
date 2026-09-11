@@ -3,20 +3,20 @@ const fs = require('fs');
 
 
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('teaminfo')
-		.setDescription('Displays information about a requested team')
+    data: new SlashCommandBuilder()
+        .setName('teaminfo')
+        .setDescription('Displays information about a requested team')
         .addStringOption(option =>
             option.setName('teamcity')
                 .setDescription('The city of the requested team')
                 .setRequired(true)
-                )
+        )
         .addStringOption(option =>
             option.setName('teamname')
                 .setDescription('The name of the requested team')
                 .setRequired(true)
-                ),
-	async execute(interaction) {
+        ),
+    async execute(interaction) {
 
         const guild = interaction.member.guild;
         const ID = interaction.user.id
@@ -39,14 +39,14 @@ module.exports = {
         let fuyumipred = []
         teamcity = interaction.options.getString('teamcity')
         teamname = interaction.options.getString('teamname')
-        teamInput = teamcity+' '+teamname
+        teamInput = teamcity + ' ' + teamname
         squad = TitleCase(teamInput)
 
         console.log(`${time} ${username(ID)} used /teaminfo ${squad}`)
 
         function TitleCase(Input) {
             Input = Input.toLowerCase().split(" ");
-    
+
             for (var i = 0; i < Input.length; i++) {
                 if (Input[i].length === 2) {
                     Input[i] = Input[i].toUpperCase();
@@ -54,7 +54,7 @@ module.exports = {
                     Input[i] = Input[i].charAt(0).toUpperCase() + Input[i].slice(1);
                 }
             }
-    
+
             return Input.join(' ');
         }
 
@@ -67,21 +67,21 @@ module.exports = {
                 });
                 //sends the request
                 espn = await req.json()
-                                  //formats the raw request into JSON
-    
+                //formats the raw request into JSON
+
                 if (espn.team != undefined) {
                     var M = espn.team.standingSummary
                     let teaminfo = []
 
-                    if (espn.team.standingSummary === undefined){
-                        if (league === 'mlb'){
+                    if (espn.team.standingSummary === undefined) {
+                        if (league === 'mlb') {
                             M = 'Spring Training'
-                        }else{
+                        } else {
                             M = 'Pre-season'
                         }
-                        
+
                     }
-    
+
                     if (espn.team.color === '000000') {
                         if (espn.team.record.items != undefined) {
                             teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, M)
@@ -132,25 +132,25 @@ module.exports = {
                             teaminfo.push('<:KirikaSmile:608201680374464532>')
                         }
                     }
-    
+
                     if (espn.team.nextEvent[0] != undefined) {
                         if ((new Date().getTime()) - (Date.parse(espn.team.nextEvent[0].date)) < 0) {
                             teaminfo.push('\n\nTheir next game is: \n' + espn.team.nextEvent[0].competitions[0].competitors[1].team.shortDisplayName + ' vs. ' + espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName + ' (' + espn.team.nextEvent[0].competitions[0].status.type.shortDetail + ')\n\n')
                         }
-    
-    
+
+
                     }
-    
+
                     return (teaminfo)
                 } else {
                     return Promise.reject('getTeamInfo() Kirika Promise Error')
                 }
             } catch (err) {
                 return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
-                console.log('getTeamInfo\n' + err)
+                    console.log('getTeamInfo\n' + err)
             }
         }
-        
+
         fs.readFile('sports.json', 'utf8', (err, data) => {
             sports = JSON.parse(data)
             SPORT = undefined
@@ -161,7 +161,7 @@ module.exports = {
             let games = []
             let logo
             let color = null
-            
+
 
             let LeaguesEntries = Object.entries(sports)
 
@@ -199,52 +199,58 @@ module.exports = {
             if (LEAGUE === 'wnba') {
                 SPORT = 'basketball'
             }
-        
 
-        fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
-            kpred = JSON.parse(data)
-            if (LEAGUE != undefined){
-                for (let i = 0; i < kpred.kirika.prediction[LEAGUE].length; i++) {
-                    if (kpred.kirika.prediction[LEAGUE][i].includes(squad)) {
-        
+
+            fs.readFile('kirikapredictions.json', 'utf8', (err, data) => {
+                kpred = JSON.parse(data)
+                if (LEAGUE != undefined) {
+                    for (let i = 0; i < kpred.kirika.prediction[LEAGUE].length; i++) {
+                        if (kpred.kirika.prediction[LEAGUE][i].includes(squad)) {
+
                             if (kpred.kirika.prediction[LEAGUE][i][5] >= kpred.kirika.prediction[LEAGUE][i][2]) {
                                 kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][4] + ' ', +kpred.kirika.prediction[LEAGUE][i][5] + ' - ', kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + '')
                             } else {
                                 kirikapred.push('<:KirikaSmile:608201680374464532> Kirika: ' + kpred.kirika.prediction[LEAGUE][i][1] + ' ', kpred.kirika.prediction[LEAGUE][i][2] + ' - ', kpred.kirika.prediction[LEAGUE][i][4] + ' ', kpred.kirika.prediction[LEAGUE][i][5] + '')
                             }
                             break;
-                        
+
+                        }
                     }
                 }
-            }                      
-        })
+            })
 
-        fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
-            fpred = JSON.parse(data)
-            if (LEAGUE != undefined){
-            for (let i = 0; i < fpred.fuyumi.prediction[LEAGUE].length; i++) {
-                if (fpred.fuyumi.prediction[LEAGUE][i].includes(squad)) {
-                    
-                        if (fpred.fuyumi.prediction[LEAGUE][i][5] >= fpred.fuyumi.prediction[LEAGUE][i][2]) {
-                            fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[LEAGUE][i][4] + ' ', +fpred.fuyumi.prediction[LEAGUE][i][5] + ' - ', fpred.fuyumi.prediction[LEAGUE][i][1] + ' ', fpred.fuyumi.prediction[LEAGUE][i][2] + '')
-                        } else {
-                            fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[LEAGUE][i][1] + ' ', fpred.fuyumi.prediction[LEAGUE][i][2] + ' - ', fpred.fuyumi.prediction[LEAGUE][i][4] + ' ', fpred.fuyumi.prediction[LEAGUE][i][5] + '')
+            fs.readFile('fuyumipredictions.json', 'utf8', (err, data) => {
+                fpred = JSON.parse(data)
+                if (LEAGUE != undefined) {
+                    for (let i = 0; i < fpred.fuyumi.prediction[LEAGUE].length; i++) {
+                        if (fpred.fuyumi.prediction[LEAGUE][i].includes(squad)) {
+
+                            if (fpred.fuyumi.prediction[LEAGUE][i][5] >= fpred.fuyumi.prediction[LEAGUE][i][2]) {
+                                fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[LEAGUE][i][4] + ' ', +fpred.fuyumi.prediction[LEAGUE][i][5] + ' - ', fpred.fuyumi.prediction[LEAGUE][i][1] + ' ', fpred.fuyumi.prediction[LEAGUE][i][2] + '')
+                            } else {
+                                fuyumipred.push('<:FuyumiJam:624560349101817856> Fuyumi: ' + fpred.fuyumi.prediction[LEAGUE][i][1] + ' ', fpred.fuyumi.prediction[LEAGUE][i][2] + ' - ', fpred.fuyumi.prediction[LEAGUE][i][4] + ' ', fpred.fuyumi.prediction[LEAGUE][i][5] + '')
+                            }
+                            break;
+
                         }
-                        break;
-                    
+                    }
                 }
-            }
-        }
-        })
+            })
 
-        
+
 
 
             async function getScores(sport, league, team) {
                 try {
                     const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
                         method: 'get',
-                        headers: {},
+                        headers: {
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                            "Accept": "application/json",
+                            "Accept-Language": "en-US,en;q=0.9",
+                            "Referer": "https://espn.com",
+                            "Origin": "https://espn.com"
+                        },
                         redirect: 'follow'
                     });
                     //sends the request
@@ -290,11 +296,11 @@ module.exports = {
                                         { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks') + nextgame + AngelPredictions + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
                                     )
 
-                                if (logo != undefined){
+                                if (logo != undefined) {
                                     scoresEmbed.setThumbnail(logo)
                                 }
 
-                                    return interaction.reply({ embeds: [scoresEmbed] })
+                                return interaction.reply({ embeds: [scoresEmbed] })
 
                             })
                         } else {
@@ -312,12 +318,12 @@ module.exports = {
                                     .addFields(
                                         { name: '===================================', value: '' + games.join('\n\n').replaceAll(',', '').replaceAll('Ducks', 'Cucks') + '\n\n' + (kirikapred.join('')).replaceAll(',', '') + '\n' + (fuyumipred.join('')).replaceAll(',', '') }
                                     )
-                                
-                                    if (logo != undefined){
-                                        scoresEmbed.setThumbnail(logo)
-                                    }
 
-                                    return interaction.reply({ embeds: [scoresEmbed] })
+                                if (logo != undefined) {
+                                    scoresEmbed.setThumbnail(logo)
+                                }
+
+                                return interaction.reply({ embeds: [scoresEmbed] })
                             })
 
                         }
@@ -327,16 +333,16 @@ module.exports = {
 
                 } catch (err) {
                     return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
-                    console.log(err)
+                        console.log(err)
                 }
 
             }
             if (LEAGUE === undefined) {
-                return interaction.reply({content: 'I\'m sorry, I don\'t recognize that team <:KirikaSmile:608201680374464532> Make sure you\'re including both the city *and* team name and you\'re using the official team spelling as well', ephemeral: true})
+                return interaction.reply({ content: 'I\'m sorry, I don\'t recognize that team <:KirikaSmile:608201680374464532> Make sure you\'re including both the city *and* team name and you\'re using the official team spelling as well', ephemeral: true })
             } else {
                 console.log(SPORT, LEAGUE, squad)
                 getScores(SPORT, LEAGUE, squad)
             }
         })
-	},
+    },
 };

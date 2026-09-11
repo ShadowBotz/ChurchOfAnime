@@ -29,18 +29,24 @@ module.exports = {
 
         var d = new Date();
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-        if (searchid != null){
+        if (searchid != null) {
             console.log(`${time} ${username(ID)} used /teams ${searchid.id}`)
         } else {
             console.log(`${time} ${username(ID)} used /teams`)
         }
-        
+
 
         async function getTeamInfo(sport, league, abbr) {
             try {
                 const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
                     method: 'get',
-                    headers: {},
+                    headers: {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                        "Accept": "application/json",
+                        "Accept-Language": "en-US,en;q=0.9",
+                        "Referer": "https://espn.com",
+                        "Origin": "https://espn.com"
+                    },
                     redirect: 'follow'
                 });
                 //sends the request
@@ -51,13 +57,13 @@ module.exports = {
                     var M = espn.team.standingSummary
                     let teaminfo = []
 
-                    if (espn.team.standingSummary === undefined){
-                        if (league === 'mlb'){
+                    if (espn.team.standingSummary === undefined) {
+                        if (league === 'mlb') {
                             M = 'Spring Training'
-                        }else{
+                        } else {
                             M = 'Pre-season'
                         }
-                        
+
                     }
 
                     if (espn.team.color === '000000') {
@@ -83,19 +89,19 @@ module.exports = {
                                 teaminfo.push('<:beatzWICKED:1165575471153549342>')
                             } else {
                                 if (espn.team.record.items != undefined) {
-                                    if (league === 'nhl'){
+                                    if (league === 'nhl') {
                                         if (((espn.team.record.items[0].summary.split("-")[0]) - (+(espn.team.record.items[0].summary.split("-")[1]) + +(espn.team.record.items[0].stats[0].value))) < 0) {
-                                        teaminfo.push('<:beatzDespair:1019839939522859109>')
+                                            teaminfo.push('<:beatzDespair:1019839939522859109>')
+                                        } else {
+                                            teaminfo.push('<:KirikaSmile:608201680374464532>')
+                                        }
                                     } else {
-                                        teaminfo.push('<:KirikaSmile:608201680374464532>')
+                                        if (((espn.team.record.items[0].summary.split("-")[0]) - (espn.team.record.items[0].summary.split("-")[1])) < 0) {
+                                            teaminfo.push('<:beatzDespair:1019839939522859109>')
+                                        } else {
+                                            teaminfo.push('<:KirikaSmile:608201680374464532>')
+                                        }
                                     }
-                                    }else{
-                                    if (((espn.team.record.items[0].summary.split("-")[0]) - (espn.team.record.items[0].summary.split("-")[1])) < 0) {
-                                        teaminfo.push('<:beatzDespair:1019839939522859109>')
-                                    } else {
-                                        teaminfo.push('<:KirikaSmile:608201680374464532>')
-                                    }
-                                }
                                 } else {
                                     teaminfo.push('<:KirikaSmile:608201680374464532>')
                                 }

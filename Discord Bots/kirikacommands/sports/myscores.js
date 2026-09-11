@@ -3,10 +3,10 @@ const fs = require('fs');
 
 
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('myscores')
-		.setDescription('Displays the scores of your favorite teams (add teams with /addteam).'),
-	async execute(interaction) {
+    data: new SlashCommandBuilder()
+        .setName('myscores')
+        .setDescription('Displays the scores of your favorite teams (add teams with /addteam).'),
+    async execute(interaction) {
         const guild = interaction.member.guild;
         const ID = interaction.user.id
 
@@ -26,111 +26,117 @@ module.exports = {
         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
         console.log(`${time} ${username(ID)} used /myscores`)
 
-            SPORT = undefined
-            LEAGUE = undefined
-            scores = []
+        SPORT = undefined
+        LEAGUE = undefined
+        scores = []
 
-            fs.readFile('sports.json', 'utf8', (err, data) => {
-                sports = JSON.parse(data)
-                id = interaction.user.id
+        fs.readFile('sports.json', 'utf8', (err, data) => {
+            sports = JSON.parse(data)
+            id = interaction.user.id
 
-                let LeaguesEntries = Object.entries(sports)
-                userfandom = []
+            let LeaguesEntries = Object.entries(sports)
+            userfandom = []
 
-                for (let i = 0; i < LeaguesEntries.length; i++) {
-                    let TeamsEntries = Object.entries(LeaguesEntries[i][1])
-                    for (let j = 0; j < TeamsEntries.length; j++) {
-                        let FansEntries = Object.entries(TeamsEntries[j][1])
-                        if (FansEntries[2][1].includes(id)) {
-                            userfandom.push(LeaguesEntries[i][0], TeamsEntries[j][0])
-                        }
+            for (let i = 0; i < LeaguesEntries.length; i++) {
+                let TeamsEntries = Object.entries(LeaguesEntries[i][1])
+                for (let j = 0; j < TeamsEntries.length; j++) {
+                    let FansEntries = Object.entries(TeamsEntries[j][1])
+                    if (FansEntries[2][1].includes(id)) {
+                        userfandom.push(LeaguesEntries[i][0], TeamsEntries[j][0])
                     }
                 }
+            }
 
-                fetchDeez = []
+            fetchDeez = []
 
 
-                if (userfandom.length < 1) {
-                    return interaction.reply({content: '<@' + id + '> You gotta tell me which teams you root for first before I can give you your scores <:KirikaSmile:608201680374464532>', ephemeral: true})
-                } else {
+            if (userfandom.length < 1) {
+                return interaction.reply({ content: '<@' + id + '> You gotta tell me which teams you root for first before I can give you your scores <:KirikaSmile:608201680374464532>', ephemeral: true })
+            } else {
 
-                    for (k = 0; k < userfandom.length; k += 2) {
+                for (k = 0; k < userfandom.length; k += 2) {
 
-                        SPORT = undefined
-                        LEAGUE = undefined
+                    SPORT = undefined
+                    LEAGUE = undefined
 
-                        league = userfandom[k]
-                        if (league.toLowerCase() === 'nfl') {
-                            SPORT = 'football'
-                            LEAGUE = 'nfl'
-                        }
-                        if (league.toLowerCase() === 'nhl') {
-                            SPORT = 'hockey'
-                            LEAGUE = 'nhl'
-                        }
-                        if (league.toLowerCase() === 'nba') {
-                            SPORT = 'basketball'
-                            LEAGUE = 'nba'
-                        }
-                        if (league.toLowerCase() === 'mlb') {
-                            SPORT = 'baseball'
-                            LEAGUE = 'mlb'
-                        }
-                        if (league.toLowerCase() === 'ncaaf') {
-                            SPORT = 'football'
-                            LEAGUE = 'college-football'
-                        }
-                        if (league.toLowerCase() === 'wnba') {
-                            SPORT = 'basketball'
-                            LEAGUE = 'wnba'
-                        }
-
-                        fetchDeez.push([SPORT, LEAGUE, userfandom[k + 1]])
+                    league = userfandom[k]
+                    if (league.toLowerCase() === 'nfl') {
+                        SPORT = 'football'
+                        LEAGUE = 'nfl'
+                    }
+                    if (league.toLowerCase() === 'nhl') {
+                        SPORT = 'hockey'
+                        LEAGUE = 'nhl'
+                    }
+                    if (league.toLowerCase() === 'nba') {
+                        SPORT = 'basketball'
+                        LEAGUE = 'nba'
+                    }
+                    if (league.toLowerCase() === 'mlb') {
+                        SPORT = 'baseball'
+                        LEAGUE = 'mlb'
+                    }
+                    if (league.toLowerCase() === 'ncaaf') {
+                        SPORT = 'football'
+                        LEAGUE = 'college-football'
+                    }
+                    if (league.toLowerCase() === 'wnba') {
+                        SPORT = 'basketball'
+                        LEAGUE = 'wnba'
                     }
 
-                    async function getScores(fetchDeez) {
-                        scores = []
-                        // return new Promise(async function(resolve, reject){
+                    fetchDeez.push([SPORT, LEAGUE, userfandom[k + 1]])
+                }
 
-                        for (l = 0; l < fetchDeez.length; l++) {
-                            sport = fetchDeez[l][0]
-                            league = fetchDeez[l][1]
-                            team = fetchDeez[l][2]
+                async function getScores(fetchDeez) {
+                    scores = []
+                    // return new Promise(async function(resolve, reject){
 
-                            const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
-                                method: 'get',
-                                headers: {},
-                                redirect: 'follow'
-                            });
+                    for (l = 0; l < fetchDeez.length; l++) {
+                        sport = fetchDeez[l][0]
+                        league = fetchDeez[l][1]
+                        team = fetchDeez[l][2]
 
-                            format_resolved_request = await req.json()
+                        const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+                            method: 'get',
+                            headers: {
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                "Accept": "application/json",
+                                "Accept-Language": "en-US,en;q=0.9",
+                                "Referer": "https://espn.com",
+                                "Origin": "https://espn.com"
+                            },
+                            redirect: 'follow'
+                        });
 
-                            for (i = 0; i < format_resolved_request.events.length; i++) {
-                                if (format_resolved_request.events[i].name.includes(team)) {
-                                    if ((new Date().getTime()) - (Date.parse(format_resolved_request.events[i].competitions[0].date)) < 86400000) {
-                                        scores.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
-                                    }          
+                        format_resolved_request = await req.json()
+
+                        for (i = 0; i < format_resolved_request.events.length; i++) {
+                            if (format_resolved_request.events[i].name.includes(team)) {
+                                if ((new Date().getTime()) - (Date.parse(format_resolved_request.events[i].competitions[0].date)) < 86400000) {
+                                    scores.push([format_resolved_request.events[i].competitions[0].competitors[1].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[1].score + " - ", format_resolved_request.events[i].competitions[0].competitors[0].team.displayName + " ", format_resolved_request.events[i].competitions[0].competitors[0].score + " (", format_resolved_request.events[i].competitions[0].status.type.shortDetail + ")"])
                                 }
                             }
                         }
-                        
-                        return (scores)
                     }
-                    getScores(fetchDeez).then(a => {
 
-                        if (a.length === 0) {
-                            scores.push('Doesn\'t look like any of your teams played today. Nice day off <:KirikaSmile:608201680374464532>')
-                        }
-                        const scoresEmbed = new EmbedBuilder()
-                            .setColor(8446019)
-                            .setAuthor({ name: username(id) + '\'s Scoreboard', iconURL: '' + guild.members.cache.get(id).user.displayAvatarURL(), url: 'https://discord.gg/churchofanime' })
-                            .addFields(
-                                { name: '===================================', value: '' + scores.join('\n\n').replaceAll(',', '').replaceAll('Carolina Panthers', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') }
-                            )
-
-                        return interaction.reply({ embeds: [scoresEmbed] })
-                    })
+                    return (scores)
                 }
-            })
-	},
+                getScores(fetchDeez).then(a => {
+
+                    if (a.length === 0) {
+                        scores.push('Doesn\'t look like any of your teams played today. Nice day off <:KirikaSmile:608201680374464532>')
+                    }
+                    const scoresEmbed = new EmbedBuilder()
+                        .setColor(8446019)
+                        .setAuthor({ name: username(id) + '\'s Scoreboard', iconURL: '' + guild.members.cache.get(id).user.displayAvatarURL(), url: 'https://discord.gg/churchofanime' })
+                        .addFields(
+                            { name: '===================================', value: '' + scores.join('\n\n').replaceAll(',', '').replaceAll('Carolina Panthers', 'Most Trash Garbage Team In The Whole League').replaceAll('Philadelphia Eagles', 'Philadelphia Phuckbois').replaceAll('Washington Commanders', 'Washington Football Team').replaceAll('Anaheim Ducks', 'Anaheim Cucks') }
+                        )
+
+                    return interaction.reply({ embeds: [scoresEmbed] })
+                })
+            }
+        })
+    },
 };

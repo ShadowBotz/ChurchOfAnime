@@ -36,7 +36,13 @@ module.exports = {
             try {
                 const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
                     method: 'get',
-                    headers: {},
+                    headers: {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                        "Accept": "application/json",
+                        "Accept-Language": "en-US,en;q=0.9",
+                        "Referer": "https://espn.com",
+                        "Origin": "https://espn.com"
+                    },
                     redirect: 'follow'
                 });
 
@@ -53,15 +59,17 @@ module.exports = {
 
                         for (i = 0; i < espn.events.length; i++) {
                             if ((new Date().getTime()) - (Date.parse(espn.events[i].competitions[0].date)) < 86400000) {
-                            if (espn.events[i].competitions[0].competitors[0].winner != undefined) {
-                                if (espn.events[i].competitions[0].competitors[0].winner === true) {
-                                winners.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
-                                losers.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
-                            } else {
-                                winners.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
-                                losers.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                                if (espn.events[i].competitions[0].competitors[0].winner != undefined) {
+                                    if (espn.events[i].competitions[0].competitors[0].winner === true) {
+                                        winners.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                                        losers.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                                    } else {
+                                        winners.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                                        losers.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
+                                    }
+                                }
                             }
-                        }}}
+                        }
 
                         wrap[league.toUpperCase()] = {
                             Winners: winners,
@@ -71,7 +79,8 @@ module.exports = {
                         fs.writeFile('dailywrap.json', JSON.stringify(wrap), (err) => {
                             if (err) {
                                 console.log(err)
-                            }})
+                            }
+                        })
 
                     } else {
                         return Promise.reject('getWrapScores() Kirika Promise Error')
@@ -83,62 +92,63 @@ module.exports = {
             }
 
         }
-                    var wins = 0
-                    var losses = 0
-                    var truewins = 0
-                    var truelosses = 0
-           
+        var wins = 0
+        var losses = 0
+        var truewins = 0
+        var truelosses = 0
 
-                fs.readFile('dailywrap.json', 'utf8', (err, wdata) => {
-                    var wrap1 = JSON.parse(wdata)
-                    let daily = Object.entries(wrap1)
 
-                    fs.readFile('sports.json', 'utf8', (err, data) => {
-                        var sports1 = JSON.parse(data)
-                    
-                    //console.log(daily[0][0]) <------ Will give the league
-                    //console.log(daily[0][1].Winners[0])
-                    //console.log(sports1[daily[0][0]][daily[0][1].Winners[0]].name)
-                    //console.log(sports1[daily[0][0]][daily[0][1].Winners[0]].fans)
-                    
+        fs.readFile('dailywrap.json', 'utf8', (err, wdata) => {
+            var wrap1 = JSON.parse(wdata)
+            let daily = Object.entries(wrap1)
 
-                    for (i = 0; i < daily.length; i++) {                       
-                        if  (daily[i][1].Winners.length > 0) {
-                        for (j = 0; j < daily[i][1].Winners.length; j++) {                                                     
+            fs.readFile('sports.json', 'utf8', (err, data) => {
+                var sports1 = JSON.parse(data)
+
+                //console.log(daily[0][0]) <------ Will give the league
+                //console.log(daily[0][1].Winners[0])
+                //console.log(sports1[daily[0][0]][daily[0][1].Winners[0]].name)
+                //console.log(sports1[daily[0][0]][daily[0][1].Winners[0]].fans)
+
+
+                for (i = 0; i < daily.length; i++) {
+                    if (daily[i][1].Winners.length > 0) {
+                        for (j = 0; j < daily[i][1].Winners.length; j++) {
                             if (sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length > 0) {
                                 wins++
                                 truewins = truewins + +sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length
-                            }                            
+                            }
                             if (sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length > 0) {
                                 losses++
                                 truelosses = truelosses + +sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length
                             }
                         }
                     }
-                    }
+                }
 
-                    if (truewins - truelosses < 0) {
-                        const wrapEmbed = new EmbedBuilder()
+                if (truewins - truelosses < 0) {
+                    const wrapEmbed = new EmbedBuilder()
                         .setColor(8446019)
                         .setTitle(`Church of Anime Wrap-Up for ${new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
                         .addFields(
                             { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:beatzDespair:1019839939522859109> ) yesterday` },
                         )
-                        return interaction.reply({ embeds: [wrapEmbed] })
-                    } else {
-                        const wrapEmbed = new EmbedBuilder()
+                    return interaction.reply({ embeds: [wrapEmbed] })
+                } else {
+                    const wrapEmbed = new EmbedBuilder()
                         .setColor(8446019)
                         .setTitle(`Church of Anime Wrap-Up for ${new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
                         .addFields(
                             { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:KirikaSmile:608201680374464532> ) yesterday` },
                         )
-                        return interaction.reply({ embeds: [wrapEmbed] })
-                    }
-                    
-                    
-                })})
+                    return interaction.reply({ embeds: [wrapEmbed] })
+                }
 
-            
+
+            })
+        })
+
+
 
     },
 };

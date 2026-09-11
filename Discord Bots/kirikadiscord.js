@@ -378,9 +378,9 @@ client.on("messageCreate", message => {
         }
 
         if (message.content.includes('!get') && message.channel.name === ('test')) {
-            randomUser = message.guild.members.random();
-            tts = randomUser.id;
-            console.log(tts)
+            //randomUser = message.guild.members.random();
+            //tts = randomUser.id;
+            console.log(message.author.id)
         }
 
     } else {
@@ -634,89 +634,90 @@ schedule.scheduleJob('0 0 2 * * *', function () {
         }
     })
 });
-schedule.scheduleJob('5 59 2 * * *', function () {
-    var d = new Date();
-    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+// schedule.scheduleJob('5 59 2 * * *', function () {
+//     var d = new Date();
+//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
     
-    getWrapScores("baseball", "mlb")
-    console.log(`${time} Logged MLB Winners and Losers o7`)
-});
-schedule.scheduleJob('10 59 2 * * *', function () {
-    var d = new Date();
-    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+//     getWrapScores("baseball", "mlb")
+//     console.log(`${time} Logged MLB Winners and Losers o7`)
+// });
+// schedule.scheduleJob('10 59 2 * * *', function () {
+//     var d = new Date();
+//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
 
-    getWrapScores("football", "nfl")
-    console.log(`${time} Logged NFL Winners and Losers o7`)
-});
-schedule.scheduleJob('15 59 2 * * *', function () {
-    var d = new Date();
-    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+//     getWrapScores("football", "nfl")
+//     console.log(`${time} Logged NFL Winners and Losers o7`)
+// });
+// schedule.scheduleJob('15 59 2 * * *', function () {
+//     var d = new Date();
+//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
     
-    getWrapScores("basketball", "nba")
-    console.log(`${time} Logged NBA Winners and Losers o7`)
-});
-schedule.scheduleJob('20 59 2 * * *', function () {
-    var d = new Date();
-    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+//     getWrapScores("basketball", "nba")
+//     console.log(`${time} Logged NBA Winners and Losers o7`)
+// });
+// schedule.scheduleJob('20 59 2 * * *', function () {
+//     var d = new Date();
+//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
     
-    getWrapScores("hockey", "nhl")
-    console.log(`${time} Logged NHL Winners and Losers o7`)
-});
-schedule.scheduleJob('25 59 2 * * *', function () {
-    var d = new Date();
-    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+//     getWrapScores("hockey", "nhl")
+//     console.log(`${time} Logged NHL Winners and Losers o7`)
+// });
+// schedule.scheduleJob('25 59 2 * * *', function () {
+//     var d = new Date();
+//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
     
-    getWrapScores("basketball", "wnba")
-    console.log(`${time} Logged WNBA Winners and Losers o7`)
-});
-schedule.scheduleJob('0 0 3 * * *', function () {
-    var wins = 0
-    var losses = 0
-    var truewins = 0
-    var truelosses = 0
+//     getWrapScores("basketball", "wnba")
+//     console.log(`${time} Logged WNBA Winners and Losers o7`)
+// });
+// schedule.scheduleJob('0 0 3 * * *', function () {
+//     var wins = 0
+//     var losses = 0
+//     var truewins = 0
+//     var truelosses = 0
+//     let e = new Date()
                
     
-        fs.readFile('dailywrap.json', 'utf8', (err, wdata) => {
-            var wrap1 = JSON.parse(wdata)
-            let daily = Object.entries(wrap1)
+//         fs.readFile('dailywrap.json', 'utf8', (err, wdata) => {
+//             var wrap1 = JSON.parse(wdata)
+//             let daily = Object.entries(wrap1)
     
-            fs.readFile('sports.json', 'utf8', (err, data) => {
-                var sports1 = JSON.parse(data)
+//             fs.readFile('sports.json', 'utf8', (err, data) => {
+//                 var sports1 = JSON.parse(data)
     
-            for (i = 0; i < daily.length; i++) {                       
-                if  (daily[i][1].Winners.length > 0) {
-                for (j = 0; j < daily[i][1].Winners.length; j++) {                                                     
-                    if (sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length > 0) {
-                        wins++
-                        truewins = truewins + +sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length
-                    }                            
-                    if (sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length > 0) {
-                        losses++
-                        truelosses = truelosses + +sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length
-                    }
-                }
-            }
-            }
+//             for (i = 0; i < daily.length; i++) {                       
+//                 if  (daily[i][1].Winners.length > 0) {
+//                 for (j = 0; j < daily[i][1].Winners.length; j++) {                                                     
+//                     if (sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length > 0) {
+//                         wins++
+//                         truewins = truewins + +sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length
+//                     }                            
+//                     if (sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length > 0) {
+//                         losses++
+//                         truelosses = truelosses + +sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length
+//                     }
+//                 }
+//             }
+//             }
     
-            if (truewins - truelosses < 0) {
-                const wrapEmbed = new EmbedBuilder()
-                .setColor(8446019)
-                .setTitle(`Church of Anime Wrap-Up for ${new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
-                .addFields(
-                    { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:beatzDespair:1019839939522859109> ) today` },
-                )
-                client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
-            } else {
-                const wrapEmbed = new EmbedBuilder()
-                .setColor(8446019)
-                .setTitle(`Church of Anime Wrap-Up for ${new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
-                .addFields(
-                    { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:KirikaSmile:608201680374464532> ) today` },
-                )
-                client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
-            }
+//             if (truewins - truelosses < 0) {
+//                 const wrapEmbed = new EmbedBuilder()
+//                 .setColor(8446019)
+//                 .setTitle(`Church of Anime Wrap-Up for ${new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
+//                 .addFields(
+//                     { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:beatzDespair:1019839939522859109> ) today` },
+//                 )
+//                 client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
+//             } else {
+//                 const wrapEmbed = new EmbedBuilder()
+//                 .setColor(8446019)
+//                 .setTitle(`Church of Anime Wrap-Up for ${new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
+//                 .addFields(
+//                     { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:KirikaSmile:608201680374464532> ) today` },
+//                 )
+//                 client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
+//             }
                         
                         
-        })})
+//         })})
     
-});       
+// });       

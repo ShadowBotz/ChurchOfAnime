@@ -59,7 +59,13 @@ module.exports = {
             try {
                 const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
                     method: 'get',
-                    headers: {},
+                    headers: {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                        "Accept": "application/json",
+                        "Accept-Language": "en-US,en;q=0.9",
+                        "Referer": "https://espn.com",
+                        "Origin": "https://espn.com"
+                    },
                     redirect: 'follow'
                 });
                 //sends the request
@@ -94,7 +100,7 @@ module.exports = {
                             } else {
                                 if (espn.team.record.items != undefined) {
                                     if ((espn.team.record.items[0].summary.split("-")[0]) < (espn.team.record.items[0].summary.split("-")[1])) {
-                                        console.log(espn.team.displayName,espn.team.record.items[0].summary.split("-")[0],espn.team.record.items[0].summary.split("-")[1])
+                                        console.log(espn.team.displayName, espn.team.record.items[0].summary.split("-")[0], espn.team.record.items[0].summary.split("-")[1])
                                         teaminfo.push('<:beatzDespair:1019839939522859109>')
                                     } else {
                                         teaminfo.push('<:KirikaSmile:608201680374464532>')
@@ -183,24 +189,25 @@ module.exports = {
 
                     console.log(a)
 
-                    if (a != undefined){
+                    if (a != undefined) {
                         logo = a[1]
                         color = a[2]
                         emote = a[5]
 
-                    const fansEmbed = new EmbedBuilder()
-                        .setColor(color)
-                        .setTitle(team + ' Fandom')
-                        .setDescription(emote)
-                        .setThumbnail(logo)
-                        .addFields(
-                            { name: '===================================', value: '' + fan.join('\n').replaceAll(',', '') }
-                        )
+                        const fansEmbed = new EmbedBuilder()
+                            .setColor(color)
+                            .setTitle(team + ' Fandom')
+                            .setDescription(emote)
+                            .setThumbnail(logo)
+                            .addFields(
+                                { name: '===================================', value: '' + fan.join('\n').replaceAll(',', '') }
+                            )
 
-                    return interaction.reply({ embeds: [fansEmbed] })
+                        return interaction.reply({ embeds: [fansEmbed] })
                     } else {
-                        
-                    return interaction.reply('Eh, I don\'t really feel like it')}
+
+                        return interaction.reply('Eh, I don\'t really feel like it')
+                    }
                 })
 
 
