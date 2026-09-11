@@ -406,29 +406,36 @@ client.on('messageCreate', message => {
                                 console.log(SPORT, LEAGUE, ABBR, '2')
                                 getPrediction(SPORT, LEAGUE, ABBR)
                             } else {
-                            for (let i = 0; i < scores.fuyumi.prediction[LEAGUE].length; i++) {
-                                if (scores.fuyumi.prediction[LEAGUE][i].includes(squad)) {
-                                    if ((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[LEAGUE][i][6])) < 5400000) {
-                                        if (scores.fuyumi.prediction[LEAGUE][i][5] >= scores.fuyumi.prediction[LEAGUE][i][2]) {
-                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[LEAGUE][i][4] + ' ' + scores.fuyumi.prediction[LEAGUE][i][5] + ', ' + scores.fuyumi.prediction[LEAGUE][i][1] + ' ' + scores.fuyumi.prediction[LEAGUE][i][2])
-                                        } else {
-                                            client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[LEAGUE][i][1] + ' ' + scores.fuyumi.prediction[LEAGUE][i][2] + ', ' + scores.fuyumi.prediction[LEAGUE][i][4] + ' ' + scores.fuyumi.prediction[LEAGUE][i][5])
+                                for (let i = 0; i < scores.fuyumi.prediction[LEAGUE].length; i++) {
+                                    if (scores.fuyumi.prediction[LEAGUE][i].includes(squad)) {
+                                        if ((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction[LEAGUE][i][6])) < 5400000) {
+                                            if (scores.fuyumi.prediction[LEAGUE][i][5] >= scores.fuyumi.prediction[LEAGUE][i][2]) {
+                                                client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[LEAGUE][i][4] + ' ' + scores.fuyumi.prediction[LEAGUE][i][5] + ', ' + scores.fuyumi.prediction[LEAGUE][i][1] + ' ' + scores.fuyumi.prediction[LEAGUE][i][2])
+                                            } else {
+                                                client.channels.cache.get('299346622985273344').send(scores.fuyumi.prediction[LEAGUE][i][1] + ' ' + scores.fuyumi.prediction[LEAGUE][i][2] + ', ' + scores.fuyumi.prediction[LEAGUE][i][4] + ' ' + scores.fuyumi.prediction[LEAGUE][i][5])
+                                            }
+                                            newpredict = 1
                                         }
-                                        newpredict = 1
                                     }
                                 }
-                            }
 
-                            if (newpredict === 0) {
-                                console.log(SPORT, LEAGUE, ABBR, '3')
-                                Predict()
-                            }}
+                                if (newpredict === 0) {
+                                    console.log(SPORT, LEAGUE, ABBR, '3')
+                                    Predict()
+                                }
+                            }
 
                             async function getPrediction(sport, league, abbr) {
                                 try {
                                     const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
                                         method: 'get',
-                                        headers: {},
+                                        headers: {
+                                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                            "Accept": "application/json",
+                                            "Accept-Language": "en-US,en;q=0.9",
+                                            "Referer": "https://espn.com",
+                                            "Origin": "https://espn.com"
+                                        },
                                         redirect: 'follow'
                                     });
 
@@ -441,6 +448,7 @@ client.on('messageCreate', message => {
                                         eventDate = espn.team.nextEvent[0].date
 
                                         if (espn.team.nextEvent[0].competitions[0].competitors[0].team.abbreviation === abbr) {
+                                            console.log(espn.team.nextEvent[0].competitions[0].competitors[1].team)
                                             fullName = espn.team.nextEvent[0].competitions[0].competitors[0].team.displayName
                                             shortName = espn.team.nextEvent[0].competitions[0].competitors[0].team.shortDisplayName
                                             opponent = espn.team.nextEvent[0].competitions[0].competitors[1].team.abbreviation
@@ -577,65 +585,65 @@ schedule.scheduleJob('5 0 2 * * *', function () {
         let total = 0
 
         if (scores.fuyumi != undefined) {
-            if (scores.fuyumi.prediction.nfl.length > 0){
-            for (i = scores.fuyumi.prediction.nfl.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nfl[i][6]))) > 0) {
-                    scores.fuyumi.prediction.nfl.splice(i, 1)
-                    x++
+            if (scores.fuyumi.prediction.nfl.length > 0) {
+                for (i = scores.fuyumi.prediction.nfl.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nfl[i][6]))) > 0) {
+                        scores.fuyumi.prediction.nfl.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
-            if (scores.fuyumi.prediction.mlb.length > 0){
-            for (i = scores.fuyumi.prediction.mlb.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.mlb[i][6]))) > 0) {
-                    scores.fuyumi.prediction.mlb.splice(i, 1)
-                    x++
+            if (scores.fuyumi.prediction.mlb.length > 0) {
+                for (i = scores.fuyumi.prediction.mlb.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.mlb[i][6]))) > 0) {
+                        scores.fuyumi.prediction.mlb.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
-            if (scores.fuyumi.prediction.nhl.length > 0){
-            for (i = scores.fuyumi.prediction.nhl.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nhl[i][6]))) > 0) {
-                    scores.fuyumi.prediction.nhl.splice(i, 1)
-                    x++
+            if (scores.fuyumi.prediction.nhl.length > 0) {
+                for (i = scores.fuyumi.prediction.nhl.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nhl[i][6]))) > 0) {
+                        scores.fuyumi.prediction.nhl.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
-            if (scores.fuyumi.prediction.nba.length > 0){
-            for (i = scores.fuyumi.prediction.nba.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nba[i][6]))) > 0) {
-                    scores.fuyumi.prediction.nba.splice(i, 1)
-                    x++
+            if (scores.fuyumi.prediction.nba.length > 0) {
+                for (i = scores.fuyumi.prediction.nba.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nba[i][6]))) > 0) {
+                        scores.fuyumi.prediction.nba.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
-            if (scores.fuyumi.prediction.wnba.length > 0){
-            for (i = scores.fuyumi.prediction.wnba.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nba[i][6]))) > 0) {
-                    scores.fuyumi.prediction.wnba.splice(i, 1)
-                    x++
+            if (scores.fuyumi.prediction.wnba.length > 0) {
+                for (i = scores.fuyumi.prediction.wnba.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.nba[i][6]))) > 0) {
+                        scores.fuyumi.prediction.wnba.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
-            if (scores.fuyumi.prediction.ncaaf.length > 0){
-            for (i = scores.fuyumi.prediction.ncaaf.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.ncaaf[i][6]))) > 0) {
-                    scores.fuyumi.prediction.ncaaf.splice(i, 1)
-                    x++
+            if (scores.fuyumi.prediction.ncaaf.length > 0) {
+                for (i = scores.fuyumi.prediction.ncaaf.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.fuyumi.prediction.ncaaf[i][6]))) > 0) {
+                        scores.fuyumi.prediction.ncaaf.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
             fs.writeFile('fuyumipredictions.json', JSON.stringify(scores), (err) => {
                 var d = new Date();
