@@ -24,12 +24,12 @@ const dealHand = (handSize, deck) => {
 
     for (let i = 0; i < handSize; i++) {
         hand.push(deck.splice(randomNumber(0, (deck.length - 1)), 1))
-   
+
     }
 
     return hand
 
-    
+
 }
 
 const randomNumber = (min, max) => {
@@ -75,56 +75,65 @@ client.on('ready', () => {
 
 async function getWrapScores(sport, league) {
 
-            try {
-                const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
-                    method: 'get',
-                    headers: {},
-                    redirect: 'follow'
-                });
+    try {
+        const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/scoreboard', {
+            method: 'get',
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "application/json",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Referer": "https://espn.com",
+                "Origin": "https://espn.com"
+            },
+            redirect: 'follow'
+        });
 
-                //sends the request
-                espn = await req.json()                   //formats the raw request into JSON
+        //sends the request
+        espn = await req.json()                   //formats the raw request into JSON
 
-                fs.readFile('dailywrap.json', 'utf8', (err, data) => {
-                    var wrap = JSON.parse(data)
+        fs.readFile('dailywrap.json', 'utf8', (err, data) => {
+            var wrap = JSON.parse(data)
 
-                    if (espn.events[0] != undefined) {
+            if (espn.events[0] != undefined) {
 
-                        winners = []
-                        losers = []
+                winners = []
+                losers = []
 
-                        for (i = 0; i < espn.events.length; i++) {
-                            if ((new Date().getTime()) - (Date.parse(espn.events[i].competitions[0].date)) < 86400000) {
-                            if (espn.events[i].competitions[0].competitors[0].winner != undefined) {
-                                if (espn.events[i].competitions[0].competitors[0].winner === true) {
+                for (i = 0; i < espn.events.length; i++) {
+                    if ((new Date().getTime()) - (Date.parse(espn.events[i].competitions[0].date)) < 86400000) {
+                        if (espn.events[i].competitions[0].competitors[0].winner != undefined) {
+                            if (espn.events[i].competitions[0].competitors[0].winner === true) {
                                 winners.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
                                 losers.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
                             } else {
                                 winners.push(espn.events[i].competitions[0].competitors[1].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
                                 losers.push(espn.events[i].competitions[0].competitors[0].team.displayName.replaceAll('Athletics', 'Athletics Athletics').replaceAll('LA Clippers', 'Los Angeles Clippers'))
                             }
-                        }}}
-
-                        wrap[league.toUpperCase()] = {
-                            Winners: winners,
-                            Losers: losers
                         }
+                    }
+                }
 
-                        fs.writeFile('dailywrap.json', JSON.stringify(wrap), (err) => {
-                            if (err) {
-                                console.log(err)
-                            }})
+                wrap[league.toUpperCase()] = {
+                    Winners: winners,
+                    Losers: losers
+                }
 
-                    } else {
-                        return Promise.reject('getWrapScores() Kirika Promise Error')
+                fs.writeFile('dailywrap.json', JSON.stringify(wrap), (err) => {
+                    if (err) {
+                        console.log(err)
                     }
                 })
-            } catch (err) {
-                return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
-                    console.log(err)
-            }
 
-        }
+            } else {
+                return Promise.reject('getWrapScores() Kirika Promise Error')
+            }
+        })
+    } catch (err) {
+        return interaction.reply('Hang on. ESPN is being a baka <:beatzBaka:1167640027652698312> Try again in a second'),
+            console.log(err)
+    }
+
+}
 
 
 client.commands = new Collection();
@@ -287,7 +296,7 @@ client.on("messageCreate", message => {
                             x++
                         }
                     }
-        
+
                     for (i = scores.kirika.prediction.mlb.length - 1; i >= 0; i--) {
                         total++
                         if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
@@ -295,7 +304,7 @@ client.on("messageCreate", message => {
                             x++
                         }
                     }
-        
+
                     fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
                         var d = new Date();
                         var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' -'
@@ -305,52 +314,52 @@ client.on("messageCreate", message => {
                 })
                 break;
             case "!noe":
-                 if (message.author.userId == '124044415634243584'){
-                    
-                if (pokerGameInProgress === 0) {
-                    let board = []
-                    message.author.username = []
+                if (message.author.userId == '124044415634243584') {
 
-                    i = 2
-                    message.channel.send('Poker hand has started KirikaSmile !poker to join. I\'ll deal the board in 30 seconds')
-                    pokerGameInProgress = 1
-                    board.push(dealHand(5, cards))
-                    message.author.username.push([username(message.author.id), dealHand(2, cards), board])
+                    if (pokerGameInProgress === 0) {
+                        let board = []
+                        message.author.username = []
 
-                    console.log(message.author.username)
-
-                    //message.channel.send(message.author.username)
-
-
-                    setTimeout(() => { message.channel.send('10 seconds KirikaSmile') }, 20000)
-
-                    setTimeout(() => {
-                        message.channel.send(`${board[0][0]} ${board[0][1]} ${board[0][2]}`)
-                        message.channel.send(`${board[0][3]} ${board[0][4]}`)
-                        cards = ['A :clubs:', 'A :diamonds:', 'A :hearts:', 'A :spades:', '2 :clubs:', '2 :diamonds:', '2 :hearts:', '2 :spades:', '3 :clubs:', '3 :diamonds:', '3 :hearts:', '3 :spades:', '4 :clubs:', '4 :diamonds:', '4 :hearts:', '4 :spades:', '5 :clubs:', '5 :diamonds:', '5 :hearts:', '5 :spades:', '6 :clubs:', '6 :diamonds:', '6 :hearts:', '6 :spades:', '7 :clubs:', '7 :diamonds:', '7 :hearts:', '7 :spades:', '8 :clubs:', '8 :diamonds:', '8 :hearts:', '8 :spades:', '9 :clubs:', '9 :diamonds:', '9 :hearts:', '9 :spades:', '10 :clubs:', '10 :diamonds:', '10 :hearts:', '10 :spades:', 'J :clubs:', 'J :diamonds:', 'J :hearts:', 'J :spades:', 'Q :clubs:', 'Q :diamonds:', 'Q :hearts:', 'Q :spades:', 'K :clubs:', 'K :diamonds:', 'K :hearts:', 'K :spades:']
-
-                        pokerGameInProgress = 0
-                        board = []
-                        players = []
                         i = 2
-                    }, 30000)
+                        message.channel.send('Poker hand has started KirikaSmile !poker to join. I\'ll deal the board in 30 seconds')
+                        pokerGameInProgress = 1
+                        board.push(dealHand(5, cards))
+                        message.author.username.push([username(message.author.id), dealHand(2, cards), board])
 
-                } else {
-                    if (players.length < 8) {
-                        if (players.includes(username(message.author.id))) {
-                            message.channel.send('You\'re already in the hand beatzSus')
-                        } else {
-                            board.push([username(message.author.id), dealHand(2, cards)])
-                            message.channel.send(`${board[i][1][0]} ${board[i][1][1]} ${board[i][0]}`)
-                            players.push(username(message.author.id))
-                            i = i + 1
-                        }
+                        console.log(message.author.username)
+
+                        //message.channel.send(message.author.username)
+
+
+                        setTimeout(() => { message.channel.send('10 seconds KirikaSmile') }, 20000)
+
+                        setTimeout(() => {
+                            message.channel.send(`${board[0][0]} ${board[0][1]} ${board[0][2]}`)
+                            message.channel.send(`${board[0][3]} ${board[0][4]}`)
+                            cards = ['A :clubs:', 'A :diamonds:', 'A :hearts:', 'A :spades:', '2 :clubs:', '2 :diamonds:', '2 :hearts:', '2 :spades:', '3 :clubs:', '3 :diamonds:', '3 :hearts:', '3 :spades:', '4 :clubs:', '4 :diamonds:', '4 :hearts:', '4 :spades:', '5 :clubs:', '5 :diamonds:', '5 :hearts:', '5 :spades:', '6 :clubs:', '6 :diamonds:', '6 :hearts:', '6 :spades:', '7 :clubs:', '7 :diamonds:', '7 :hearts:', '7 :spades:', '8 :clubs:', '8 :diamonds:', '8 :hearts:', '8 :spades:', '9 :clubs:', '9 :diamonds:', '9 :hearts:', '9 :spades:', '10 :clubs:', '10 :diamonds:', '10 :hearts:', '10 :spades:', 'J :clubs:', 'J :diamonds:', 'J :hearts:', 'J :spades:', 'Q :clubs:', 'Q :diamonds:', 'Q :hearts:', 'Q :spades:', 'K :clubs:', 'K :diamonds:', 'K :hearts:', 'K :spades:']
+
+                            pokerGameInProgress = 0
+                            board = []
+                            players = []
+                            i = 2
+                        }, 30000)
+
                     } else {
-                        message.channel.send(`Sorry ${username(message.author.id)}, max of 8 players allowed per hand beatzFeels you can get in next time KirikaSmile`)
+                        if (players.length < 8) {
+                            if (players.includes(username(message.author.id))) {
+                                message.channel.send('You\'re already in the hand beatzSus')
+                            } else {
+                                board.push([username(message.author.id), dealHand(2, cards)])
+                                message.channel.send(`${board[i][1][0]} ${board[i][1][1]} ${board[i][0]}`)
+                                players.push(username(message.author.id))
+                                i = i + 1
+                            }
+                        } else {
+                            message.channel.send(`Sorry ${username(message.author.id)}, max of 8 players allowed per hand beatzFeels you can get in next time KirikaSmile`)
+                        }
                     }
-                }
 
-                 }
+                }
                 break;
         }
 
@@ -388,7 +397,7 @@ client.on("messageCreate", message => {
     }
 });
 
-        // copies the deleted message into a private channel
+// copies the deleted message into a private channel
 
 client.on("messageDelete", message => {
     console.log(`${time} ${message.author.username} said "${message.content}"`)
@@ -451,7 +460,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
         if (currentlyStreaming >= 1) {
             // if (newMember.userId != '306578848177192960' || newMember.userId != '205980021251244032') {
             client.guilds.cache.get('172065393525915648').members.cache.get(newMember.userId).roles.add('610621341984489472')
-                 console.log(newMember)
+            console.log(newMember)
             // }else{
             //     console.log('lol '+username(newMember.userId)+' tried it ', newMember.userId)
             // }
@@ -567,63 +576,63 @@ schedule.scheduleJob('0 0 2 * * *', function () {
 
         if (scores.kirika != undefined) {
             if (scores.kirika.prediction.nfl.length > 0) {
-            for (i = scores.kirika.prediction.nfl.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nfl[i][6]))) > 0) {
-                    scores.kirika.prediction.nfl.splice(i, 1)
-                    x++
+                for (i = scores.kirika.prediction.nfl.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nfl[i][6]))) > 0) {
+                        scores.kirika.prediction.nfl.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
             if (scores.kirika.prediction.mlb.length > 0) {
-            for (i = scores.kirika.prediction.mlb.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
-                    scores.kirika.prediction.mlb.splice(i, 1)
-                    x++
+                for (i = scores.kirika.prediction.mlb.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.mlb[i][6]))) > 0) {
+                        scores.kirika.prediction.mlb.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
             if (scores.kirika.prediction.nhl.length > 0) {
-            for (i = scores.kirika.prediction.nhl.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nhl[i][6]))) > 0) {
-                    scores.kirika.prediction.nhl.splice(i, 1)
-                    x++
+                for (i = scores.kirika.prediction.nhl.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nhl[i][6]))) > 0) {
+                        scores.kirika.prediction.nhl.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
             if (scores.kirika.prediction.nba.length > 0) {
-            for (i = scores.kirika.prediction.nba.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nba[i][6]))) > 0) {
-                    scores.kirika.prediction.nba.splice(i, 1)
-                    x++
+                for (i = scores.kirika.prediction.nba.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nba[i][6]))) > 0) {
+                        scores.kirika.prediction.nba.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
             if (scores.kirika.prediction.wnba.length > 0) {
-            for (i = scores.kirika.prediction.wnba.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nba[i][6]))) > 0) {
-                    scores.kirika.prediction.wnba.splice(i, 1)
-                    x++
+                for (i = scores.kirika.prediction.wnba.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.nba[i][6]))) > 0) {
+                        scores.kirika.prediction.wnba.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
             if (scores.kirika.prediction.ncaaf.length > 0) {
-            for (i = scores.kirika.prediction.ncaaf.length - 1; i >= 0; i--) {
-                total++
-                if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.ncaaf[i][6]))) > 0) {
-                    scores.kirika.prediction.ncaaf.splice(i, 1)
-                    x++
+                for (i = scores.kirika.prediction.ncaaf.length - 1; i >= 0; i--) {
+                    total++
+                    if (((new Date().getTime()) - (Date.parse(scores.kirika.prediction.ncaaf[i][6]))) > 0) {
+                        scores.kirika.prediction.ncaaf.splice(i, 1)
+                        x++
+                    }
                 }
             }
-        }
 
             fs.writeFile('kirikapredictions.json', JSON.stringify(scores), (err) => {
                 var d = new Date();
@@ -634,90 +643,91 @@ schedule.scheduleJob('0 0 2 * * *', function () {
         }
     })
 });
-// schedule.scheduleJob('5 59 2 * * *', function () {
-//     var d = new Date();
-//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-    
-//     getWrapScores("baseball", "mlb")
-//     console.log(`${time} Logged MLB Winners and Losers o7`)
-// });
-// schedule.scheduleJob('10 59 2 * * *', function () {
-//     var d = new Date();
-//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+schedule.scheduleJob('5 59 2 * * *', function () {
+    var d = new Date();
+    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
 
-//     getWrapScores("football", "nfl")
-//     console.log(`${time} Logged NFL Winners and Losers o7`)
-// });
-// schedule.scheduleJob('15 59 2 * * *', function () {
-//     var d = new Date();
-//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-    
-//     getWrapScores("basketball", "nba")
-//     console.log(`${time} Logged NBA Winners and Losers o7`)
-// });
-// schedule.scheduleJob('20 59 2 * * *', function () {
-//     var d = new Date();
-//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-    
-//     getWrapScores("hockey", "nhl")
-//     console.log(`${time} Logged NHL Winners and Losers o7`)
-// });
-// schedule.scheduleJob('25 59 2 * * *', function () {
-//     var d = new Date();
-//     var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
-    
-//     getWrapScores("basketball", "wnba")
-//     console.log(`${time} Logged WNBA Winners and Losers o7`)
-// });
-// schedule.scheduleJob('0 0 3 * * *', function () {
-//     var wins = 0
-//     var losses = 0
-//     var truewins = 0
-//     var truelosses = 0
-//     let e = new Date()
-               
-    
-//         fs.readFile('dailywrap.json', 'utf8', (err, wdata) => {
-//             var wrap1 = JSON.parse(wdata)
-//             let daily = Object.entries(wrap1)
-    
-//             fs.readFile('sports.json', 'utf8', (err, data) => {
-//                 var sports1 = JSON.parse(data)
-    
-//             for (i = 0; i < daily.length; i++) {                       
-//                 if  (daily[i][1].Winners.length > 0) {
-//                 for (j = 0; j < daily[i][1].Winners.length; j++) {                                                     
-//                     if (sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length > 0) {
-//                         wins++
-//                         truewins = truewins + +sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length
-//                     }                            
-//                     if (sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length > 0) {
-//                         losses++
-//                         truelosses = truelosses + +sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length
-//                     }
-//                 }
-//             }
-//             }
-    
-//             if (truewins - truelosses < 0) {
-//                 const wrapEmbed = new EmbedBuilder()
-//                 .setColor(8446019)
-//                 .setTitle(`Church of Anime Wrap-Up for ${new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
-//                 .addFields(
-//                     { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:beatzDespair:1019839939522859109> ) today` },
-//                 )
-//                 client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
-//             } else {
-//                 const wrapEmbed = new EmbedBuilder()
-//                 .setColor(8446019)
-//                 .setTitle(`Church of Anime Wrap-Up for ${new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
-//                 .addFields(
-//                     { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:KirikaSmile:608201680374464532> ) today` },
-//                 )
-//                 client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
-//             }
-                        
-                        
-//         })})
-    
-// });       
+    getWrapScores("baseball", "mlb")
+    console.log(`${time} Logged MLB Winners and Losers o7`)
+});
+schedule.scheduleJob('10 59 2 * * *', function () {
+    var d = new Date();
+    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+
+    getWrapScores("football", "nfl")
+    console.log(`${time} Logged NFL Winners and Losers o7`)
+});
+schedule.scheduleJob('15 59 2 * * *', function () {
+    var d = new Date();
+    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+
+    getWrapScores("basketball", "nba")
+    console.log(`${time} Logged NBA Winners and Losers o7`)
+});
+schedule.scheduleJob('20 59 2 * * *', function () {
+    var d = new Date();
+    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+
+    getWrapScores("hockey", "nhl")
+    console.log(`${time} Logged NHL Winners and Losers o7`)
+});
+schedule.scheduleJob('25 59 2 * * *', function () {
+    var d = new Date();
+    var time = (d.getHours()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ':' + (d.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })) + ':' + (d.getSeconds()).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + ' - '
+
+    getWrapScores("basketball", "wnba")
+    console.log(`${time} Logged WNBA Winners and Losers o7`)
+});
+schedule.scheduleJob('0 0 3 * * *', function () {
+    var wins = 0
+    var losses = 0
+    var truewins = 0
+    var truelosses = 0
+    let e = new Date()
+
+
+    fs.readFile('dailywrap.json', 'utf8', (err, wdata) => {
+        var wrap1 = JSON.parse(wdata)
+        let daily = Object.entries(wrap1)
+
+        fs.readFile('sports.json', 'utf8', (err, data) => {
+            var sports1 = JSON.parse(data)
+
+            for (i = 0; i < daily.length; i++) {
+                if (daily[i][1].Winners.length > 0) {
+                    for (j = 0; j < daily[i][1].Winners.length; j++) {
+                        if (sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length > 0) {
+                            wins++
+                            truewins = truewins + +sports1[daily[i][0]][daily[i][1].Winners[j]].fans.length
+                        }
+                        if (sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length > 0) {
+                            losses++
+                            truelosses = truelosses + +sports1[daily[i][0]][daily[i][1].Losers[j]].fans.length
+                        }
+                    }
+                }
+            }
+
+            if (truewins - truelosses < 0) {
+                const wrapEmbed = new EmbedBuilder()
+                    .setColor(8446019)
+                    .setTitle(`Church of Anime Wrap-Up for ${new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
+                    .addFields(
+                        { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:beatzDespair:1019839939522859109> ) today` },
+                    )
+                client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
+            } else {
+                const wrapEmbed = new EmbedBuilder()
+                    .setColor(8446019)
+                    .setTitle(`Church of Anime Wrap-Up for ${new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`)
+                    .addFields(
+                        { name: '===============================================', value: `CoA teams went ${wins}-${losses} (Total: ${truewins}-${truelosses} <:KirikaSmile:608201680374464532> ) today` },
+                    )
+                client.channels.cache.get('299346622985273344').send({ embeds: [wrapEmbed] })
+            }
+
+
+        })
+    })
+
+});       
