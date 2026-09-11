@@ -62,7 +62,13 @@ module.exports = {
             try {
                 const req = await fetch('http://site.api.espn.com/apis/site/v2/sports/' + sport + '/' + league + '/teams/' + abbr, {
                     method: 'get',
-                    headers: {},
+                    headers: {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                        "Accept": "application/json",
+                        "Accept-Language": "en-US,en;q=0.9",
+                        "Referer": "https://espn.com",
+                        "Origin": "https://espn.com"
+                    },
                     redirect: 'follow'
                 });
                 //sends the request
@@ -82,20 +88,20 @@ module.exports = {
 
                     }
 
-                    if (espn.team.color === '000000') {
-                        if (espn.team.record.items != undefined) {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, M)
-                        } else {
-                            teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, "0-0", M)
-                        }
+                    // if (espn.team.color === '000000') {
+                    //     if (espn.team.record.items != undefined) {
+                    //         teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, espn.team.record.items[0].summary, M)
+                    //     } else {
+                    //         teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.alternateColor, "0-0", M)
+                    //     }
 
-                    } else {
+                    //} else {
                         if (espn.team.record.items != undefined) {
                             teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, espn.team.record.items[0].summary, M)
                         } else {
                             teaminfo.push(espn.team.displayName, espn.team.logos[1].href, espn.team.color, "0-0", M)
                         }
-                    }
+                    //}
 
                     if (espn.team.displayName.includes(' Eagles') || espn.team.displayName.includes(' Cowboys') || espn.team.displayName.includes(' Flyers') || espn.team.displayName.includes(' Phillies') || espn.team.displayName.includes(' Braves') || espn.team.displayName.includes(' Nationals') || espn.team.displayName.includes(' Yankees') || espn.team.displayName.includes(' Capitals')) {
                         teaminfo.push('<:beatzSusAF:549413960948908063>')
